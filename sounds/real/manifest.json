@@ -1,0 +1,3072 @@
+{
+ "banks": {
+  "step.grass": [
+   "real/step_grass_0.ogg",
+   "real/step_grass_1.ogg",
+   "real/step_grass_2.ogg",
+   "real/step_grass_3.ogg",
+   "real/step_grass_4.ogg",
+   "real/step_grass_5.ogg",
+   "real/step_grass_6.ogg",
+   "real/step_grass_7.ogg"
+  ],
+  "step.gravel": [
+   "real/step_gravel_0.ogg",
+   "real/step_gravel_1.ogg",
+   "real/step_gravel_2.ogg",
+   "real/step_gravel_3.ogg",
+   "real/step_gravel_4.ogg",
+   "real/step_gravel_5.ogg",
+   "real/step_gravel_6.ogg",
+   "real/step_gravel_7.ogg"
+  ],
+  "step.sand": [
+   "real/step_sand_0.ogg",
+   "real/step_sand_1.ogg",
+   "real/step_sand_2.ogg",
+   "real/step_sand_3.ogg",
+   "real/step_sand_4.ogg",
+   "real/step_sand_5.ogg",
+   "real/step_sand_6.ogg",
+   "real/step_sand_7.ogg"
+  ],
+  "step.snow": [
+   "real/step_snow_0.ogg",
+   "real/step_snow_1.ogg",
+   "real/step_snow_2.ogg",
+   "real/step_snow_3.ogg",
+   "real/step_snow_4.ogg"
+  ],
+  "step.wood": [
+   "real/step_wood_0.ogg",
+   "real/step_wood_1.ogg",
+   "real/step_wood_2.ogg",
+   "real/step_wood_3.ogg",
+   "real/step_wood_4.ogg",
+   "real/step_wood_5.ogg",
+   "real/step_wood_6.ogg",
+   "real/step_wood_7.ogg"
+  ],
+  "step.stone": [
+   "real/step_stone_0.ogg",
+   "real/step_stone_1.ogg",
+   "real/step_stone_2.ogg",
+   "real/step_stone_3.ogg",
+   "real/step_stone_4.ogg",
+   "real/step_stone_5.ogg",
+   "real/step_stone_6.ogg",
+   "real/step_stone_7.ogg"
+  ],
+  "dig.stone": [
+   "real/dig_stone_0.ogg",
+   "real/dig_stone_1.ogg",
+   "real/dig_stone_2.ogg",
+   "real/dig_stone_3.ogg",
+   "real/dig_stone_4.ogg",
+   "real/dig_stone_5.ogg",
+   "real/dig_stone_6.ogg",
+   "real/dig_stone_7.ogg"
+  ],
+  "dig.gravel": [
+   "real/dig_gravel_0.ogg",
+   "real/dig_gravel_1.ogg",
+   "real/dig_gravel_2.ogg",
+   "real/dig_gravel_3.ogg",
+   "real/dig_gravel_4.ogg",
+   "real/dig_gravel_5.ogg",
+   "real/dig_gravel_6.ogg",
+   "real/dig_gravel_7.ogg"
+  ],
+  "dig.wood": [
+   "real/dig_wood_0.ogg",
+   "real/dig_wood_1.ogg",
+   "real/dig_wood_2.ogg",
+   "real/dig_wood_3.ogg",
+   "real/dig_wood_4.ogg",
+   "real/dig_wood_5.ogg"
+  ],
+  "dig.leaves": [
+   "real/dig_leaves_0.ogg",
+   "real/dig_leaves_1.ogg",
+   "real/dig_leaves_2.ogg",
+   "real/dig_leaves_3.ogg"
+  ],
+  "dig.cloth": [
+   "real/dig_cloth_0.ogg",
+   "real/dig_cloth_1.ogg",
+   "real/dig_cloth_2.ogg",
+   "real/dig_cloth_3.ogg",
+   "real/dig_cloth_4.ogg"
+  ],
+  "break.glass": [
+   "real/break_glass_0.ogg",
+   "real/break_glass_1.ogg"
+  ],
+  "pop": [
+   "real/pop_0.ogg",
+   "real/pop_1.ogg"
+  ],
+  "eat": [
+   "real/eat_0.ogg",
+   "real/eat_1.ogg",
+   "real/eat_2.ogg",
+   "real/eat_3.ogg",
+   "real/eat_4.ogg",
+   "real/eat_5.ogg"
+  ],
+  "splash": [
+   "real/splash_0.ogg",
+   "real/splash_1.ogg",
+   "real/splash_2.ogg"
+  ],
+  "swim": [
+   "real/swim_0.ogg",
+   "real/swim_1.ogg"
+  ],
+  "ignite": [
+   "real/ignite_0.ogg"
+  ],
+  "chest.open": [
+   "real/chest_open_0.ogg"
+  ],
+  "chest.close": [
+   "real/chest_close_0.ogg",
+   "real/chest_close_1.ogg"
+  ],
+  "creak": [
+   "real/creak_0.ogg"
+  ],
+  "door.open": [
+   "real/door_open_0.ogg"
+  ],
+  "door.close": [
+   "real/door_close_0.ogg"
+  ],
+  "explode": [
+   "real/explode_0.ogg",
+   "real/explode_1.ogg"
+  ],
+  "hurt": [
+   "real/hurt_0.ogg"
+  ],
+  "loop.fire": [
+   "real/loop_fire_0.ogg"
+  ],
+  "loop.underwater": [
+   "real/loop_underwater_0.ogg"
+  ],
+  "loop.birds": [
+   "real/loop_birds_0.ogg",
+   "real/loop_birds_1.ogg"
+  ],
+  "loop.crickets": [
+   "real/loop_crickets_0.ogg"
+  ],
+  "loop.cave": [
+   "real/loop_cave_0.ogg"
+  ],
+  "loop.wind": [
+   "real/loop_wind_0.ogg"
+  ],
+  "mono": [
+   "real/mono_0.ogg",
+   "real/mono_1.ogg",
+   "real/mono_2.ogg",
+   "real/mono_3.ogg"
+  ],
+  "cara_blanca": [
+   "real/cara_blanca_0.ogg",
+   "real/cara_blanca_1.ogg",
+   "real/cara_blanca_2.ogg",
+   "real/cara_blanca_3.ogg",
+   "real/cara_blanca_4.ogg"
+  ],
+  "tucan": [
+   "real/tucan_0.ogg",
+   "real/tucan_1.ogg",
+   "real/tucan_2.ogg",
+   "real/tucan_3.ogg",
+   "real/tucan_4.ogg"
+  ],
+  "lapa": [
+   "real/lapa_0.ogg",
+   "real/lapa_1.ogg",
+   "real/lapa_2.ogg",
+   "real/lapa_3.ogg",
+   "real/lapa_4.ogg"
+  ],
+  "jaguar": [
+   "real/jaguar_0.ogg"
+  ],
+  "cocodrilo": [
+   "real/cocodrilo_0.ogg",
+   "real/cocodrilo_1.ogg",
+   "real/cocodrilo_2.ogg"
+  ],
+  "rana": [
+   "real/rana_0.ogg",
+   "real/rana_1.ogg",
+   "real/rana_2.ogg",
+   "real/rana_3.ogg",
+   "real/rana_4.ogg",
+   "real/rana_5.ogg"
+  ],
+  "serpiente": [
+   "real/serpiente_0.ogg",
+   "real/serpiente_1.ogg"
+  ],
+  "murcielago": [
+   "real/murcielago_0.ogg",
+   "real/murcielago_1.ogg",
+   "real/murcielago_2.ogg",
+   "real/murcielago_3.ogg",
+   "real/murcielago_4.ogg",
+   "real/murcielago_5.ogg"
+  ],
+  "pizote": [
+   "real/pizote_0.ogg"
+  ],
+  "aleteo": [
+   "real/aleteo_0.ogg",
+   "real/aleteo_1.ogg",
+   "real/aleteo_2.ogg",
+   "real/aleteo_3.ogg"
+  ],
+  "colibri": [
+   "real/colibri_0.ogg",
+   "real/colibri_1.ogg",
+   "real/colibri_2.ogg"
+  ],
+  "gallina": [
+   "real/gallina_0.ogg",
+   "real/gallina_1.ogg",
+   "real/gallina_2.ogg",
+   "real/gallina_3.ogg",
+   "real/gallina_4.ogg"
+  ],
+  "gallo": [
+   "real/gallo_0.ogg"
+  ],
+  "vaca": [
+   "real/vaca_0.ogg"
+  ],
+  "trueno": [
+   "real/trueno_0.ogg",
+   "real/trueno_1.ogg"
+  ],
+  "loop.rain": [
+   "real/loop_rain_0.ogg",
+   "real/loop_rain_1.ogg"
+  ],
+  "loop.waves": [
+   "real/loop_waves_0.ogg"
+  ],
+  "loop.river": [
+   "real/loop_river_0.ogg"
+  ],
+  "loop.jungle_night": [
+   "real/loop_jungle_night_0.ogg"
+  ],
+  "loop.jungle_day": [
+   "real/loop_jungle_day_0.ogg"
+  ],
+  "loop.frogs": [
+   "real/loop_frogs_0.ogg"
+  ],
+  "loop.bees": [
+   "real/loop_bees_0.ogg"
+  ],
+  "perro": [
+   "real/perro_0.ogg",
+   "real/perro_1.ogg",
+   "real/perro_2.ogg",
+   "real/perro_3.ogg",
+   "real/perro_4.ogg",
+   "real/perro_5.ogg"
+  ],
+  "perro.gruñido": [
+   "real/perro_gruñido_0.ogg",
+   "real/perro_gruñido_1.ogg",
+   "real/perro_gruñido_2.ogg"
+  ],
+  "caballo": [
+   "real/caballo_0.ogg",
+   "real/caballo_1.ogg",
+   "real/caballo_2.ogg"
+  ],
+  "resoplido": [
+   "real/resoplido_0.ogg",
+   "real/resoplido_1.ogg",
+   "real/resoplido_2.ogg",
+   "real/resoplido_3.ogg"
+  ],
+  "galope": [
+   "real/galope_0.ogg",
+   "real/galope_1.ogg",
+   "real/galope_2.ogg",
+   "real/galope_3.ogg",
+   "real/galope_4.ogg",
+   "real/galope_5.ogg",
+   "real/galope_6.ogg",
+   "real/galope_7.ogg"
+  ],
+  "balde": [
+   "real/balde_0.ogg",
+   "real/balde_1.ogg"
+  ],
+  "montura": [
+   "real/montura_0.ogg"
+  ],
+  "freir": [
+   "real/freir_0.ogg",
+   "real/freir_1.ogg"
+  ],
+  "chorrear": [
+   "real/chorrear_0.ogg",
+   "real/chorrear_1.ogg"
+  ],
+  "loop.hervir": [
+   "real/loop_hervir_0.ogg"
+  ],
+  "sorbo": [
+   "real/sorbo_0.ogg",
+   "real/sorbo_1.ogg"
+  ],
+  "campana": [
+   "real/campana_0.ogg",
+   "real/campana_1.ogg"
+  ],
+  "monedas": [
+   "real/monedas_0.ogg",
+   "real/monedas_1.ogg",
+   "real/monedas_2.ogg"
+  ],
+  "caja": [
+   "real/caja_0.ogg"
+  ],
+  "balon": [
+   "real/balon_0.ogg",
+   "real/balon_1.ogg"
+  ],
+  "hmm": [
+   "real/hmm_0.ogg",
+   "real/hmm_1.ogg",
+   "real/hmm_2.ogg"
+  ],
+  "loop.pueblo": [
+   "real/loop_pueblo_0.ogg",
+   "real/loop_pueblo_1.ogg"
+  ],
+  "ballena": [
+   "real/ballena_0.ogg",
+   "real/ballena_1.ogg",
+   "real/ballena_2.ogg"
+  ],
+  "delfin": [
+   "real/delfin_0.ogg",
+   "real/delfin_1.ogg",
+   "real/delfin_2.ogg",
+   "real/delfin_3.ogg",
+   "real/delfin_4.ogg"
+  ],
+  "carrete": [
+   "real/carrete_0.ogg",
+   "real/carrete_1.ogg"
+  ],
+  "lanzar": [
+   "real/lanzar_0.ogg",
+   "real/lanzar_1.ogg",
+   "real/lanzar_2.ogg",
+   "real/lanzar_3.ogg"
+  ],
+  "remo": [
+   "real/remo_0.ogg",
+   "real/remo_1.ogg",
+   "real/remo_2.ogg",
+   "real/remo_3.ogg",
+   "real/remo_4.ogg",
+   "real/remo_5.ogg"
+  ],
+  "pez": [
+   "real/pez_0.ogg",
+   "real/pez_1.ogg"
+  ],
+  "loop.gaviotas": [
+   "real/loop_gaviotas_0.ogg"
+  ],
+  "gaviota": [
+   "real/gaviota_0.ogg",
+   "real/gaviota_1.ogg"
+  ],
+  "cadenas": [
+   "real/cadenas_0.ogg",
+   "real/cadenas_1.ogg"
+  ],
+  "loop.llanto": [
+   "real/loop_llanto_0.ogg",
+   "real/loop_llanto_1.ogg"
+  ],
+  "susurro": [
+   "real/susurro_0.ogg",
+   "real/susurro_1.ogg"
+  ],
+  "grito": [
+   "real/grito_0.ogg"
+  ],
+  "relincho": [
+   "real/relincho_0.ogg"
+  ],
+  "cadejos": [
+   "real/cadejos_0.ogg",
+   "real/cadejos_1.ogg",
+   "real/cadejos_2.ogg",
+   "real/cadejos_3.ogg",
+   "real/cadejos_4.ogg"
+  ],
+  "arco": [
+   "real/arco_0.ogg",
+   "real/arco_1.ogg"
+  ],
+  "flecha": [
+   "real/flecha_0.ogg",
+   "real/flecha_1.ogg"
+  ],
+  "nivel": [
+   "real/nivel_0.ogg",
+   "real/nivel_1.ogg"
+  ],
+  "silbido": [
+   "real/silbido_0.ogg",
+   "real/silbido_1.ogg"
+  ],
+  "bombeta": [
+   "real/bombeta_0.ogg",
+   "real/bombeta_1.ogg",
+   "real/bombeta_2.ogg"
+  ],
+  "mecha": [
+   "real/mecha_0.ogg"
+  ],
+  "nota.marimba.59": [
+   "real/nota_marimba_59_0.ogg"
+  ],
+  "nota.marimba.83": [
+   "real/nota_marimba_83_0.ogg"
+  ],
+  "nota.marimba.48": [
+   "real/nota_marimba_48_0.ogg"
+  ],
+  "nota.marimba.72": [
+   "real/nota_marimba_72_0.ogg"
+  ],
+  "nota.marimba.96": [
+   "real/nota_marimba_96_0.ogg"
+  ],
+  "nota.marimba.41": [
+   "real/nota_marimba_41_0.ogg"
+  ],
+  "nota.marimba.65": [
+   "real/nota_marimba_65_0.ogg"
+  ],
+  "nota.marimba.89": [
+   "real/nota_marimba_89_0.ogg"
+  ],
+  "nota.marimba.54": [
+   "real/nota_marimba_54_0.ogg"
+  ],
+  "nota.marimba.78": [
+   "real/nota_marimba_78_0.ogg"
+  ],
+  "nota.arpa.65": [
+   "real/nota_arpa_65_0.ogg"
+  ],
+  "nota.arpa.89": [
+   "real/nota_arpa_89_0.ogg"
+  ],
+  "nota.arpa.54": [
+   "real/nota_arpa_54_0.ogg"
+  ],
+  "nota.arpa.78": [
+   "real/nota_arpa_78_0.ogg"
+  ],
+  "nota.arpa.98": [
+   "real/nota_arpa_98_0.ogg"
+  ],
+  "nota.arpa.28": [
+   "real/nota_arpa_28_0.ogg"
+  ],
+  "nota.arpa.101": [
+   "real/nota_arpa_101_0.ogg"
+  ],
+  "hipo": [
+   "real/hipo_0.ogg",
+   "real/hipo_1.ogg",
+   "real/hipo_2.ogg"
+  ],
+  "portal": [
+   "real/portal_0.ogg",
+   "real/portal_1.ogg"
+  ],
+  "loop.lava": [
+   "real/loop_lava_0.ogg",
+   "real/loop_lava_1.ogg"
+  ],
+  "loop.volcan": [
+   "real/loop_volcan_0.ogg"
+  ],
+  "monstruo": [
+   "real/monstruo_0.ogg",
+   "real/monstruo_1.ogg",
+   "real/monstruo_2.ogg"
+  ],
+  "aplausos": [
+   "real/aplausos_0.ogg",
+   "real/aplausos_1.ogg"
+  ],
+  "gol": [
+   "real/gol_0.ogg",
+   "real/gol_1.ogg"
+  ],
+  "tren": [
+   "real/tren_0.ogg"
+  ],
+  "swish": [
+   "real/swish_0.ogg",
+   "real/swish_1.ogg",
+   "real/swish_2.ogg"
+  ],
+  "tajo": [
+   "real/tajo_0.ogg",
+   "real/tajo_1.ogg",
+   "real/tajo_2.ogg"
+  ],
+  "armadura.metal": [
+   "real/armadura_metal_0.ogg",
+   "real/armadura_metal_1.ogg",
+   "real/armadura_metal_2.ogg",
+   "real/armadura_metal_3.ogg",
+   "real/armadura_metal_4.ogg",
+   "real/armadura_metal_5.ogg"
+  ],
+  "armadura.cuero": [
+   "real/armadura_cuero_0.ogg",
+   "real/armadura_cuero_1.ogg",
+   "real/armadura_cuero_2.ogg"
+  ],
+  "inv.open": [
+   "real/inv_open_0.ogg"
+  ],
+  "inv.close": [
+   "real/inv_close_0.ogg"
+  ],
+  "fuse": [
+   "real/fuse_0.ogg"
+  ],
+  "rumble": [
+   "real/rumble_0.ogg",
+   "real/rumble_1.ogg"
+  ],
+  "recoger": [
+   "real/recoger_0.ogg",
+   "real/recoger_1.ogg",
+   "real/recoger_2.ogg",
+   "real/recoger_3.ogg",
+   "real/recoger_4.ogg"
+  ],
+  "soltar": [
+   "real/soltar_0.ogg",
+   "real/soltar_1.ogg",
+   "real/soltar_2.ogg",
+   "real/soltar_3.ogg",
+   "real/soltar_4.ogg",
+   "real/soltar_5.ogg"
+  ],
+  "cofre.abrir": [
+   "real/cofre_abrir_0.ogg",
+   "real/cofre_abrir_1.ogg",
+   "real/cofre_abrir_2.ogg",
+   "real/cofre_abrir_3.ogg"
+  ],
+  "cofre.cerrar": [
+   "real/cofre_cerrar_0.ogg",
+   "real/cofre_cerrar_1.ogg",
+   "real/cofre_cerrar_2.ogg",
+   "real/cofre_cerrar_3.ogg",
+   "real/cofre_cerrar_4.ogg",
+   "real/cofre_cerrar_5.ogg"
+  ],
+  "picar": [
+   "real/picar_0.ogg",
+   "real/picar_1.ogg",
+   "real/picar_2.ogg",
+   "real/picar_3.ogg",
+   "real/picar_4.ogg",
+   "real/picar_5.ogg",
+   "real/picar_6.ogg",
+   "real/picar_7.ogg"
+  ],
+  "danta": [
+   "real/danta_0.ogg"
+  ],
+  "danta.hurt": [
+   "real/danta_hurt_0.ogg"
+  ],
+  "sombra": [
+   "real/sombra_0.ogg",
+   "real/sombra_1.ogg"
+  ],
+  "sombra.hurt": [
+   "real/sombra_hurt_0.ogg"
+  ],
+  "perezoso": [
+   "real/perezoso_0.ogg"
+  ],
+  "quetzal": [
+   "real/quetzal_0.ogg",
+   "real/quetzal_1.ogg",
+   "real/quetzal_2.ogg",
+   "real/quetzal_3.ogg"
+  ],
+  "tortuga": [
+   "real/tortuga_0.ogg"
+  ],
+  "arpia": [
+   "real/arpia_0.ogg",
+   "real/arpia_1.ogg"
+  ],
+  "rafaga": [
+   "real/rafaga_0.ogg",
+   "real/rafaga_1.ogg"
+  ],
+  "carro.arranque": [
+   "real/carro_arranque_0.ogg"
+  ],
+  "loop.motor": [
+   "real/loop_motor_0.ogg",
+   "real/loop_motor_1.ogg"
+  ],
+  "pito": [
+   "real/pito_0.ogg",
+   "real/pito_1.ogg"
+  ],
+  "hueco": [
+   "real/hueco_0.ogg",
+   "real/hueco_1.ogg"
+  ],
+  "llanta": [
+   "real/llanta_0.ogg"
+  ],
+  "bus.freno": [
+   "real/bus_freno_0.ogg",
+   "real/bus_freno_1.ogg"
+  ],
+  "bus.puerta": [
+   "real/bus_puerta_0.ogg"
+  ],
+  "loop.tirolesa": [
+   "real/loop_tirolesa_0.ogg"
+  ],
+  "loop.zancudo": [
+   "real/loop_zancudo_0.ogg"
+  ],
+  "gato": [
+   "real/gato_0.ogg",
+   "real/gato_1.ogg",
+   "real/gato_2.ogg"
+  ],
+  "gato.ronroneo": [
+   "real/gato_ronroneo_0.ogg"
+  ],
+  "gato.bufido": [
+   "real/gato_bufido_0.ogg"
+  ],
+  "titi": [
+   "real/titi_0.ogg",
+   "real/titi_1.ogg",
+   "real/titi_2.ogg",
+   "real/titi_3.ogg",
+   "real/titi_4.ogg"
+  ],
+  "tepezcuintle": [
+   "real/tepezcuintle_0.ogg",
+   "real/tepezcuintle_1.ogg",
+   "real/tepezcuintle_2.ogg",
+   "real/tepezcuintle_3.ogg",
+   "real/tepezcuintle_4.ogg"
+  ],
+  "coyote": [
+   "real/coyote_0.ogg",
+   "real/coyote_1.ogg",
+   "real/coyote_2.ogg",
+   "real/coyote_3.ogg",
+   "real/coyote_4.ogg"
+  ],
+  "ardilla": [
+   "real/ardilla_0.ogg",
+   "real/ardilla_1.ogg",
+   "real/ardilla_2.ogg",
+   "real/ardilla_3.ogg"
+  ],
+  "zorro_pelon": [
+   "real/zorro_pelon_0.ogg"
+  ],
+  "guatusa": [
+   "real/guatusa_0.ogg",
+   "real/guatusa_1.ogg"
+  ],
+  "arena": [
+   "real/arena_0.ogg",
+   "real/arena_1.ogg"
+  ],
+  "loop.comparsa": [
+   "real/loop_comparsa_0.ogg"
+  ],
+  "loop.chicharras": [
+   "real/loop_chicharras_0.ogg",
+   "real/loop_chicharras_1.ogg"
+  ],
+  "loop.marimba": [
+   "real/loop_marimba_0.ogg",
+   "real/loop_marimba_1.ogg"
+  ],
+  "yiguirro": [
+   "real/yiguirro_0.ogg",
+   "real/yiguirro_1.ogg",
+   "real/yiguirro_2.ogg",
+   "real/yiguirro_3.ogg",
+   "real/yiguirro_4.ogg"
+  ],
+  "silbato": [
+   "real/silbato_0.ogg",
+   "real/silbato_1.ogg"
+  ],
+  "loop.sirena": [
+   "real/loop_sirena_0.ogg",
+   "real/loop_sirena_1.ogg"
+  ],
+  "oropendola": [
+   "real/oropendola_0.ogg",
+   "real/oropendola_1.ogg",
+   "real/oropendola_2.ogg",
+   "real/oropendola_3.ogg",
+   "real/oropendola_4.ogg",
+   "real/oropendola_5.ogg"
+  ],
+  "loop.granizo": [
+   "real/loop_granizo_0.ogg"
+  ],
+  "chancho": [
+   "real/chancho_0.ogg",
+   "real/chancho_1.ogg",
+   "real/chancho_2.ogg",
+   "real/chancho_3.ogg",
+   "real/chancho_4.ogg",
+   "real/chancho_5.ogg"
+  ],
+  "chancho.chillido": [
+   "real/chancho_chillido_0.ogg",
+   "real/chancho_chillido_1.ogg",
+   "real/chancho_chillido_2.ogg",
+   "real/chancho_chillido_3.ogg"
+  ],
+  "lechuza": [
+   "real/lechuza_0.ogg",
+   "real/lechuza_1.ogg",
+   "real/lechuza_2.ogg",
+   "real/lechuza_3.ogg",
+   "real/lechuza_4.ogg",
+   "real/lechuza_5.ogg",
+   "real/lechuza_6.ogg"
+  ],
+  "latido": [
+   "real/latido_0.ogg",
+   "real/latido_1.ogg",
+   "real/latido_2.ogg"
+  ],
+  "derrumbe": [
+   "real/derrumbe_0.ogg",
+   "real/derrumbe_1.ogg"
+  ],
+  "chancleta.golpe": [
+   "real/chancleta_golpe_0.ogg",
+   "real/chancleta_golpe_1.ogg",
+   "real/chancleta_golpe_2.ogg",
+   "real/chancleta_golpe_3.ogg",
+   "real/chancleta_golpe_4.ogg",
+   "real/chancleta_golpe_5.ogg"
+  ],
+  "yunque": [
+   "real/yunque_0.ogg",
+   "real/yunque_1.ogg",
+   "real/yunque_2.ogg",
+   "real/yunque_3.ogg",
+   "real/yunque_4.ogg",
+   "real/yunque_5.ogg"
+  ],
+  "cencerro": [
+   "real/cencerro_0.ogg",
+   "real/cencerro_1.ogg",
+   "real/cencerro_2.ogg",
+   "real/cencerro_3.ogg"
+  ],
+  "puerta.golpe": [
+   "real/puerta_golpe_0.ogg",
+   "real/puerta_golpe_1.ogg",
+   "real/puerta_golpe_2.ogg",
+   "real/puerta_golpe_3.ogg"
+  ]
+ },
+ "credits": [
+  {
+   "group": "step_grass",
+   "id": 206030,
+   "title": "footsteps grass.wav by Yuval",
+   "user": "",
+   "url": "https://freesound.org/s/206030/",
+   "license": "CC0"
+  },
+  {
+   "group": "step_grass",
+   "id": 411148,
+   "title": "running in grass by EvanSki",
+   "user": "",
+   "url": "https://freesound.org/s/411148/",
+   "license": "CC0"
+  },
+  {
+   "group": "step_dirt",
+   "id": 353799,
+   "title": "Footsteps_6_Dirt_shoe.wav by monte32",
+   "user": "",
+   "url": "https://freesound.org/s/353799/",
+   "license": "CC0"
+  },
+  {
+   "group": "step_dirt",
+   "id": 352870,
+   "title": "Footsteps Dirt Gravel by PotatokingXII",
+   "user": "",
+   "url": "https://freesound.org/s/352870/",
+   "license": "CC0"
+  },
+  {
+   "group": "step_sand",
+   "id": 384082,
+   "title": "Foot_Step_grit_Sand.wav by savataivanov",
+   "user": "",
+   "url": "https://freesound.org/s/384082/",
+   "license": "CC0"
+  },
+  {
+   "group": "step_sand",
+   "id": 161815,
+   "title": "Sand walk.WAV by DasDeer",
+   "user": "",
+   "url": "https://freesound.org/s/161815/",
+   "license": "CC0"
+  },
+  {
+   "group": "step_snow",
+   "id": 543385,
+   "title": "FOOT_STEPS_SNOW_HEAVY.wav by alexo400",
+   "user": "",
+   "url": "https://freesound.org/s/543385/",
+   "license": "CC0"
+  },
+  {
+   "group": "step_wood",
+   "id": 19292,
+   "title": "footstep on wood foley.wav by martian",
+   "user": "",
+   "url": "https://freesound.org/s/19292/",
+   "license": "CC0"
+  },
+  {
+   "group": "step_wood",
+   "id": 366111,
+   "title": "Indoor Footsteps.wav by WakuWakuWakuWaku",
+   "user": "",
+   "url": "https://freesound.org/s/366111/",
+   "license": "CC0"
+  },
+  {
+   "group": "step_stone",
+   "id": 521590,
+   "title": "Hiking Boot Footsteps on Stone by Fission9",
+   "user": "",
+   "url": "https://freesound.org/s/521590/",
+   "license": "CC0"
+  },
+  {
+   "group": "step_stone",
+   "id": 813622,
+   "title": "Footsteps - Stone, Rock, Concrete, Cement by SecureSubset",
+   "user": "",
+   "url": "https://freesound.org/s/813622/",
+   "license": "CC0"
+  },
+  {
+   "group": "hit_stone",
+   "id": 431019,
+   "title": "Stone hit by CamoMano",
+   "user": "",
+   "url": "https://freesound.org/s/431019/",
+   "license": "CC0"
+  },
+  {
+   "group": "hit_stone",
+   "id": 233630,
+   "title": "Pickaxe #2.wav by abstraktgeneriert",
+   "user": "",
+   "url": "https://freesound.org/s/233630/",
+   "license": "CC0"
+  },
+  {
+   "group": "hit_stone",
+   "id": 760567,
+   "title": "Pickaxe3 by NoisyRedFox",
+   "user": "",
+   "url": "https://freesound.org/s/760567/",
+   "license": "CC0"
+  },
+  {
+   "group": "hit_stone",
+   "id": 179365,
+   "title": "Small Rock and Stone Hits.wav by lolamadeus",
+   "user": "",
+   "url": "https://freesound.org/s/179365/",
+   "license": "CC0"
+  },
+  {
+   "group": "hit_gravel",
+   "id": 179341,
+   "title": "Gravel Impacts and Falls.wav by lolamadeus",
+   "user": "",
+   "url": "https://freesound.org/s/179341/",
+   "license": "CC0"
+  },
+  {
+   "group": "dig_dirt",
+   "id": 353907,
+   "title": "Shovel_dirt.wav by dr19",
+   "user": "",
+   "url": "https://freesound.org/s/353907/",
+   "license": "CC0"
+  },
+  {
+   "group": "dig_dirt",
+   "id": 213005,
+   "title": "Shovel.wav by abstraktgeneriert",
+   "user": "",
+   "url": "https://freesound.org/s/213005/",
+   "license": "CC0"
+  },
+  {
+   "group": "hit_wood",
+   "id": 421929,
+   "title": "Chopping wood 02 by micahlg",
+   "user": "",
+   "url": "https://freesound.org/s/421929/",
+   "license": "CC0"
+  },
+  {
+   "group": "hit_wood",
+   "id": 629987,
+   "title": "Knocking on Wood Door (1) by Flem0527",
+   "user": "",
+   "url": "https://freesound.org/s/629987/",
+   "license": "CC0"
+  },
+  {
+   "group": "hit_wood",
+   "id": 244325,
+   "title": "Knock_on_door.wav by Philip_Daniels",
+   "user": "",
+   "url": "https://freesound.org/s/244325/",
+   "license": "CC0"
+  },
+  {
+   "group": "break_glass",
+   "id": 141563,
+   "title": "Glass Break by avrahamy",
+   "user": "",
+   "url": "https://freesound.org/s/141563/",
+   "license": "CC0"
+  },
+  {
+   "group": "break_glass",
+   "id": 212698,
+   "title": "Breaking a glass bottle by dasebr",
+   "user": "",
+   "url": "https://freesound.org/s/212698/",
+   "license": "CC0"
+  },
+  {
+   "group": "leaves",
+   "id": 106114,
+   "title": "bushmovement.wav by j1987",
+   "user": "",
+   "url": "https://freesound.org/s/106114/",
+   "license": "CC0"
+  },
+  {
+   "group": "leaves",
+   "id": 443065,
+   "title": "Leaves_Rustling_Edited.wav by AmberdeMeillon",
+   "user": "",
+   "url": "https://freesound.org/s/443065/",
+   "license": "CC0"
+  },
+  {
+   "group": "cloth",
+   "id": 19291,
+   "title": "foley cloth rustle.wav by martian",
+   "user": "",
+   "url": "https://freesound.org/s/19291/",
+   "license": "CC0"
+  },
+  {
+   "group": "cloth",
+   "id": 334219,
+   "title": "Clothes Rustling 1 by WasabiWielder",
+   "user": "",
+   "url": "https://freesound.org/s/334219/",
+   "license": "CC0"
+  },
+  {
+   "group": "pop",
+   "id": 202230,
+   "title": "Pop sound by deraj",
+   "user": "",
+   "url": "https://freesound.org/s/202230/",
+   "license": "CC0"
+  },
+  {
+   "group": "pop",
+   "id": 447910,
+   "title": "Plop! by Breviceps",
+   "user": "",
+   "url": "https://freesound.org/s/447910/",
+   "license": "CC0"
+  },
+  {
+   "group": "eat",
+   "id": 275015,
+   "title": "Bite (Apple) by wadaltmon",
+   "user": "",
+   "url": "https://freesound.org/s/275015/",
+   "license": "CC0"
+  },
+  {
+   "group": "eat",
+   "id": 348112,
+   "title": "Crunch by LilMati",
+   "user": "",
+   "url": "https://freesound.org/s/348112/",
+   "license": "CC0"
+  },
+  {
+   "group": "eat",
+   "id": 244370,
+   "title": "Chew Food by philip1789",
+   "user": "",
+   "url": "https://freesound.org/s/244370/",
+   "license": "CC0"
+  },
+  {
+   "group": "splash",
+   "id": 9508,
+   "title": "SPLASH.wav by petenice",
+   "user": "",
+   "url": "https://freesound.org/s/9508/",
+   "license": "CC0"
+  },
+  {
+   "group": "splash",
+   "id": 434978,
+   "title": "Water Splash by felix.blume",
+   "user": "",
+   "url": "https://freesound.org/s/434978/",
+   "license": "CC0"
+  },
+  {
+   "group": "swim",
+   "id": 379334,
+   "title": "Swimming.wav by 13FPanska_Marval_Lukas",
+   "user": "",
+   "url": "https://freesound.org/s/379334/",
+   "license": "CC0"
+  },
+  {
+   "group": "underwater",
+   "id": 173439,
+   "title": "SFX_UnderWater by Perel",
+   "user": "",
+   "url": "https://freesound.org/s/173439/",
+   "license": "CC0"
+  },
+  {
+   "group": "fire",
+   "id": 532191,
+   "title": "Fire in the stove by mcmikai",
+   "user": "",
+   "url": "https://freesound.org/s/532191/",
+   "license": "CC0"
+  },
+  {
+   "group": "fire",
+   "id": 534702,
+   "title": "Lighting a Fire by plasterbrain",
+   "user": "",
+   "url": "https://freesound.org/s/534702/",
+   "license": "CC0"
+  },
+  {
+   "group": "chest",
+   "id": 377552,
+   "title": "Wooden Creak by Mafon2",
+   "user": "",
+   "url": "https://freesound.org/s/377552/",
+   "license": "CC0"
+  },
+  {
+   "group": "door",
+   "id": 219499,
+   "title": "Door - Creak.wav by JarredGibb",
+   "user": "",
+   "url": "https://freesound.org/s/219499/",
+   "license": "CC0"
+  },
+  {
+   "group": "door",
+   "id": 219492,
+   "title": "Door - Creak 02.wav by JarredGibb",
+   "user": "",
+   "url": "https://freesound.org/s/219492/",
+   "license": "CC0"
+  },
+  {
+   "group": "explosion",
+   "id": 235968,
+   "title": "Explosion_01.wav by tommccann",
+   "user": "",
+   "url": "https://freesound.org/s/235968/",
+   "license": "CC0"
+  },
+  {
+   "group": "explosion",
+   "id": 47252,
+   "title": "bad explosion by deleted_user_364925",
+   "user": "",
+   "url": "https://freesound.org/s/47252/",
+   "license": "CC0"
+  },
+  {
+   "group": "hurt",
+   "id": 515624,
+   "title": "PlayerHurt2 by mrickey13",
+   "user": "",
+   "url": "https://freesound.org/s/515624/",
+   "license": "CC0"
+  },
+  {
+   "group": "amb_birds",
+   "id": 387978,
+   "title": "Birds Singing 03.wav by DCPoke",
+   "user": "",
+   "url": "https://freesound.org/s/387978/",
+   "license": "CC0"
+  },
+  {
+   "group": "amb_birds",
+   "id": 423711,
+   "title": "Jungle, Tropical birds and insects by myrinvp",
+   "user": "",
+   "url": "https://freesound.org/s/423711/",
+   "license": "CC0"
+  },
+  {
+   "group": "amb_crickets",
+   "id": 129678,
+   "title": "crickets by FreethinkerAnon",
+   "user": "",
+   "url": "https://freesound.org/s/129678/",
+   "license": "CC0"
+  },
+  {
+   "group": "amb_cave",
+   "id": 177958,
+   "title": "Water Dripping in Cave.wav by Sclolex",
+   "user": "",
+   "url": "https://freesound.org/s/177958/",
+   "license": "CC0"
+  },
+  {
+   "group": "amb_wind",
+   "id": 22331,
+   "title": "wind.ogg by sleepCircle",
+   "user": "",
+   "url": "https://freesound.org/s/22331/",
+   "license": "CC0"
+  },
+  {
+   "group": "a_mono",
+   "id": 232748,
+   "title": "Monos Aulladores - Howler monkeys by franciscoguerrero",
+   "user": "",
+   "url": "https://freesound.org/s/232748/",
+   "license": "CC0"
+  },
+  {
+   "group": "a_mono",
+   "id": 332723,
+   "title": "Howler Monkeys.wav by sethlind",
+   "user": "",
+   "url": "https://freesound.org/s/332723/",
+   "license": "CC0"
+  },
+  {
+   "group": "a_carablanca",
+   "id": 437953,
+   "title": "G12-21-Monkey Chattering.wav by craigsmith",
+   "user": "",
+   "url": "https://freesound.org/s/437953/",
+   "license": "CC0"
+  },
+  {
+   "group": "a_carablanca",
+   "id": 843477,
+   "title": "Primates - Geoffroy&#x27;s Spider Monkey, Take 2 by TheKingOfGeeks360",
+   "user": "",
+   "url": "https://freesound.org/s/843477/",
+   "license": "CC0"
+  },
+  {
+   "group": "a_tucan",
+   "id": 812935,
+   "title": "Toucans calling by zachrau",
+   "user": "",
+   "url": "https://freesound.org/s/812935/",
+   "license": "CC0"
+  },
+  {
+   "group": "a_tucan",
+   "id": 163115,
+   "title": "111013__soundbytez__chesnut-mandibled-toucan.wav by agarwalkunal",
+   "user": "",
+   "url": "https://freesound.org/s/163115/",
+   "license": "CC0"
+  },
+  {
+   "group": "a_lapa",
+   "id": 504988,
+   "title": "Macaw Parrot screaming in a park by felix.blume",
+   "user": "",
+   "url": "https://freesound.org/s/504988/",
+   "license": "CC0"
+  },
+  {
+   "group": "a_lapa",
+   "id": 426274,
+   "title": "Macaws at Dawn, Fazenda in Goiás, Brazil by marc.om",
+   "user": "",
+   "url": "https://freesound.org/s/426274/",
+   "license": "CC0"
+  },
+  {
+   "group": "a_jaguar",
+   "id": 571287,
+   "title": "jaguar_growl_roar.wav by Vaporpup",
+   "user": "",
+   "url": "https://freesound.org/s/571287/",
+   "license": "CC0"
+  },
+  {
+   "group": "a_cocodrilo",
+   "id": 527844,
+   "title": "Alligator Growls 02.wav by D.jones",
+   "user": "",
+   "url": "https://freesound.org/s/527844/",
+   "license": "CC0"
+  },
+  {
+   "group": "a_rana",
+   "id": 354132,
+   "title": "Frog croaking sound effect by betterchinese",
+   "user": "",
+   "url": "https://freesound.org/s/354132/",
+   "license": "CC0"
+  },
+  {
+   "group": "a_rana",
+   "id": 361117,
+   "title": "frog_quak.mp3 by katzlbt",
+   "user": "",
+   "url": "https://freesound.org/s/361117/",
+   "license": "CC0"
+  },
+  {
+   "group": "a_ranas_coro",
+   "id": 429590,
+   "title": "Pacific Treefrogs in Mating Season by superfreq",
+   "user": "",
+   "url": "https://freesound.org/s/429590/",
+   "license": "CC0"
+  },
+  {
+   "group": "a_serpiente",
+   "id": 540162,
+   "title": "Snake hissing.mp3 by schreibsel",
+   "user": "",
+   "url": "https://freesound.org/s/540162/",
+   "license": "CC0"
+  },
+  {
+   "group": "a_serpiente",
+   "id": 553374,
+   "title": "Snake Hiss by xoiziox",
+   "user": "",
+   "url": "https://freesound.org/s/553374/",
+   "license": "CC0"
+  },
+  {
+   "group": "a_murcielago",
+   "id": 245768,
+   "title": "Hundreds of bats screaming and coming out of their nest by felix.blume",
+   "user": "",
+   "url": "https://freesound.org/s/245768/",
+   "license": "CC0"
+  },
+  {
+   "group": "a_pizote",
+   "id": 850005,
+   "title": "Small Mammals - South American Coatimundi, Squeak, Close Perspective by TheKingOfGeeks360",
+   "user": "",
+   "url": "https://freesound.org/s/850005/",
+   "license": "CC0"
+  },
+  {
+   "group": "a_aleteo",
+   "id": 389634,
+   "title": "Wing Flap 1.wav by _stubb",
+   "user": "",
+   "url": "https://freesound.org/s/389634/",
+   "license": "CC0"
+  },
+  {
+   "group": "a_aleteo",
+   "id": 386706,
+   "title": "wings flapping.wav by tommy_mooney",
+   "user": "",
+   "url": "https://freesound.org/s/386706/",
+   "license": "CC0"
+  },
+  {
+   "group": "a_aleteo",
+   "id": 240476,
+   "title": "wings.wav by Godowan",
+   "user": "",
+   "url": "https://freesound.org/s/240476/",
+   "license": "CC0"
+  },
+  {
+   "group": "a_aleteo_rapido",
+   "id": 71417,
+   "title": "wingflap_fast.wav by philberts",
+   "user": "",
+   "url": "https://freesound.org/s/71417/",
+   "license": "CC0"
+  },
+  {
+   "group": "a_abejas",
+   "id": 341639,
+   "title": "Honey Bees Buzzing by kiwimana",
+   "user": "",
+   "url": "https://freesound.org/s/341639/",
+   "license": "CC0"
+  },
+  {
+   "group": "a_abejas",
+   "id": 481647,
+   "title": "Bee Buzzing by JonCon_Library",
+   "user": "",
+   "url": "https://freesound.org/s/481647/",
+   "license": "CC0"
+  },
+  {
+   "group": "a_gallina",
+   "id": 456803,
+   "title": "Chicken clucking by Breviceps",
+   "user": "",
+   "url": "https://freesound.org/s/456803/",
+   "license": "CC0"
+  },
+  {
+   "group": "a_gallina",
+   "id": 316920,
+   "title": "Chicken Single Alarm Call by Rudmer_Rotteveel",
+   "user": "",
+   "url": "https://freesound.org/s/316920/",
+   "license": "CC0"
+  },
+  {
+   "group": "a_gallina",
+   "id": 43382,
+   "title": "Rooster chicken calls_2.wav by AGFX",
+   "user": "",
+   "url": "https://freesound.org/s/43382/",
+   "license": "CC0"
+  },
+  {
+   "group": "a_vaca",
+   "id": 177253,
+   "title": "Cow moos by JosephSardin",
+   "user": "",
+   "url": "https://freesound.org/s/177253/",
+   "license": "CC0"
+  },
+  {
+   "group": "a_vaca",
+   "id": 163727,
+   "title": "Cow mooing in south of France (Limousin) by felix.blume",
+   "user": "",
+   "url": "https://freesound.org/s/163727/",
+   "license": "CC0"
+  },
+  {
+   "group": "g_lluvia",
+   "id": 507902,
+   "title": "Heavy Rain Sound - Inu Etc.mp3 by inuetc",
+   "user": "",
+   "url": "https://freesound.org/s/507902/",
+   "license": "CC0"
+  },
+  {
+   "group": "g_lluvia",
+   "id": 200273,
+   "title": "Rain light 2 (rural) by jmbphilmes",
+   "user": "",
+   "url": "https://freesound.org/s/200273/",
+   "license": "CC0"
+  },
+  {
+   "group": "g_trueno",
+   "id": 244053,
+   "title": "Thunder.ogg by lennyboy",
+   "user": "",
+   "url": "https://freesound.org/s/244053/",
+   "license": "CC0"
+  },
+  {
+   "group": "g_trueno",
+   "id": 399656,
+   "title": "sfx_thunder blast.wav by bajko",
+   "user": "",
+   "url": "https://freesound.org/s/399656/",
+   "license": "CC0"
+  },
+  {
+   "group": "g_olas",
+   "id": 531015,
+   "title": "Ocean Waves.wav by Noted451",
+   "user": "",
+   "url": "https://freesound.org/s/531015/",
+   "license": "CC0"
+  },
+  {
+   "group": "g_rio",
+   "id": 415151,
+   "title": "Stream, Running Water | Aviemore Scotland by BurghRecords",
+   "user": "",
+   "url": "https://freesound.org/s/415151/",
+   "license": "CC0"
+  },
+  {
+   "group": "g_selva_noche",
+   "id": 342191,
+   "title": "Insects and frogs at night.wav by nervousneal",
+   "user": "",
+   "url": "https://freesound.org/s/342191/",
+   "license": "CC0"
+  },
+  {
+   "group": "g_selva_dia",
+   "id": 653742,
+   "title": "Peruvian Amazon frogs birds jungle by nonamethefish",
+   "user": "",
+   "url": "https://freesound.org/s/653742/",
+   "license": "CC0"
+  },
+  {
+   "group": "b_perro",
+   "id": 163459,
+   "title": "LBS_FX DOG Small Alert Bark001.wav by LittleBigSounds",
+   "user": "",
+   "url": "https://freesound.org/s/163459/",
+   "license": "CC0"
+  },
+  {
+   "group": "b_perro",
+   "id": 386766,
+   "title": "Dog_Barking.wav by ken788",
+   "user": "",
+   "url": "https://freesound.org/s/386766/",
+   "license": "CC0"
+  },
+  {
+   "group": "b_perro",
+   "id": 337101,
+   "title": "Group_of_Dogs_Barking.WAV by ivolipa",
+   "user": "",
+   "url": "https://freesound.org/s/337101/",
+   "license": "CC0"
+  },
+  {
+   "group": "b_perro_gruñido",
+   "id": 404920,
+   "title": "Dog Growl - Beast / Creature by coldvet",
+   "user": "",
+   "url": "https://freesound.org/s/404920/",
+   "license": "CC0"
+  },
+  {
+   "group": "b_caballo",
+   "id": 269571,
+   "title": "horse neigh shortened.wav by shadoWisp",
+   "user": "",
+   "url": "https://freesound.org/s/269571/",
+   "license": "CC0"
+  },
+  {
+   "group": "b_caballo",
+   "id": 510903,
+   "title": "Horse_neighing.wav by Lydmakeren",
+   "user": "",
+   "url": "https://freesound.org/s/510903/",
+   "license": "CC0"
+  },
+  {
+   "group": "b_resoplido",
+   "id": 475483,
+   "title": "Horse(snort)_3.wav by o_ciz",
+   "user": "",
+   "url": "https://freesound.org/s/475483/",
+   "license": "CC0"
+  },
+  {
+   "group": "b_resoplido",
+   "id": 437111,
+   "title": "G38-16-Four Horse Snorts.wav by craigsmith",
+   "user": "",
+   "url": "https://freesound.org/s/437111/",
+   "license": "CC0"
+  },
+  {
+   "group": "b_galope",
+   "id": 175356,
+   "title": "Horse Galloping.wav by Max_Headroom",
+   "user": "",
+   "url": "https://freesound.org/s/175356/",
+   "license": "CC0"
+  },
+  {
+   "group": "b_balde",
+   "id": 173930,
+   "title": "Water Pour by JohnsonBrandEditing",
+   "user": "",
+   "url": "https://freesound.org/s/173930/",
+   "license": "CC0"
+  },
+  {
+   "group": "b_balde",
+   "id": 533146,
+   "title": "Drop - Water by mattfinarelli",
+   "user": "",
+   "url": "https://freesound.org/s/533146/",
+   "license": "CC0"
+  },
+  {
+   "group": "b_montura",
+   "id": 481831,
+   "title": "R12-63-Sitting Down on Horse Saddle.wav by craigsmith",
+   "user": "",
+   "url": "https://freesound.org/s/481831/",
+   "license": "CC0"
+  },
+  {
+   "group": "c_freir",
+   "id": 201936,
+   "title": "sizzling_frypan.WAV by beatmad",
+   "user": "",
+   "url": "https://freesound.org/s/201936/",
+   "license": "CC0"
+  },
+  {
+   "group": "c_freir",
+   "id": 353124,
+   "title": "Frying Pan Sizzle by BenjaminNelan",
+   "user": "",
+   "url": "https://freesound.org/s/353124/",
+   "license": "CC0"
+  },
+  {
+   "group": "c_cafe",
+   "id": 432775,
+   "title": "Pouring coffee by Maajora",
+   "user": "",
+   "url": "https://freesound.org/s/432775/",
+   "license": "CC0"
+  },
+  {
+   "group": "c_cafe",
+   "id": 658711,
+   "title": "Pouring a cup of coffee.wav by tlabrant1",
+   "user": "",
+   "url": "https://freesound.org/s/658711/",
+   "license": "CC0"
+  },
+  {
+   "group": "c_hervir",
+   "id": 420228,
+   "title": "37 - 17 Boiling water.wav by 14FPanska_Nemec_Petr",
+   "user": "",
+   "url": "https://freesound.org/s/420228/",
+   "license": "CC0"
+  },
+  {
+   "group": "c_sorbo",
+   "id": 272037,
+   "title": "Sipping coffee by aldenroth2",
+   "user": "",
+   "url": "https://freesound.org/s/272037/",
+   "license": "CC0"
+  },
+  {
+   "group": "c_sorbo",
+   "id": 194808,
+   "title": "Sip of coffee, swallow then &quot;ah&quot; by odditonic",
+   "user": "",
+   "url": "https://freesound.org/s/194808/",
+   "license": "CC0"
+  },
+  {
+   "group": "p_campana",
+   "id": 76405,
+   "title": "Old Church Bell.wav by dsp9000",
+   "user": "",
+   "url": "https://freesound.org/s/76405/",
+   "license": "CC0"
+  },
+  {
+   "group": "p_campana",
+   "id": 425172,
+   "title": "Church bell.wav by Audeption",
+   "user": "",
+   "url": "https://freesound.org/s/425172/",
+   "license": "CC0"
+  },
+  {
+   "group": "p_monedas",
+   "id": 17502,
+   "title": "Coin dropping.wav by Jace",
+   "user": "",
+   "url": "https://freesound.org/s/17502/",
+   "license": "CC0"
+  },
+  {
+   "group": "p_monedas",
+   "id": 443334,
+   "title": "MONEY_001.wav by rolandseer",
+   "user": "",
+   "url": "https://freesound.org/s/443334/",
+   "license": "CC0"
+  },
+  {
+   "group": "p_monedas",
+   "id": 338260,
+   "title": "Money Bag by PhilSavlem",
+   "user": "",
+   "url": "https://freesound.org/s/338260/",
+   "license": "CC0"
+  },
+  {
+   "group": "p_caja",
+   "id": 209578,
+   "title": "Cash Register Purchase by Zott820",
+   "user": "",
+   "url": "https://freesound.org/s/209578/",
+   "license": "CC0"
+  },
+  {
+   "group": "p_balon",
+   "id": 261267,
+   "title": "Soccer Kick.wav by musita182",
+   "user": "",
+   "url": "https://freesound.org/s/261267/",
+   "license": "CC0"
+  },
+  {
+   "group": "p_balon",
+   "id": 555042,
+   "title": "Soccer Ball Kick by bittermelonheart",
+   "user": "",
+   "url": "https://freesound.org/s/555042/",
+   "license": "CC0"
+  },
+  {
+   "group": "amb_pueblo",
+   "id": 482990,
+   "title": "People talking at cafe ambience by priesjensen",
+   "user": "",
+   "url": "https://freesound.org/s/482990/",
+   "license": "CC0"
+  },
+  {
+   "group": "amb_pueblo",
+   "id": 222993,
+   "title": "People (talking).wav by ZyryTSounds",
+   "user": "",
+   "url": "https://freesound.org/s/222993/",
+   "license": "CC0"
+  },
+  {
+   "group": "p_hmm",
+   "id": 170768,
+   "title": "Hmm question.wav by esperar",
+   "user": "",
+   "url": "https://freesound.org/s/170768/",
+   "license": "CC0"
+  },
+  {
+   "group": "p_hmm",
+   "id": 165011,
+   "title": "hmmmm by DAN2008",
+   "user": "",
+   "url": "https://freesound.org/s/165011/",
+   "license": "CC0"
+  },
+  {
+   "group": "p_hmm",
+   "id": 394231,
+   "title": "Hmm reflexion male voice thinking by daalvinz",
+   "user": "",
+   "url": "https://freesound.org/s/394231/",
+   "license": "CC0"
+  },
+  {
+   "group": "m_ballena",
+   "id": 684188,
+   "title": "whale song by muri_kuri",
+   "user": "",
+   "url": "https://freesound.org/s/684188/",
+   "license": "CC0"
+  },
+  {
+   "group": "m_ballena",
+   "id": 171945,
+   "title": "LowWhalesong.wav by RebekahDay",
+   "user": "",
+   "url": "https://freesound.org/s/171945/",
+   "license": "CC0"
+  },
+  {
+   "group": "m_ballena",
+   "id": 88449,
+   "title": "Baleines.wav by davidou",
+   "user": "",
+   "url": "https://freesound.org/s/88449/",
+   "license": "CC0"
+  },
+  {
+   "group": "m_delfin",
+   "id": 161691,
+   "title": "Dolphin screaming underwater in Caribbean Sea (Mexico) by felix.blume",
+   "user": "",
+   "url": "https://freesound.org/s/161691/",
+   "license": "CC0"
+  },
+  {
+   "group": "m_delfin",
+   "id": 456151,
+   "title": "Dolphin Noise-.wav by jfournier18",
+   "user": "",
+   "url": "https://freesound.org/s/456151/",
+   "license": "CC0"
+  },
+  {
+   "group": "m_delfin",
+   "id": 391317,
+   "title": "Dolphin.wav by Forpus_Prod",
+   "user": "",
+   "url": "https://freesound.org/s/391317/",
+   "license": "CC0"
+  },
+  {
+   "group": "m_carrete",
+   "id": 118973,
+   "title": "FishingRod Winding.aif by esperri",
+   "user": "",
+   "url": "https://freesound.org/s/118973/",
+   "license": "CC0"
+  },
+  {
+   "group": "m_carrete",
+   "id": 95564,
+   "title": "reel.wav by j1987",
+   "user": "",
+   "url": "https://freesound.org/s/95564/",
+   "license": "CC0"
+  },
+  {
+   "group": "m_lanzar",
+   "id": 60006,
+   "title": "Swoosh Metal Rod Swing Sound made with Bamboo Stick by qubodup",
+   "user": "",
+   "url": "https://freesound.org/s/60006/",
+   "license": "CC0"
+  },
+  {
+   "group": "m_lanzar",
+   "id": 371313,
+   "title": "Fishing Rod Swish Swoosh.wav by Mrthenoronha",
+   "user": "",
+   "url": "https://freesound.org/s/371313/",
+   "license": "CC0"
+  },
+  {
+   "group": "m_remo",
+   "id": 249707,
+   "title": "Paddles rowing on a calm water stream by brunoboselli",
+   "user": "",
+   "url": "https://freesound.org/s/249707/",
+   "license": "CC0"
+  },
+  {
+   "group": "m_remo",
+   "id": 197750,
+   "title": "boat_noises_paddling_in_lake_lbj_08232013_1.flac by wjoojoo",
+   "user": "",
+   "url": "https://freesound.org/s/197750/",
+   "license": "CC0"
+  },
+  {
+   "group": "m_gaviota",
+   "id": 353416,
+   "title": "Seagull on beach by squashy555",
+   "user": "",
+   "url": "https://freesound.org/s/353416/",
+   "license": "CC0"
+  },
+  {
+   "group": "m_gaviota",
+   "id": 166703,
+   "title": "sea gulls.wav by Snapper4298",
+   "user": "",
+   "url": "https://freesound.org/s/166703/",
+   "license": "CC0"
+  },
+  {
+   "group": "m_pez",
+   "id": 321490,
+   "title": "Tiny Splash by dslrguide",
+   "user": "",
+   "url": "https://freesound.org/s/321490/",
+   "license": "CC0"
+  },
+  {
+   "group": "m_pez",
+   "id": 507093,
+   "title": "Fish Splashing Release 2.wav by paulprit",
+   "user": "",
+   "url": "https://freesound.org/s/507093/",
+   "license": "CC0"
+  },
+  {
+   "group": "l_cadenas",
+   "id": 370877,
+   "title": "Chains.wav by cribbler",
+   "user": "",
+   "url": "https://freesound.org/s/370877/",
+   "license": "CC0"
+  },
+  {
+   "group": "l_cadenas",
+   "id": 448917,
+   "title": "Chain Rattling by Kp69606",
+   "user": "",
+   "url": "https://freesound.org/s/448917/",
+   "license": "CC0"
+  },
+  {
+   "group": "l_llanto",
+   "id": 172738,
+   "title": "crying woman.wav by AlucardsBride",
+   "user": "",
+   "url": "https://freesound.org/s/172738/",
+   "license": "CC0"
+  },
+  {
+   "group": "l_llanto",
+   "id": 171946,
+   "title": "womancrying.wav by RebekahDay",
+   "user": "",
+   "url": "https://freesound.org/s/171946/",
+   "license": "CC0"
+  },
+  {
+   "group": "l_susurro",
+   "id": 175944,
+   "title": "Ghost Whispers by Litruv",
+   "user": "",
+   "url": "https://freesound.org/s/175944/",
+   "license": "CC0"
+  },
+  {
+   "group": "l_susurro",
+   "id": 234044,
+   "title": "Creepy Whispering by RaspberryTickle",
+   "user": "",
+   "url": "https://freesound.org/s/234044/",
+   "license": "CC0"
+  },
+  {
+   "group": "l_grito",
+   "id": 333832,
+   "title": "Demonic Woman Scream.wav by nick121087",
+   "user": "",
+   "url": "https://freesound.org/s/333832/",
+   "license": "CC0"
+  },
+  {
+   "group": "l_relincho",
+   "id": 149024,
+   "title": "Horse_Whinny.wav by foxen10",
+   "user": "",
+   "url": "https://freesound.org/s/149024/",
+   "license": "CC0"
+  },
+  {
+   "group": "l_grunido",
+   "id": 439535,
+   "title": "Angry Dog by CmdRobot",
+   "user": "",
+   "url": "https://freesound.org/s/439535/",
+   "license": "CC0"
+  },
+  {
+   "group": "l_grunido",
+   "id": 332173,
+   "title": "Agressive_Dog_Barks.wav by ivolipa",
+   "user": "",
+   "url": "https://freesound.org/s/332173/",
+   "license": "CC0"
+  },
+  {
+   "group": "w_arco",
+   "id": 394179,
+   "title": "Longbow Release 2.wav by saturdaysoundguy",
+   "user": "",
+   "url": "https://freesound.org/s/394179/",
+   "license": "CC0"
+  },
+  {
+   "group": "w_arco",
+   "id": 384918,
+   "title": "Bow Release (Bow and Arrow) 3 by Ali_6868",
+   "user": "",
+   "url": "https://freesound.org/s/384918/",
+   "license": "CC0"
+  },
+  {
+   "group": "w_flecha",
+   "id": 205938,
+   "title": "Arrow Impact by Twisted_Euphoria",
+   "user": "",
+   "url": "https://freesound.org/s/205938/",
+   "license": "CC0"
+  },
+  {
+   "group": "w_flecha",
+   "id": 521552,
+   "title": "Arrow Impact by omerbhatti34",
+   "user": "",
+   "url": "https://freesound.org/s/521552/",
+   "license": "CC0"
+  },
+  {
+   "group": "w_nivel",
+   "id": 717771,
+   "title": "victory chime by 1bob",
+   "user": "",
+   "url": "https://freesound.org/s/717771/",
+   "license": "CC0"
+  },
+  {
+   "group": "w_nivel",
+   "id": 541985,
+   "title": "GASP_Chimes_Success_4.wav by Rob_Marion",
+   "user": "",
+   "url": "https://freesound.org/s/541985/",
+   "license": "CC0"
+  },
+  {
+   "group": "f_silbido",
+   "id": 186933,
+   "title": "rocket-whistle.wav by ReadeOnly",
+   "user": "",
+   "url": "https://freesound.org/s/186933/",
+   "license": "CC0"
+  },
+  {
+   "group": "f_silbido",
+   "id": 140726,
+   "title": "tiny_rocket.wav by j1987",
+   "user": "",
+   "url": "https://freesound.org/s/140726/",
+   "license": "CC0"
+  },
+  {
+   "group": "f_estallido",
+   "id": 587196,
+   "title": "explosion_06 by derplayer",
+   "user": "",
+   "url": "https://freesound.org/s/587196/",
+   "license": "CC0"
+  },
+  {
+   "group": "f_estallido",
+   "id": 140717,
+   "title": "Firework Cluster by j1987",
+   "user": "",
+   "url": "https://freesound.org/s/140717/",
+   "license": "CC0"
+  },
+  {
+   "group": "f_estallido",
+   "id": 140711,
+   "title": "Firecracker by j1987",
+   "user": "",
+   "url": "https://freesound.org/s/140711/",
+   "license": "CC0"
+  },
+  {
+   "group": "f_mecha",
+   "id": 140715,
+   "title": "fuse2.wav by j1987",
+   "user": "",
+   "url": "https://freesound.org/s/140715/",
+   "license": "CC0"
+  },
+  {
+   "group": "mus_arpa",
+   "id": 373570,
+   "title": "Harp - E#4 (KSHarp_F4_mf.wav) by sgossner",
+   "user": "",
+   "url": "https://freesound.org/s/373570/",
+   "license": "CC0"
+  },
+  {
+   "group": "mus_arpa",
+   "id": 373571,
+   "title": "Harp - E#6 (KSHarp_F6_mf.wav) by sgossner",
+   "user": "",
+   "url": "https://freesound.org/s/373571/",
+   "license": "CC0"
+  },
+  {
+   "group": "mus_arpa",
+   "id": 373572,
+   "title": "Harp - F#3 (KSHarp_G3_mf.wav) by sgossner",
+   "user": "",
+   "url": "https://freesound.org/s/373572/",
+   "license": "CC0"
+  },
+  {
+   "group": "mus_arpa",
+   "id": 373573,
+   "title": "Harp - F#5 (KSHarp_G5_mf.wav) by sgossner",
+   "user": "",
+   "url": "https://freesound.org/s/373573/",
+   "license": "CC0"
+  },
+  {
+   "group": "mus_arpa",
+   "id": 373574,
+   "title": "Harp - D7 (KSHarp_D7_f.wav) by sgossner",
+   "user": "",
+   "url": "https://freesound.org/s/373574/",
+   "license": "CC0"
+  },
+  {
+   "group": "mus_arpa",
+   "id": 373575,
+   "title": "Harp - E1 (KSHarp_E1_f.wav) by sgossner",
+   "user": "",
+   "url": "https://freesound.org/s/373575/",
+   "license": "CC0"
+  },
+  {
+   "group": "mus_arpa",
+   "id": 373576,
+   "title": "Harp - E#7 (KSHarp_F7_f.wav) by sgossner",
+   "user": "",
+   "url": "https://freesound.org/s/373576/",
+   "license": "CC0"
+  },
+  {
+   "group": "mus_marimba",
+   "id": 373577,
+   "title": "Marimba - B3 (Marimba_hit_Outrigger_B2_loud_01.wav) by sgossner",
+   "user": "",
+   "url": "https://freesound.org/s/373577/",
+   "license": "CC0"
+  },
+  {
+   "group": "mus_marimba",
+   "id": 373578,
+   "title": "Marimba - B5 (Marimba_hit_Outrigger_B4_loud_01.wav) by sgossner",
+   "user": "",
+   "url": "https://freesound.org/s/373578/",
+   "license": "CC0"
+  },
+  {
+   "group": "mus_marimba",
+   "id": 373579,
+   "title": "Marimba - C3 (Marimba_hit_Outrigger_C2_loud_01.wav) by sgossner",
+   "user": "",
+   "url": "https://freesound.org/s/373579/",
+   "license": "CC0"
+  },
+  {
+   "group": "mus_marimba",
+   "id": 373580,
+   "title": "Marimba - C5 (Marimba_hit_Outrigger_C4_loud_01.wav) by sgossner",
+   "user": "",
+   "url": "https://freesound.org/s/373580/",
+   "license": "CC0"
+  },
+  {
+   "group": "mus_marimba",
+   "id": 373581,
+   "title": "Marimba - C7 (Marimba_hit_Outrigger_C6_loud_01.wav) by sgossner",
+   "user": "",
+   "url": "https://freesound.org/s/373581/",
+   "license": "CC0"
+  },
+  {
+   "group": "mus_marimba",
+   "id": 373582,
+   "title": "Marimba - E#2 (Marimba_hit_Outrigger_F1_loud_01.wav) by sgossner",
+   "user": "",
+   "url": "https://freesound.org/s/373582/",
+   "license": "CC0"
+  },
+  {
+   "group": "mus_marimba",
+   "id": 373583,
+   "title": "Marimba - E#4 (Marimba_hit_Outrigger_F3_loud_01.wav) by sgossner",
+   "user": "",
+   "url": "https://freesound.org/s/373583/",
+   "license": "CC0"
+  },
+  {
+   "group": "mus_marimba",
+   "id": 373584,
+   "title": "Marimba - E#6 (Marimba_hit_Outrigger_F5_loud_01.wav) by sgossner",
+   "user": "",
+   "url": "https://freesound.org/s/373584/",
+   "license": "CC0"
+  },
+  {
+   "group": "mus_marimba",
+   "id": 373585,
+   "title": "Marimba - F#3 (Marimba_hit_Outrigger_G2_loud_01.wav) by sgossner",
+   "user": "",
+   "url": "https://freesound.org/s/373585/",
+   "license": "CC0"
+  },
+  {
+   "group": "mus_marimba",
+   "id": 373586,
+   "title": "Marimba - F#5 (Marimba_hit_Outrigger_G4_loud_01.wav) by sgossner",
+   "user": "",
+   "url": "https://freesound.org/s/373586/",
+   "license": "CC0"
+  },
+  {
+   "group": "x_hipo",
+   "id": 250140,
+   "title": "Adult Male Hiccup by Hephaestus",
+   "user": "",
+   "url": "https://freesound.org/s/250140/",
+   "license": "CC0"
+  },
+  {
+   "group": "x_hipo",
+   "id": 202800,
+   "title": "comedy  hiccup.wav by martian",
+   "user": "",
+   "url": "https://freesound.org/s/202800/",
+   "license": "CC0"
+  },
+  {
+   "group": "x_hipo",
+   "id": 338196,
+   "title": "Hiccup by ceoux",
+   "user": "",
+   "url": "https://freesound.org/s/338196/",
+   "license": "CC0"
+  },
+  {
+   "group": "i_lava",
+   "id": 474852,
+   "title": "Lava Loop 4 by Fission9",
+   "user": "",
+   "url": "https://freesound.org/s/474852/",
+   "license": "CC0"
+  },
+  {
+   "group": "i_lava",
+   "id": 145036,
+   "title": "lava.wav by ATG142",
+   "user": "",
+   "url": "https://freesound.org/s/145036/",
+   "license": "CC0"
+  },
+  {
+   "group": "i_lava",
+   "id": 334671,
+   "title": "Boiling Liquid 1 by Yoyodaman234",
+   "user": "",
+   "url": "https://freesound.org/s/334671/",
+   "license": "CC0"
+  },
+  {
+   "group": "i_volcan",
+   "id": 385098,
+   "title": "Volcano.wav by morganpurkis",
+   "user": "",
+   "url": "https://freesound.org/s/385098/",
+   "license": "CC0"
+  },
+  {
+   "group": "i_volcan",
+   "id": 17785,
+   "title": "Earth-01.wav by Halion",
+   "user": "",
+   "url": "https://freesound.org/s/17785/",
+   "license": "CC0"
+  },
+  {
+   "group": "i_portal",
+   "id": 657653,
+   "title": "Black Portal - Dark Dimension Rift by LilMati",
+   "user": "",
+   "url": "https://freesound.org/s/657653/",
+   "license": "CC0"
+  },
+  {
+   "group": "i_portal",
+   "id": 735062,
+   "title": "Fast Warp In by GammaGool",
+   "user": "",
+   "url": "https://freesound.org/s/735062/",
+   "license": "CC0"
+  },
+  {
+   "group": "i_monstruo",
+   "id": 344903,
+   "title": "Monster - deep growl.wav by Aegersum",
+   "user": "",
+   "url": "https://freesound.org/s/344903/",
+   "license": "CC0"
+  },
+  {
+   "group": "i_monstruo",
+   "id": 345733,
+   "title": "Deep Growl 1.wav by noahpardo",
+   "user": "",
+   "url": "https://freesound.org/s/345733/",
+   "license": "CC0"
+  },
+  {
+   "group": "i_monstruo",
+   "id": 222523,
+   "title": "Deep Monster Growl by uagadugu",
+   "user": "",
+   "url": "https://freesound.org/s/222523/",
+   "license": "CC0"
+  },
+  {
+   "group": "t_aplausos",
+   "id": 396549,
+   "title": "Applause Crowd Theater.wav by Jedo",
+   "user": "",
+   "url": "https://freesound.org/s/396549/",
+   "license": "CC0"
+  },
+  {
+   "group": "t_aplausos",
+   "id": 432333,
+   "title": "Medium Crowd Clapping 6 by jentlemen",
+   "user": "",
+   "url": "https://freesound.org/s/432333/",
+   "license": "CC0"
+  },
+  {
+   "group": "t_aplausos",
+   "id": 634524,
+   "title": "Aplaudiments, Applause.wav by Salsero_classic",
+   "user": "",
+   "url": "https://freesound.org/s/634524/",
+   "license": "CC0"
+  },
+  {
+   "group": "t_gol",
+   "id": 241630,
+   "title": "Crowd screaming GOAL during the soccer game Mexico-Holland (Fifa world cup 2014) by felix.blume",
+   "user": "",
+   "url": "https://freesound.org/s/241630/",
+   "license": "CC0"
+  },
+  {
+   "group": "t_gol",
+   "id": 397434,
+   "title": "Crowd Cheer by FoolBoyMedia",
+   "user": "",
+   "url": "https://freesound.org/s/397434/",
+   "license": "CC0"
+  },
+  {
+   "group": "t_tren",
+   "id": 71778,
+   "title": "Steam Whistle.mp3 by Bidone",
+   "user": "",
+   "url": "https://freesound.org/s/71778/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_swish",
+   "id": 19312,
+   "title": "classic double swwosh .wav by martian",
+   "user": "",
+   "url": "https://freesound.org/s/19312/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_swish",
+   "id": 240640,
+   "title": "Metallic Whoosh.wav by MissCellany",
+   "user": "",
+   "url": "https://freesound.org/s/240640/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_swish",
+   "id": 419341,
+   "title": "Swoosh.ogg by WizardOZ",
+   "user": "",
+   "url": "https://freesound.org/s/419341/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_tajo",
+   "id": 411122,
+   "title": "Sword hits the body.wav by vdovitsky",
+   "user": "",
+   "url": "https://freesound.org/s/411122/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_tajo",
+   "id": 395370,
+   "title": "Sword stab 1 by ihitokage",
+   "user": "",
+   "url": "https://freesound.org/s/395370/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_metal",
+   "id": 616492,
+   "title": "clank.wav by Empiremonkey",
+   "user": "",
+   "url": "https://freesound.org/s/616492/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_metal",
+   "id": 675817,
+   "title": "S09-02 metal armor helmet open &amp; close; hinges and clanks.wav by craigsmith",
+   "user": "",
+   "url": "https://freesound.org/s/675817/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_cuero",
+   "id": 396429,
+   "title": "ClothingEquip.mp3 by SoundEffEcks",
+   "user": "",
+   "url": "https://freesound.org/s/396429/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_cuero",
+   "id": 743265,
+   "title": "Texture or Leather Rubbing Sound 2 by qubodup",
+   "user": "",
+   "url": "https://freesound.org/s/743265/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_cuero",
+   "id": 743266,
+   "title": "Texture or Leather Rubbing Sound by qubodup",
+   "user": "",
+   "url": "https://freesound.org/s/743266/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_inv",
+   "id": 568992,
+   "title": "Inventory Open by Fission9",
+   "user": "",
+   "url": "https://freesound.org/s/568992/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_inv",
+   "id": 568991,
+   "title": "Inventory Close by Fission9",
+   "user": "",
+   "url": "https://freesound.org/s/568991/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_mecha",
+   "id": 45650,
+   "title": "fuse_burning_48khz.wav by elonen",
+   "user": "",
+   "url": "https://freesound.org/s/45650/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_retumbo",
+   "id": 258341,
+   "title": "Rumble · fade in 10s by unfa",
+   "user": "",
+   "url": "https://freesound.org/s/258341/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_retumbo",
+   "id": 217657,
+   "title": "earth rumble.wav by Reitanna",
+   "user": "",
+   "url": "https://freesound.org/s/217657/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_pop",
+   "id": 665183,
+   "title": "Item or Material Pickup Pop 1 of 3 by el_boss",
+   "user": "",
+   "url": "https://freesound.org/s/665183/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_danta",
+   "id": 800274,
+   "title": "Mouse Rodent Squeak Whistle by SecureSubset",
+   "user": "",
+   "url": "https://freesound.org/s/800274/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_danta",
+   "id": 352698,
+   "title": "Angry Pig Oinking by Jofae",
+   "user": "",
+   "url": "https://freesound.org/s/352698/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_sombra",
+   "id": 643741,
+   "title": "Ghostly Moan.mp3 by SnowFightStudios",
+   "user": "",
+   "url": "https://freesound.org/s/643741/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_sombra",
+   "id": 204963,
+   "title": "Scary_Breath.wav by titsher",
+   "user": "",
+   "url": "https://freesound.org/s/204963/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_sombra",
+   "id": 473525,
+   "title": "groan.mp3 by Kneeling",
+   "user": "",
+   "url": "https://freesound.org/s/473525/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_quetzal",
+   "id": 456930,
+   "title": "mourning_dove _2017-06-06.wav by nathankwright",
+   "user": "",
+   "url": "https://freesound.org/s/456930/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_tortuga",
+   "id": 871251,
+   "title": "Reptiles - Sulcata Tortoise; Breeding Honk from Male by TheKingOfGeeks360",
+   "user": "",
+   "url": "https://freesound.org/s/871251/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_cofre_a",
+   "id": 573654,
+   "title": "Wooden Chest Open.wav by The_Frisbee_of_Peace",
+   "user": "",
+   "url": "https://freesound.org/s/573654/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_cofre_a",
+   "id": 271378,
+   "title": "Opening Antique Trunk - Latches and Opening.wav by OverlookHotelRecords",
+   "user": "",
+   "url": "https://freesound.org/s/271378/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_cofre_a",
+   "id": 422975,
+   "title": "SFXWoodenObjectOpen.wav by WakuWakuWakuWaku",
+   "user": "",
+   "url": "https://freesound.org/s/422975/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_cofre_c",
+   "id": 676420,
+   "title": "Little Wooden Box Opening And Closing by arduenn",
+   "user": "",
+   "url": "https://freesound.org/s/676420/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_cofre_c",
+   "id": 475294,
+   "title": "Wooden Box: Open / Close 2 (Compilation) by Sheyvan",
+   "user": "",
+   "url": "https://freesound.org/s/475294/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_soltar",
+   "id": 339365,
+   "title": "drop05.wav by newagesoup",
+   "user": "",
+   "url": "https://freesound.org/s/339365/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_soltar",
+   "id": 272065,
+   "title": "Thrown Object by Bexhillcollege",
+   "user": "",
+   "url": "https://freesound.org/s/272065/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_soltar",
+   "id": 174631,
+   "title": "Small Junk Dropped by altfuture",
+   "user": "",
+   "url": "https://freesound.org/s/174631/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_recoger",
+   "id": 609569,
+   "title": "GrabItemCloth.wav by CJspellsfish",
+   "user": "",
+   "url": "https://freesound.org/s/609569/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_recoger",
+   "id": 565969,
+   "title": "Rummaging in a pocket by melle_teich",
+   "user": "",
+   "url": "https://freesound.org/s/565969/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_recoger",
+   "id": 426631,
+   "title": "Picking up and Putting Down Object.wav by mrh4hn",
+   "user": "",
+   "url": "https://freesound.org/s/426631/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_picar",
+   "id": 487084,
+   "title": "R26-21-Metal Hand Tools on Stone.wav by craigsmith",
+   "user": "",
+   "url": "https://freesound.org/s/487084/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_picar",
+   "id": 841053,
+   "title": "chisel in the quarry by Artiom_Constantinov",
+   "user": "",
+   "url": "https://freesound.org/s/841053/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_arpia",
+   "id": 381200,
+   "title": "Eagle Cry.wav by kaydinhamby",
+   "user": "",
+   "url": "https://freesound.org/s/381200/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_arpia",
+   "id": 39338,
+   "title": "baldeagle-flap_and_cry.ogg by stackpool",
+   "user": "",
+   "url": "https://freesound.org/s/39338/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_rafaga",
+   "id": 146932,
+   "title": "Wind Gust by crashoverride6",
+   "user": "",
+   "url": "https://freesound.org/s/146932/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_rafaga",
+   "id": 683096,
+   "title": "Woosh by florianreichelt",
+   "user": "",
+   "url": "https://freesound.org/s/683096/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_motor",
+   "id": 250009,
+   "title": "old car engine start and stop by launemax",
+   "user": "",
+   "url": "https://freesound.org/s/250009/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_motor",
+   "id": 369054,
+   "title": "car_idle_ext_loop.wav by AndrewAlexander",
+   "user": "",
+   "url": "https://freesound.org/s/369054/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_motor",
+   "id": 349171,
+   "title": "Car engine idle 2 by Iridiuss",
+   "user": "",
+   "url": "https://freesound.org/s/349171/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_pito",
+   "id": 434878,
+   "title": "Car Honking by MicktheMicGuy",
+   "user": "",
+   "url": "https://freesound.org/s/434878/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_pito",
+   "id": 423990,
+   "title": "Car horn beep beep two beeps honk honk by AmishRob",
+   "user": "",
+   "url": "https://freesound.org/s/423990/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_hueco",
+   "id": 96137,
+   "title": "Thud2.wav by BMacZero",
+   "user": "",
+   "url": "https://freesound.org/s/96137/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_hueco",
+   "id": 170633,
+   "title": "Clunky Metal Noise by Swedger",
+   "user": "",
+   "url": "https://freesound.org/s/170633/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_llanta",
+   "id": 243375,
+   "title": "Tire Puncture Pop Hit Punch by JohnsonBrandEditing",
+   "user": "",
+   "url": "https://freesound.org/s/243375/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_freno",
+   "id": 801435,
+   "title": "air brake sound effect by okpato123",
+   "user": "",
+   "url": "https://freesound.org/s/801435/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_freno",
+   "id": 422442,
+   "title": "Jbrake_sim_96k.wav by vacuumfan7072",
+   "user": "",
+   "url": "https://freesound.org/s/422442/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_puerta_bus",
+   "id": 380320,
+   "title": "bus door by zombiechick",
+   "user": "",
+   "url": "https://freesound.org/s/380320/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_tirolina",
+   "id": 196403,
+   "title": "Tirolina by crooner",
+   "user": "",
+   "url": "https://freesound.org/s/196403/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_titi",
+   "id": 479823,
+   "title": "R02-02-Small Monkey.wav by craigsmith",
+   "user": "",
+   "url": "https://freesound.org/s/479823/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_tepezcuintle",
+   "id": 430055,
+   "title": "Guinea pig.wav by BeeProductive",
+   "user": "",
+   "url": "https://freesound.org/s/430055/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_zancudo",
+   "id": 662970,
+   "title": "Mosquito 1 Edit.wav by IanFSA",
+   "user": "",
+   "url": "https://freesound.org/s/662970/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_gato",
+   "id": 110011,
+   "title": "cat meow by tuberatanka",
+   "user": "",
+   "url": "https://freesound.org/s/110011/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_gato",
+   "id": 333916,
+   "title": "Cat Meowing by lextrack",
+   "user": "",
+   "url": "https://freesound.org/s/333916/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_gato",
+   "id": 412017,
+   "title": "cat meow short by skymary",
+   "user": "",
+   "url": "https://freesound.org/s/412017/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_ronroneo",
+   "id": 260881,
+   "title": "Cat purr.wav by Trautwein",
+   "user": "",
+   "url": "https://freesound.org/s/260881/",
+   "license": "CC0"
+  },
+  {
+   "group": "s_bufido",
+   "id": 343927,
+   "title": "hiss2.wav by Reitanna",
+   "user": "",
+   "url": "https://freesound.org/s/343927/",
+   "license": "CC0"
+  },
+  {
+   "group": "f_coyote",
+   "id": 256533,
+   "title": "coyote barks and howls by dkaufman",
+   "user": "",
+   "url": "https://freesound.org/s/256533/",
+   "license": "CC0"
+  },
+  {
+   "group": "f_coyote",
+   "id": 640060,
+   "title": "coyotes howling by SamsterBirdies",
+   "user": "",
+   "url": "https://freesound.org/s/640060/",
+   "license": "CC0"
+  },
+  {
+   "group": "f_ardilla",
+   "id": 111393,
+   "title": "Red_Squirrel_chatter.wav by philberts",
+   "user": "",
+   "url": "https://freesound.org/s/111393/",
+   "license": "CC0"
+  },
+  {
+   "group": "f_zorro",
+   "id": 447636,
+   "title": "HIS_hissing_cat_snake.wav by CrownieYT",
+   "user": "",
+   "url": "https://freesound.org/s/447636/",
+   "license": "CC0"
+  },
+  {
+   "group": "f_guatusa",
+   "id": 288941,
+   "title": "rat-squeak.wav by toefur",
+   "user": "",
+   "url": "https://freesound.org/s/288941/",
+   "license": "CC0"
+  },
+  {
+   "group": "f_guatusa",
+   "id": 435748,
+   "title": "Guineapig by RICHERlandTV",
+   "user": "",
+   "url": "https://freesound.org/s/435748/",
+   "license": "CC0"
+  },
+  {
+   "group": "f_arena",
+   "id": 651292,
+   "title": "Digging in wet course sand (1) by f3bbbo",
+   "user": "",
+   "url": "https://freesound.org/s/651292/",
+   "license": "CC0"
+  },
+  {
+   "group": "f_arena",
+   "id": 651293,
+   "title": "Digging in wet course sand (2) by f3bbbo",
+   "user": "",
+   "url": "https://freesound.org/s/651293/",
+   "license": "CC0"
+  },
+  {
+   "group": "f_comparsa",
+   "id": 435501,
+   "title": "Street carnival drums by rastadawg100",
+   "user": "",
+   "url": "https://freesound.org/s/435501/",
+   "license": "CC0"
+  },
+  {
+   "group": "f_comparsa",
+   "id": 564823,
+   "title": "Samba.mp3 by raquelgalvao",
+   "user": "",
+   "url": "https://freesound.org/s/564823/",
+   "license": "CC0"
+  },
+  {
+   "group": "f_sirena",
+   "id": 646179,
+   "title": "Woman Humming Softly- MP3 by MayaTakeda",
+   "user": "",
+   "url": "https://freesound.org/s/646179/",
+   "license": "CC0"
+  },
+  {
+   "group": "f_sirena",
+   "id": 680709,
+   "title": "Fairy Humming MP3.mp3 by MayaTakeda",
+   "user": "",
+   "url": "https://freesound.org/s/680709/",
+   "license": "CC0"
+  },
+  {
+   "group": "f_silbato",
+   "id": 538422,
+   "title": "Referee whistle sound.wav by Rosa-Orenes256",
+   "user": "",
+   "url": "https://freesound.org/s/538422/",
+   "license": "CC0"
+  },
+  {
+   "group": "f_silbato",
+   "id": 218318,
+   "title": "Referee whistle blow, gymnasium.wav by SpliceSound",
+   "user": "",
+   "url": "https://freesound.org/s/218318/",
+   "license": "CC0"
+  },
+  {
+   "group": "f_chicharra",
+   "id": 268964,
+   "title": "cicadas 8_28_13 10_08 AM.wav",
+   "user": "",
+   "url": "https://freesound.org/s/268964/",
+   "license": "CC0"
+  },
+  {
+   "group": "f_chicharra",
+   "id": 320113,
+   "title": "cicadas.wav",
+   "user": "",
+   "url": "https://freesound.org/s/320113/",
+   "license": "CC0"
+  },
+  {
+   "group": "f_marimba",
+   "id": 522193,
+   "title": "Marimba loop 3",
+   "user": "",
+   "url": "https://freesound.org/s/522193/",
+   "license": "CC0"
+  },
+  {
+   "group": "f_marimba",
+   "id": 586014,
+   "title": "MARIMBA1.wav",
+   "user": "",
+   "url": "https://freesound.org/s/586014/",
+   "license": "CC0"
+  },
+  {
+   "group": "f_yiguirro",
+   "id": 785669,
+   "title": "Song Thrush (zorzal, mismo género que el yigüirro)",
+   "user": "",
+   "url": "https://freesound.org/s/785669/",
+   "license": "CC0"
+  },
+  {
+   "id": 512109,
+   "title": "Montezuma oropendola bird call",
+   "user": "felix.blume",
+   "url": "https://freesound.org/s/512109/",
+   "license": "CC0"
+  },
+  {
+   "id": 232288,
+   "title": "Hail on roof",
+   "user": "zachrau",
+   "url": "https://freesound.org/s/232288/",
+   "license": "CC0"
+  },
+  {
+   "id": 421734,
+   "title": "Pig grunts",
+   "user": "gerainsan",
+   "url": "https://freesound.org/s/421734/",
+   "license": "CC0"
+  },
+  {
+   "id": 442907,
+   "title": "Pig Grunt",
+   "user": "qubodup",
+   "url": "https://freesound.org/s/442907/",
+   "license": "CC0"
+  },
+  {
+   "id": 260640,
+   "title": "Pig Squealing",
+   "user": "TheAcidRomance",
+   "url": "https://freesound.org/s/260640/",
+   "license": "CC0"
+  },
+  {
+   "id": 397690,
+   "title": "Owl Screeches",
+   "user": "Yacob_l",
+   "url": "https://freesound.org/s/397690/",
+   "license": "CC0"
+  },
+  {
+   "id": 101344,
+   "title": "BarnOwl.wav",
+   "user": "raoul_slayer",
+   "url": "https://freesound.org/s/101344/",
+   "license": "CC0"
+  },
+  {
+   "id": 231275,
+   "title": "Cowbell",
+   "user": "stomachache",
+   "url": "https://freesound.org/s/231275/",
+   "license": "CC0"
+  },
+  {
+   "id": 450793,
+   "title": "door wood hits impacts",
+   "user": "kyles",
+   "url": "https://freesound.org/s/450793/",
+   "license": "CC0"
+  },
+  {
+   "id": 321889,
+   "title": "Hammer and anvil",
+   "user": "Duasun",
+   "url": "https://freesound.org/s/321889/",
+   "license": "CC0"
+  },
+  {
+   "id": 488660,
+   "title": "Tumbling Rocks",
+   "user": "Fission9",
+   "url": "https://freesound.org/s/488660/",
+   "license": "CC0"
+  },
+  {
+   "id": 523267,
+   "title": "Foley_Feet_FloorSlapDoubles.wav",
+   "user": "MrFossy",
+   "url": "https://freesound.org/s/523267/",
+   "license": "CC0"
+  },
+  {
+   "id": 91258,
+   "title": "Heartbeat Real.wav",
+   "user": "Kevinflo",
+   "url": "https://freesound.org/s/91258/",
+   "license": "CC0"
+  }
+ ]
+}

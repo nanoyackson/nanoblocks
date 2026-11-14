@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- v12.4.3 (seguridad, A2): política de contenido. Todo sale del mismo sitio; las imágenes también de data:/blob: (los íconos se
+       dibujan en canvas), el worker del horizonte es del mismo sitio, y connect-src deja el WebSocket de Vite en desarrollo.
+       'unsafe-inline' solo en estilos (hay style= en el HTML que arma el juego); en scripts, nada en línea ni eval. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src 'self'; worker-src 'self' blob:; connect-src 'self' ws: wss: https://openrelay.metered.ca; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'" />
+  <title>NanoBlocks</title>
+  <meta name="theme-color" content="#5ca038" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icons/favicon-32.png" sizes="32x32" />
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
+  <script type="module" crossorigin src="./assets/index-K_qfh_A4.js"></script>
+  <link rel="modulepreload" crossorigin href="./assets/three-CgOGtdc0.js">
+  <link rel="modulepreload" crossorigin href="./assets/arte-Bnz0KCAd.js">
+  <link rel="modulepreload" crossorigin href="./assets/base-qRVBjcLT.js">
+  <link rel="modulepreload" crossorigin href="./assets/mundo-2rr7Q9Sq.js">
+  <link rel="modulepreload" crossorigin href="./assets/criaturas-CXZ0jHJO.js">
+  <link rel="modulepreload" crossorigin href="./assets/textos-L5dB5awa.js">
+  <link rel="modulepreload" crossorigin href="./assets/red-DwY6ywOS.js">
+  <link rel="modulepreload" crossorigin href="./assets/graficos-BzeX50Hm.js">
+  <link rel="modulepreload" crossorigin href="./assets/trama-DJiO_-_k.js">
+  <link rel="stylesheet" crossorigin href="./assets/index-Ofhfd4SH.css">
+</head>
+<body>
+  <canvas id="game"></canvas>
+
+  <div id="hud" class="hidden">
+    <div id="crosshair"></div>
+    <div id="captions"></div>
+    <div id="compass"><div id="compass-strip"></div></div>
+    <div id="debug" class="hidden"></div>
+    <div id="toast"></div>
+    <div id="region-banner"><b></b><span></span></div>
+    <div id="stamina"><i></i></div>
+    <div id="combat-flash"></div>
+    <div id="bossbar" class="hidden"><span id="boss-name"></span><div><i id="boss-fill"></i></div></div>
+    <div id="xpbar" class="hidden"><i id="xp-fill"></i><b id="xp-level"></b></div>
+    <div id="dialog"><b id="dialog-name"></b><span id="dialog-text"></span></div>
+    <div id="itemname"></div>
+    <div id="recogidos"></div>
+    <div id="bars">
+      <div id="armorbar"></div>
+      <div id="hearts"></div>
+      <div id="air"></div>
+      <div id="food"></div>
+      <div id="water"></div>
+    </div>
+    <div id="hotbar"></div>
+    <div id="billetera-hud" class="hidden"></div>
+    <div id="water-overlay"></div>
+    <div id="lava-overlay"></div>
+    <div id="sleep-overlay"></div>
+    <div id="effects"></div>
+    <div id="mision-hud"></div>
+    <div id="mirando"></div>
+    <div id="lado-hud"><div id="objetivo"></div><div id="receta-fija"></div></div>
+    <div id="reloj"></div>
+    <div id="perf" class="hidden" aria-hidden="true"></div>
+    <div id="guardado">💾 Guardado</div>
+    <div id="hurt-overlay"></div>
+    <div id="click-hint" class="hidden">Haga clic para jugar</div>
+    <form id="cmd" class="hidden" autocomplete="off"><input id="cmd-input" placeholder="/ayuda para ver comandos" /></form>
+    <div id="version-tag"></div>
+  </div>
+
+  <!-- Menú principal -->
+  <div id="screen-menu" class="screen bg-menu">
+    <div class="panel wide">
+      <h1 class="logo"><img src="./ui/logo.png" alt="NanoBlocks" /></h1>
+      <div class="subtitle" id="splash"></div>
+      <button data-go="worlds">Un jugador</button>
+      <button id="btn-amistades">Jugar con amistades</button>
+      <button data-go="news">Novedades</button>
+      <button data-go="settings">Ajustes</button>
+      <div class="foot" id="menu-version"></div>
+    </div>
+  </div>
+
+  <div id="screen-worlds" class="screen bg-dirt">
+    <div class="panel wide">
+      <h2>Escoja un mundo</h2>
+      <div id="world-list"></div>
+      <div class="row">
+        <button data-go="new">Crear mundo nuevo</button>
+        <button id="btn-import">Importar mundo o respaldo</button>
+        <button id="btn-respaldo" class="ghost">💾 Descargar respaldo (todos los mundos)</button>
+        <input type="file" id="import-file" accept=".json" class="hidden" />
+      </div>
+      <button data-go="menu" class="ghost">Volver</button>
+    </div>
+  </div>
+
+  <div id="screen-new" class="screen bg-dirt">
+    <form class="panel" id="new-form">
+      <h2>Mundo nuevo</h2>
+      <label>Nombre<input name="name" value="Mi mundo" maxlength="40" /></label>
+      <label>Semilla (vacío = al azar)<input name="seed" placeholder="ej. pura vida" maxlength="60" /></label>
+      <label>Modo
+        <select name="mode">
+          <option value="survival">Supervivencia</option>
+          <option value="creative">Creativo</option>
+        </select>
+      </label>
+      <label>Tipo de mundo
+        <select name="tipoMundo">
+          <option value="normal" selected>Normal</option>
+          <option value="compacto">Tiquicia de bolsillo</option>
+        </select>
+        <small id="tipo-nota">Grande, como siempre: hay que caminar para encontrar las cosas.</small>
+      </label>
+      <label>Dificultad
+        <select name="dificultad">
+          <option value="tranquilo">Tranquilo</option>
+          <option value="normal" selected>Normal</option>
+          <option value="dificil">Difícil</option>
+        </select>
+        <small id="dif-nota">Al morir, sus cosas quedan en un cofre y se cae la mitad de la plata.</small>
+      </label>
+      <button type="submit">Crear y jugar</button>
+      <button type="button" data-go="worlds" class="ghost">Cancelar</button>
+    </form>
+  </div>
+
+  <div id="screen-loading" class="screen bg-dirt">
+    <div class="panel">
+      <h2 id="loading-title">Generando mundo…</h2>
+      <div class="progress"><div id="loading-bar"></div></div>
+      <div id="loading-tip" class="tip"></div>
+    </div>
+  </div>
+
+  <div id="screen-pause" class="screen dim">
+    <div class="panel">
+      <h2>Juego en pausa</h2>
+      <button id="btn-resume">Volver al juego</button>
+      <button id="btn-save">Guardar ahora</button>
+      <button id="btn-sala">Sala de amistades</button>
+      <button id="btn-ayuda-pausa">Ayuda (Y)</button>
+      <button data-go="settings">Ajustes</button>
+      <button id="btn-quit">Guardar y salir al menú</button>
+      <div class="foot" id="pause-info"></div>
+    </div>
+  </div>
+
+  <div id="screen-settings" class="screen dim">
+    <div class="panel">
+      <h2>Ajustes</h2>
+      <button data-go="video" id="btn-ir-video">Opciones de video…</button>
+      <fieldset class="ajustes-grupo"><legend>Sonido</legend>
+        <label>Volumen: <span id="v-vol"></span><input type="range" id="s-vol" min="0" max="1" step="0.05" /></label>
+        <label>Música (marimba): <span id="v-mus"></span><input type="range" id="s-mus" min="0" max="1" step="0.05" /></label>
+        <label class="check"><input type="checkbox" id="s-subs" /> Subtítulos de sonidos</label>
+      </fieldset>
+      <fieldset class="ajustes-grupo"><legend>Mundos guardados</legend>
+        <p id="estado-almacen" class="nota-ajuste"></p>
+        <button id="btn-respaldo2" class="ghost">💾 Descargar respaldo (todos los mundos)</button>
+        <label class="check"><input type="checkbox" id="s-aviso-respaldo" /> Recordarme cada ~2 horas de juego si no he bajado un respaldo</label>
+      </fieldset>
+      <fieldset class="ajustes-grupo"><legend>Jugar en línea</legend>
+        <label>Su nombre en la sala: <input id="s-red-nombre" maxlength="16" autocomplete="off" /></label>
+        <label>Clave TURN (opcional): <input id="s-red-turn" maxlength="64" autocomplete="off" spellcheck="false" /></label>
+        <p class="nota-ajuste">Jugar en línea muestra su dirección de red a las demás personas de la sala. La clave TURN (de Open Relay) solo ayuda a conectar cuando una red bloquea la conexión directa; si no la pone, el juego igual funciona en la mayoría de casos.</p>
+      </fieldset>
+      <fieldset class="ajustes-grupo"><legend>Juego</legend>
+        <label class="check"><input type="checkbox" id="s-hostile" /> Sombras de noche (supervivencia)</label>
+        <label class="check"><input type="checkbox" id="s-pausa-paneles" /> Pausar al abrir el mapa, la libreta y la tienda</label>
+        <label class="check"><input type="checkbox" id="s-herramienta" /> Agarrar sola la herramienta adecuada al picar</label>
+        <label class="check"><input type="checkbox" id="s-correr" /> Correr con un toque de Ctrl (sin mantenerlo)</label>
+        <label>Sensibilidad del mouse: <span id="v-sens"></span><input type="range" id="s-sens" min="0.2" max="3" step="0.05" /></label>
+        <label class="check"><input type="checkbox" id="s-objetivo" /> Mostrar el objetivo en pantalla</label>
+        <label class="check"><input type="checkbox" id="s-mirando" /> Mostrar lo que estoy mirando</label>
+        <label class="check"><input type="checkbox" id="s-reloj" /> Mostrar el día y la hora</label>
+        <label class="check"><input type="checkbox" id="s-numeros" /> Mostrar los números de daño</label>
+      </fieldset>
+      <fieldset class="ajustes-grupo"><legend>Accesibilidad</legend>
+        <label class="check"><input type="checkbox" id="s-calma" /> Movimiento tranquilo (menos sacudidas y animaciones)</label>
+        <label>Avisos en pantalla: <select id="s-avisos"><option value="pocos">Pocos (sin comentarios; cada consejo una vez)</option><option value="normal">Normal</option><option value="todos">Todos (sin tope por minuto)</option></select></label>
+        <label>Velocidad de lectura: <select id="s-lectura"><option value="tranquila">Tranquila</option><option value="normal">Normal</option><option value="rapida">Rápida</option></select></label>
+      </fieldset>
+      <fieldset class="ajustes-grupo" id="pwa-grupo"><legend>Aplicación</legend>
+        <p id="pwa-estado" class="nota-ajuste"></p>
+        <button id="btn-instalar" class="ghost hidden">Instalar NanoBlocks</button>
+        <button id="btn-actualizar" class="ghost hidden">Hay una versión nueva · Actualizar</button>
+      </fieldset>
+      <div id="s-teclas"></div>
+      <button id="btn-settings-reset" class="ghost">Restablecer todo</button>
+      <button id="btn-settings-back">Listo</button>
+    </div>
+  </div>
+
+  <!-- v12.0.0: Opciones de video (calidad, efectos de la hora dorada, imagen y brillo) -->
+  <div id="screen-video" class="screen dim">
+    <div class="panel">
+      <h2>Opciones de video</h2>
+      <fieldset class="ajustes-grupo"><legend>Calidad</legend>
+        <label>Calidad: <select id="s-calidad"><option value="bajo">Bajo (como siempre)</option><option value="medio">Medio</option><option value="alto">Alto</option><option value="ultra">Ultra</option><option value="personalizado">Personalizado</option></select></label>
+        <p id="calidad-nota" class="nota-ajuste"></p>
+        <label class="check"><input type="checkbox" id="s-v-tono" /> Tono y color según la hora</label>
+        <label class="check"><input type="checkbox" id="s-v-niebla" /> Niebla de altura y luz del sol</label>
+        <label class="check"><input type="checkbox" id="s-v-cielo" /> Cielo mejorado</label>
+        <label class="check"><input type="checkbox" id="s-v-bruma" /> Bruma según el bioma</label>
+        <label class="check"><input type="checkbox" id="s-v-nitidez" /> Texturas nítidas de lejos (sin centelleo)</label>
+        <label class="check"><input type="checkbox" id="s-v-agua" /> Agua que refleja el cielo (Fresnel, sol, profundidad y espuma)</label>
+        <label class="check"><input type="checkbox" id="s-v-bloom" /> Brillo de antorchas, lámparas y lava (bloom; cuesta más)</label>
+        <label class="check"><input type="checkbox" id="s-v-halos" /> Halos de luz sobre antorchas y lava (la versión barata del brillo)</label>
+        <label class="check"><input type="checkbox" id="s-calidad-auto" /> Calidad automática (baja la resolución o el nivel si los fps no alcanzan)</label>
+        <label class="check"><input type="checkbox" id="s-perf" /> Mostrar fps, milisegundos (CPU y GPU), llamadas y triángulos</label>
+      </fieldset>
+      <fieldset class="ajustes-grupo"><legend>Imagen</legend>
+        <label>Distancia de visión: <span id="v-rd"></span><input type="range" id="s-rd" min="2" max="16" step="1" /></label>
+        <label>Campo de visión: <span id="v-fov"></span><input type="range" id="s-fov" min="50" max="110" step="1" /></label>
+        <label>Brillo: <span id="v-brillo"></span><input type="range" id="s-brillo" min="0" max="100" step="5" /></label>
+        <label>Horizonte lejano: <select id="s-far"><option value="0">Apagado</option><option value="768">Cerca (768 bloques)</option><option value="1536">Lejos (1 536 bloques)</option><option value="3072">Muy lejos (3 072 bloques)</option></select></label>
+        <label>Resolución: <span id="v-scale"></span><input type="range" id="s-scale" min="0.5" max="2" step="0.25" /></label>
+        <label class="check"><input type="checkbox" id="s-full" /> Pantalla completa al jugar <small>(Esc sale; así Ctrl+W no cierra la pestaña)</small></label>
+        <label class="check"><input type="checkbox" id="s-bob" /> Balanceo al caminar</label>
+      </fieldset>
+      <button id="btn-video-back">Listo</button>
+    </div>
+  </div>
+
+  <div id="screen-news" class="screen bg-dirt">
+    <div class="panel wide">
+      <h2>Novedades</h2>
+      <div id="news-list"></div>
+      <button data-go="menu" class="ghost">Volver</button>
+    </div>
+  </div>
+
+  <div id="screen-inventory" class="screen dim">
+    <div class="inv-wrap">
+      <div class="inv-panel char" id="char-panel">
+        <h3>Personaje</h3>
+        <div class="char-body">
+          <div id="armor-slots" class="armor-col"></div>
+          <div class="doll"><canvas id="doll-canvas"></canvas><div id="doll-fx"></div><div class="doll-hint">Arrastre para girar</div></div>
+        </div>
+        <div class="char-stats">
+          <div class="stat"><span>🛡 Protección</span><div class="meter"><i id="armor-meter"></i></div><b id="armor-points"></b></div>
+          <div class="stat"><span>💪 Dureza</span><div class="meter tough"><i id="tough-meter"></i></div><b id="tough-points"></b></div>
+          <div class="stat-note" id="armor-note"></div>
+        </div>
+      </div>
+      <div class="inv-panel main-panel">
+        <h3 id="inv-title">Inventario</h3>
+        <div id="creative-search-row" class="hidden"><input id="creative-search" placeholder="Buscar bloque…" /></div>
+        <div id="creative-grid" class="grid catalog hidden"></div>
+        <div id="station-area"></div>
+        <div id="inv-sortbar" class="sortbar"></div>
+        <div id="inv-grid" class="grid"></div>
+        <div class="sep"></div>
+        <div id="inv-hotbar" class="grid"></div>
+        <div id="inv-billetera" class="billetera"></div>
+      </div>
+      <div class="inv-panel craft" id="craft-panel">
+        <h3>Recetas <span id="craft-table-note"></span></h3>
+        <div id="craft-buscar-fila"><input id="craft-buscar" placeholder="Buscar receta o ingrediente" autocomplete="off" title="Clic: poner la receta · Mayús+clic: el máximo · clic derecho: fijarla en pantalla" /><div id="craft-chips" class="chips" role="group" aria-label="Filtrar recetas"></div></div>
+        <div id="craft-list"></div>
+      </div>
+    </div>
+    <div id="tooltip" class="hidden"></div>
+  </div>
+
+  <div id="screen-map" class="screen dim">
+    <div class="map-panel">
+      <h3>Mapa <span id="map-scale"></span></h3>
+      <canvas id="map-canvas" width="560" height="420" title="Arrastre o WASD para mover · rueda o + / − para acercar · doble clic o C: volver a usted · clic marca destino · clic derecho borra un marcador · M o Esc para cerrar"></canvas>
+    </div>
+  </div>
+
+  <div id="screen-libreta" class="screen dim">
+    <div class="map-panel libreta" title="Y, I, U, C, L, H, K y N cambian de hoja · Esc para cerrar">
+      <div class="lib-tabs"><button type="button" data-lib="ayuda">❓ Ayuda (Y)</button><button type="button" data-lib="partida">📊 Partida</button><button type="button" data-lib="album">📒 Álbum (I)</button><button type="button" data-lib="pesca">🎣 Pesca</button><button type="button" data-lib="manas">🌟 Mañas (U)</button><button type="button" data-lib="cartas">✉ Cartas (C)</button><button type="button" data-lib="logros">🏆 Logros (L)</button><button type="button" data-lib="habilidades">🎖️ Habilidades (H)</button><button type="button" data-lib="bestiario">📖 Bestiario (K)</button><button type="button" data-lib="diario">📔 Diario (N)</button><button type="button" data-lib="dicho">💬 Lo que se dijo</button></div>
+      <div id="lib-body"></div>
+    </div>
+  </div>
+
+  <div id="screen-shop" class="screen dim">
+    <div class="shop-panel">
+      <h3 id="shop-title">Pulpería</h3>
+      <div class="shop-purse"><img id="shop-coin" alt=""><span id="shop-colones"></span><span id="shop-debt"></span><button id="shop-fiado" class="hidden">Pedir fiado (10 colones)</button><button id="shop-cambio-b" title="Toda su plata en la menor cantidad de billetes (y cambia los billetes viejos)">Cambiar plata: a billetes</button><button id="shop-cambio-m" title="Los billetes en monedas de 500">A monedas</button></div>
+      <div class="shop-cols">
+        <div><h4>Comprar</h4><div id="shop-sell" class="shop-list"></div></div>
+        <div><h4>Vender</h4><div id="shop-buy" class="shop-list"></div></div>
+      </div>
+      <p class="shop-hint">Clic para comprar o vender · Shift+clic: cinco veces · E o Esc para salir</p>
+    </div>
+  </div>
+
+  <div id="screen-dead" class="screen red">
+    <div class="panel">
+      <h1>¡Se murió!</h1>
+      <div id="death-cause" class="subtitle"></div>
+      <p class="tip" id="death-tip">Conserva su inventario.</p>
+      <button id="btn-respawn">Reaparecer</button>
+      <button id="btn-dead-quit" class="ghost">Reaparecer y salir al menú</button>
+    </div>
+  </div>
+
+  <div id="cursor-stack" class="slot hidden"></div>
+  <div id="bar-top" class="cinebar"></div>
+  <div id="bar-bottom" class="cinebar"></div>
+
+</body>
+</html>
