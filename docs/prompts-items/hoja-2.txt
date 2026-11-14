@@ -1,0 +1,82 @@
+Necesito pixel art de **íconos de ítems** para un juego de bloques con identidad costarricense («NanoBlocks»). Es un set original: no copies sprites de ningún juego existente.
+
+**Formato**
+- Hojas PNG de **256×256 px con fondo transparente**, cuadrícula de **8×8 celdas de 32×32 px**, sin bordes ni separación entre celdas. Cada celda es un ítem, en el orden exacto de la lista (fila por fila, de izquierda a derecha). Las celdas que sobran en la última hoja, vacías.
+- Cada ícono ocupa ~26×26 px centrado en su celda, con 3 px de aire alrededor.
+
+**Estilo (igual para todo el set)**
+- Pixel art limpio, sin antialias ni degradados suaves, sin texto ni logos ni marcas.
+- Contorno de 1 px más oscuro que el color del objeto (no negro puro), luz desde arriba a la izquierda, sombra abajo a la derecha, 1–2 pixeles de brillo.
+- Paleta viva y cálida (trópico): verdes de selva, rojos, amarillos, azules del Caribe; máximo ~12 colores por ícono.
+- Que se reconozca a 32×32 y también ampliado: siluetas claras, nada de detalles de 1 px sueltos.
+- Herramientas y armas en diagonal (mango abajo a la izquierda, punta arriba a la derecha). Armaduras de frente. Comidas en plato, taza o envoltura cuando aplica (vista de 3/4).
+- Mismo material = mismos colores: madera café cálido, piedra gris, hierro gris claro azulado, oro amarillo, diamante celeste, jade verde.
+
+Ahora hacé la HOJA 2 de 5: una sola imagen PNG de 256×256 px con fondo transparente, cuadrícula de 8×8 celdas de 32×32 px. Llená las celdas fila por fila, de izquierda a derecha, en este orden exacto:
+
+1. (fila 1, columna 1) Azada de jade (herramienta)
+2. (fila 1, columna 2) Pico de jade (herramienta)
+3. (fila 1, columna 3) Hacha de jade (herramienta)
+4. (fila 1, columna 4) Pala de jade (herramienta)
+5. (fila 1, columna 5) Espada de jade (herramienta)
+6. (fila 1, columna 6) machete de hoja larga con mango de madera
+7. (fila 1, columna 7) arco de madera con cuerda
+8. (fila 1, columna 8) flecha con plumas
+9. (fila 2, columna 1) machete oscuro con brillo rojo, mango negro con cadena
+10. (fila 2, columna 2) Casco de cuero (pieza de armadura de leather)
+11. (fila 2, columna 3) Pechera de cuero (pieza de armadura de leather)
+12. (fila 2, columna 4) Pantalones de cuero (pieza de armadura de leather)
+13. (fila 2, columna 5) Botas de cuero (pieza de armadura de leather)
+14. (fila 2, columna 6) Casco de hierro (pieza de armadura de iron)
+15. (fila 2, columna 7) Pechera de hierro (pieza de armadura de iron)
+16. (fila 2, columna 8) Pantalones de hierro (pieza de armadura de iron)
+17. (fila 3, columna 1) Botas de hierro (pieza de armadura de iron)
+18. (fila 3, columna 2) Casco de diamante (pieza de armadura de diamond)
+19. (fila 3, columna 3) Pechera de diamante (pieza de armadura de diamond)
+20. (fila 3, columna 4) Pantalones de diamante (pieza de armadura de diamond)
+21. (fila 3, columna 5) Botas de diamante (pieza de armadura de diamond)
+22. (fila 3, columna 6) Casco de jade (pieza de armadura de jade)
+23. (fila 3, columna 7) Pechera de jade (pieza de armadura de jade)
+24. (fila 3, columna 8) Pantalones de jade (pieza de armadura de jade)
+25. (fila 4, columna 1) Botas de jade (pieza de armadura de jade)
+26. (fila 4, columna 2) gallo pinto con un huevo frito encima
+27. (fila 4, columna 3) plato con arroz, frijoles, ensalada, plátano maduro y carne
+28. (fila 4, columna 4) tazón con frijoles, chicharrón, arroz y pico de gallo
+29. (fila 4, columna 5) tamal envuelto en hoja de plátano verde amarrada con mecate
+30. (fila 4, columna 6) plátano maduro frito, dorado y caramelizado
+31. (fila 4, columna 7) caña de pescar con carrete
+32. (fila 4, columna 8) bote de remos de madera pintado de azul
+33. (fila 5, columna 1) moneda dorada grande de colón costarricense (sin texto)
+34. (fila 5, columna 2) pargo rojo crudo
+35. (fila 5, columna 3) corvina plateada cruda
+36. (fila 5, columna 4) guapote (pez de río) crudo
+37. (fila 5, columna 5) pez dorado (mahi-mahi) verde y amarillo crudo
+38. (fila 5, columna 6) pescado frito entero con limón
+39. (fila 5, columna 7) vaso de ceviche con limón y culantro
+40. (fila 5, columna 8) limón mandarina anaranjado
+41. (fila 6, columna 1) bota vieja rota (basura del mar)
+42. (fila 6, columna 2) perla blanca brillante
+43. (fila 6, columna 3) colmillo negro grande con brillo rojo
+44. (fila 6, columna 4) calavera de caballo pequeña
+45. (fila 6, columna 5) lágrima de cristal celeste brillante
+46. (fila 6, columna 6) cohete de fiesta (bombeta) con mecha y palito
+47. (fila 6, columna 7) botella pequeña transparente de guaro de caña
+48. (fila 6, columna 8) máscara de mascarada tica: cabezona de papel maché, colorida
+49. (fila 7, columna 1) mango maduro amarillo y rojo
+50. (fila 7, columna 2) llave antigua de piedra volcánica con brillo naranja
+51. (fila 7, columna 3) trozo de azufre amarillo
+52. (fila 7, columna 4) tazón de caldo con hongos
+53. (fila 7, columna 5) copa alta con hielo raspado rojo, leche en polvo y helado
+54. (fila 7, columna 6) pipa (coco verde) con una pajilla
+55. (fila 7, columna 7) copo de hielo raspado con sirope rojo en vasito
+56. (fila 7, columna 8) vaina de guanacaste en forma de oreja, café oscura
+57. (fila 8, columna 1) pluma dorada brillante
+58. (fila 8, columna 2) documento enrollado con sello rojo de lacre
+59. (fila 8, columna 3) bidón rojo de combustible
+60. (fila 8, columna 4) encendedor plástico
+61. (fila 8, columna 5) olla con sopa de carne y verduras
+62. (fila 8, columna 6) empanada dorada de maíz
+63. (fila 8, columna 7) chorreada (panqueque de maíz) con natilla
+64. (fila 8, columna 8) hongo de sombrero café claro con pintas blancas
+
+No escribas números ni texto en la imagen. Solo los íconos.

@@ -1,0 +1,27 @@
+Necesito pixel art de íconos de ítems para un juego de bloques con identidad costarricense («NanoBlocks»). Set original: no copies sprites de ningún juego existente.
+
+FORMATO
+- Una sola imagen cuadrada con una cuadrícula de 4 columnas x 4 filas (16 celdas iguales), fondo blanco liso, sin bordes ni líneas entre celdas, sin texto ni números.
+- Cada celda es un ítem, en el orden exacto de la lista (fila por fila, de izquierda a derecha). Las dos últimas celdas quedan vacías (blancas).
+- Cada ícono centrado en su celda, ocupando ~80 % de la celda.
+
+ESTILO
+- Pixel art limpio de 32x32 (pixeles grandes y nítidos, sin antialias ni degradados), contorno de 1 px más oscuro que el objeto (no negro puro), luz desde arriba a la izquierda.
+- Paleta viva y cálida de trópico, máximo ~12 colores por ícono. Siluetas claras que se reconozcan en chiquito.
+- Armas en diagonal (mango abajo a la izquierda, punta arriba a la derecha). Ropa de frente.
+
+LA LISTA
+1. Cuchillo de monte: cuchillo corto con hoja de acero gris claro y mango de madera café con remaches.
+2. Seda de la Reina Bananera: un ovillo/madeja de seda blanca brillante con reflejos dorados.
+3. Cuerno del escarabajo Hércules: cuerno grande negro brillante, curvo hacia arriba, con brillo café.
+4. Glándula del Tata Sapo: bolsita carnosa amarillo verdosa con verrugas y una gota de veneno.
+5. Cascabel de la Cascabel del Llano: el cascabel de una serpiente, segmentos color hueso apilados.
+6. Pinza del Cangrejo Rey: una pinza de cangrejo grande, naranja rojiza, con la punta blanca.
+7. Colmillo del Ciempiés Rey: colmillo curvo rojo oscuro, casi negro, con punta ámbar.
+8. Ofrenda del monte: una jícara (media calabaza seca) con una candela encendida, flores amarillas y granos de cacao.
+9. Mazo de cuerno: garrote de madera con la cabeza hecha de un cuerno negro curvo amarrado con cuero.
+10. Lanza de colmillo: lanza de madera con un colmillo rojo oscuro de punta, amarrado con cuerda.
+11. Cuchillo de pinza: cuchillo hecho con una pinza de cangrejo naranja como hoja y mango de cuero.
+12. Chaleco de seda: chaleco tejido con seda blanca y dorada, visto de frente.
+13. Botas de cascabel: un par de botas de cuero de serpiente con rombos café y beige.
+14. Antídoto del Tata: frasquito de vidrio con líquido verde claro y corcho, con etiqueta en blanco.

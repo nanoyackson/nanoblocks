@@ -1,0 +1,82 @@
+Necesito pixel art de **íconos de ítems** para un juego de bloques con identidad costarricense («NanoBlocks»). Es un set original: no copies sprites de ningún juego existente.
+
+**Formato**
+- Hojas PNG de **256×256 px con fondo transparente**, cuadrícula de **8×8 celdas de 32×32 px**, sin bordes ni separación entre celdas. Cada celda es un ítem, en el orden exacto de la lista (fila por fila, de izquierda a derecha). Las celdas que sobran en la última hoja, vacías.
+- Cada ícono ocupa ~26×26 px centrado en su celda, con 3 px de aire alrededor.
+
+**Estilo (igual para todo el set)**
+- Pixel art limpio, sin antialias ni degradados suaves, sin texto ni logos ni marcas.
+- Contorno de 1 px más oscuro que el color del objeto (no negro puro), luz desde arriba a la izquierda, sombra abajo a la derecha, 1–2 pixeles de brillo.
+- Paleta viva y cálida (trópico): verdes de selva, rojos, amarillos, azules del Caribe; máximo ~12 colores por ícono.
+- Que se reconozca a 32×32 y también ampliado: siluetas claras, nada de detalles de 1 px sueltos.
+- Herramientas y armas en diagonal (mango abajo a la izquierda, punta arriba a la derecha). Armaduras de frente. Comidas en plato, taza o envoltura cuando aplica (vista de 3/4).
+- Mismo material = mismos colores: madera café cálido, piedra gris, hierro gris claro azulado, oro amarillo, diamante celeste, jade verde.
+
+Ahora hacé la HOJA 4 de 5: una sola imagen PNG de 256×256 px con fondo transparente, cuadrícula de 8×8 celdas de 32×32 px. Llená las celdas fila por fila, de izquierda a derecha, en este orden exacto:
+
+1. (fila 1, columna 1) Batea
+2. (fila 1, columna 2) Pepita de oro
+3. (fila 1, columna 3) Cartelito para nombre
+4. (fila 1, columna 4) Red de pesca
+5. (fila 1, columna 5) Escama de sirena
+6. (fila 1, columna 6) Fragmento de meteorito
+7. (fila 1, columna 7) Corona de piña (para sembrar)
+8. (fila 1, columna 8) Piña
+9. (fila 2, columna 1) Fresco de piña
+10. (fila 2, columna 2) Cajeta de piña
+11. (fila 2, columna 3) Mechón del Mono congo (clic derecho: aullar)
+12. (fila 2, columna 4) Silbato del reto (clic derecho: arma la arena)
+13. (fila 2, columna 5) Copa del reto
+14. (fila 2, columna 6) Papalote (clic derecho: volarlo)
+15. (fila 2, columna 7) Trompo (clic derecho al piso: bailarlo)
+16. (fila 2, columna 8) Chumicos (clic derecho a un vecino: jugar)
+17. (fila 3, columna 1) Parapente (clic derecho cayendo: abrirlo)
+18. (fila 3, columna 2) Avioneta (clic derecho al suelo: ponerla)
+19. (fila 3, columna 3) Bandera de circuito (clic derecho: aros en el cielo)
+20. (fila 3, columna 4) Tabla de surf (clic derecho en el mar)
+21. (fila 3, columna 5) Yuca
+22. (fila 3, columna 6) Vigorón
+23. (fila 3, columna 7) Rosquillas
+24. (fila 3, columna 8) Tanelas
+25. (fila 4, columna 1) Arroz con pollo
+26. (fila 4, columna 2) Trofeo del torneo de pesca
+27. (fila 4, columna 3) Peluche de perezoso (premio de feria)
+28. (fila 4, columna 4) Carreta con bueyes (clic derecho al suelo: ponerla)
+29. (fila 4, columna 5) Arco de cintas (clic derecho: armarlo)
+30. (fila 4, columna 6) Cinta de la carrera de cintas
+31. (fila 4, columna 7) Permiso de Todo (sellado siete veces)
+32. (fila 4, columna 8) Saco de gangoche (clic derecho: carrera de sacos)
+33. (fila 5, columna 1) Racimo de pejibayes (crudos)
+34. (fila 5, columna 2) Pejibayes cocinados
+35. (fila 5, columna 3) Pejibayes con mayonesa
+36. (fila 5, columna 4) Pedazo de la tierra
+37. (fila 5, columna 5) Pedazo del agua
+38. (fila 5, columna 6) Pedazo del fuego
+39. (fila 5, columna 7) Pedazo del cielo
+40. (fila 5, columna 8) Esencia de sombra
+41. (fila 6, columna 1) Aceite de filo (clic derecho: va a su mejor arma)
+42. (fila 6, columna 2) Candela de regreso (clic derecho: vuelve a donde durmió)
+43. (fila 6, columna 3) Maletín del tío Rigo
+44. (fila 6, columna 4) Machete de Zenaida
+45. (fila 6, columna 5) Delantal de Zenaida (pieza de armadura de leather)
+46. (fila 6, columna 6) Chancleta de Zenaida (clic derecho: se tira y vuelve)
+47. (fila 6, columna 7) Sombrero de Zenaida (pieza de armadura de leather)
+48. (fila 6, columna 8) Cucharón de Zenaida (con tenerlo, la comida rinde más)
+49. (fila 7, columna 1) Tablilla (arregla la pierna quebrada)
+50. (fila 7, columna 2) Tranca (clic derecho a una puerta)
+51. (fila 7, columna 3) Cigarros del 62, sin abrir (un recuerdo)
+52. (fila 7, columna 4) Hoja de firmas (clic derecho a un vecino)
+53. (fila 7, columna 5) documento enrollado con sello rojo de lacre
+54. (fila 7, columna 6) Martillo de Ñor Tino
+55. (fila 7, columna 7) Recetario de Niña Chepa
+56. (fila 7, columna 8) La mata de Doña Flor
+57. (fila 8, columna 1) Catalejo de Mae Wilber
+58. (fila 8, columna 2) Sobre sellado: «Para Marielos»
+59. (fila 8, columna 3) La otra chancleta (con las dos, se pega más duro)
+60. (fila 8, columna 4) Sello de oficina
+61. (fila 8, columna 5) Sello de goma (a veces deja aturdido)
+62. (fila 8, columna 6) Sobre de estampas (clic derecho: abrirlo)
+63. (fila 8, columna 7) Bomba de espalda (clic derecho: rocía agua lejos; se llena en el agua)
+64. (fila 8, columna 8) Agua bendita (clic derecho: 3 minutos en que sus golpes le entran a los espantos)
+
+No escribas números ni texto en la imagen. Solo los íconos.

@@ -1,0 +1,12 @@
+Necesito pixel art de íconos de ítems para un juego de bloques con identidad costarricense («NanoBlocks»). Set original: no copies sprites de ningún juego existente. Mismo estilo que la hoja anterior (assets-src/items/jefes/jefes-hoja.png): pixel art limpio de 32x32, contorno 1 px más oscuro que el objeto, luz arriba a la izquierda, paleta viva y cálida, máximo ~12 colores por ícono.
+
+FORMATO: una imagen cuadrada en cuadrícula de 3x3 (9 celdas iguales), fondo blanco liso, sin texto ni líneas. En el orden de la lista, fila por fila; las celdas que sobran, vacías.
+
+LA LISTA
+1. Alas del Rey Zopilote: un par de alas grandes abiertas, de plumas negras con las puntas blancas y gris ceniza, con correas de cuero café para la espalda. Vista de espalda.
+2. Bombeta: un cohetito de pólvora tico, tubo de cartón rojo y blanco con mecha y un palito de caña largo. En diagonal.
+3. Pluma del Rey Zopilote: una pluma grande negra con la punta blanca y un brillo naranja de brasa en el cañón.
+4. Corona del monte: una corona tejida de bejucos y hojas, con seis cosas amarradas: un hilo de seda blanca, un cuerno negro, un cascabel de culebra, una pinza naranja, un colmillo rojo y una gota verde.
+5. Cabeza del Rey Zopilote (trofeo): cabeza de zopilote rey montada en una placa de madera: cabeza calva con piel naranja, roja, amarilla y morada, ojo blanco, pico ganchudo y collar de plumas grises.
+6. Pólvora de bombeta: un saquito de tela café abierto con pólvora negra gris.
+7. Caña brava: una vara de caña verde amarillenta, recta, en diagonal.

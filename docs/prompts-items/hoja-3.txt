@@ -1,0 +1,82 @@
+Necesito pixel art de **íconos de ítems** para un juego de bloques con identidad costarricense («NanoBlocks»). Es un set original: no copies sprites de ningún juego existente.
+
+**Formato**
+- Hojas PNG de **256×256 px con fondo transparente**, cuadrícula de **8×8 celdas de 32×32 px**, sin bordes ni separación entre celdas. Cada celda es un ítem, en el orden exacto de la lista (fila por fila, de izquierda a derecha). Las celdas que sobran en la última hoja, vacías.
+- Cada ícono ocupa ~26×26 px centrado en su celda, con 3 px de aire alrededor.
+
+**Estilo (igual para todo el set)**
+- Pixel art limpio, sin antialias ni degradados suaves, sin texto ni logos ni marcas.
+- Contorno de 1 px más oscuro que el color del objeto (no negro puro), luz desde arriba a la izquierda, sombra abajo a la derecha, 1–2 pixeles de brillo.
+- Paleta viva y cálida (trópico): verdes de selva, rojos, amarillos, azules del Caribe; máximo ~12 colores por ícono.
+- Que se reconozca a 32×32 y también ampliado: siluetas claras, nada de detalles de 1 px sueltos.
+- Herramientas y armas en diagonal (mango abajo a la izquierda, punta arriba a la derecha). Armaduras de frente. Comidas en plato, taza o envoltura cuando aplica (vista de 3/4).
+- Mismo material = mismos colores: madera café cálido, piedra gris, hierro gris claro azulado, oro amarillo, diamante celeste, jade verde.
+
+Ahora hacé la HOJA 3 de 5: una sola imagen PNG de 256×256 px con fondo transparente, cuadrícula de 8×8 celdas de 32×32 px. Llená las celdas fila por fila, de izquierda a derecha, en este orden exacto:
+
+1. (fila 1, columna 1) cajeta de leche: cuadrito café claro
+2. (fila 1, columna 2) chicharrón dorado y crujiente
+3. (fila 1, columna 3) corazón de lava: piedra negra con grietas naranjas brillantes
+4. (fila 1, columna 4) Escudo de madera (pieza de armadura de wood)
+5. (fila 1, columna 5) Escudo de hierro (pieza de armadura de iron)
+6. (fila 1, columna 6) Escudo de jade (pieza de armadura de jade)
+7. (fila 1, columna 7) lanza de hierro
+8. (fila 1, columna 8) mazo de hierro pesado
+9. (fila 2, columna 1) garrote de madera de guayabo
+10. (fila 2, columna 2) sombrero ancho de tule tejido
+11. (fila 2, columna 3) pluma gris pizarra de águila arpía
+12. (fila 2, columna 4) capa de plumas gris pizarra con broche dorado
+13. (fila 2, columna 5) semillas de cacao café
+14. (fila 2, columna 6) barra de chocolate artesanal envuelta a medias
+15. (fila 2, columna 7) queso Turrialba: rueda blanca
+16. (fila 2, columna 8) vasito de natilla blanca
+17. (fila 3, columna 1) sombrero de cuero café de ala ancha
+18. (fila 3, columna 2) documento de papel con sello azul de municipalidad
+19. (fila 3, columna 3) carro viejo de los 80 visto de lado, rojo, con óxido
+20. (fila 3, columna 4) polea de tirolesa con mosquetón amarillo
+21. (fila 3, columna 5) tazón de arroz con leche con canela
+22. (fila 3, columna 6) plato de sopa negra con huevo duro
+23. (fila 3, columna 7) gallos: tortilla doblada con picadillo verde
+24. (fila 3, columna 8) plátano maduro con queso derretido
+25. (fila 4, columna 1) porción de queque tres leches con merengue y cereza
+26. (fila 4, columna 2) taza de café con leche
+27. (fila 4, columna 3) bolsa de arroz
+28. (fila 4, columna 4) botellita de repelente con dibujo de limón
+29. (fila 4, columna 5) corazón de madera con musgo verde y brillo verde
+30. (fila 4, columna 6) bola de fútbol blanca con pentágonos negros
+31. (fila 4, columna 7) cantimplora de cuero café, vacía y aplanada, con tapón de madera y correa
+32. (fila 4, columna 8) cantimplora de cuero café llena y redonda con una gota de agua azul
+33. (fila 5, columna 1) mata de sábila (aloe) verde con hojas gruesas y puntiagudas
+34. (fila 5, columna 2) ramito de manzanilla con florecitas blancas de centro amarillo
+35. (fila 5, columna 3) ramita de hierbabuena con hojas verdes dentadas
+36. (fila 5, columna 4) raíz de jengibre beige con nudos
+37. (fila 5, columna 5) honda de madera en forma de Y con liga de cuero
+38. (fila 5, columna 6) cerbatana larga de caña verde con nudos
+39. (fila 5, columna 7) dardo fino de madera con punta verde de veneno y cola de algodón
+40. (fila 5, columna 8) jabalina de madera con punta de hierro y cinta roja
+41. (fila 6, columna 1) colmillo grande de jaguar, curvo y marfil, con un cordón
+42. (fila 6, columna 2) diente de cocodrilo enorme, cónico y amarillento
+43. (fila 6, columna 3) frasco con veneno verde brillante y una calavera de serpiente
+44. (fila 6, columna 4) machete de doble filo con mango de cuero, colmillo y diente amarrados
+45. (fila 6, columna 5) Venda
+46. (fila 6, columna 6) Alcohol
+47. (fila 6, columna 7) Suero oral
+48. (fila 6, columna 8) Botiquín
+49. (fila 7, columna 1) Mapa del tesoro
+50. (fila 7, columna 2) Careta de buceo
+51. (fila 7, columna 3) Brocha
+52. (fila 7, columna 4) Mochila de cuero
+53. (fila 7, columna 5) Pan casero de la abuela
+54. (fila 7, columna 6) Agua de sapo
+55. (fila 7, columna 7) tazón de arroz con leche con canela
+56. (fila 7, columna 8) Libro de recetas viejo
+57. (fila 8, columna 1) Plano: casita de adobe
+58. (fila 8, columna 2) Plano: casa de madera con corredor
+59. (fila 8, columna 3) Plano: rancho de playa
+60. (fila 8, columna 4) Bicicleta
+61. (fila 8, columna 5) Moto
+62. (fila 8, columna 6) Lancha con motor
+63. (fila 8, columna 7) Cajuela (canasto para coger café)
+64. (fila 8, columna 8) Cajuela llena de café
+
+No escribas números ni texto en la imagen. Solo los íconos.

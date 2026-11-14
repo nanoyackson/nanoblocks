@@ -1,0 +1,24 @@
+Necesito pixel art de **íconos de ítems** para un juego de bloques con identidad costarricense («NanoBlocks»). Es un set original: no copies sprites de ningún juego existente.
+
+**Formato**
+- Hojas PNG de **256×256 px con fondo transparente**, cuadrícula de **8×8 celdas de 32×32 px**, sin bordes ni separación entre celdas. Cada celda es un ítem, en el orden exacto de la lista (fila por fila, de izquierda a derecha). Las celdas que sobran en la última hoja, vacías.
+- Cada ícono ocupa ~26×26 px centrado en su celda, con 3 px de aire alrededor.
+
+**Estilo (igual para todo el set)**
+- Pixel art limpio, sin antialias ni degradados suaves, sin texto ni logos ni marcas.
+- Contorno de 1 px más oscuro que el color del objeto (no negro puro), luz desde arriba a la izquierda, sombra abajo a la derecha, 1–2 pixeles de brillo.
+- Paleta viva y cálida (trópico): verdes de selva, rojos, amarillos, azules del Caribe; máximo ~12 colores por ícono.
+- Que se reconozca a 32×32 y también ampliado: siluetas claras, nada de detalles de 1 px sueltos.
+- Herramientas y armas en diagonal (mango abajo a la izquierda, punta arriba a la derecha). Armaduras de frente. Comidas en plato, taza o envoltura cuando aplica (vista de 3/4).
+- Mismo material = mismos colores: madera café cálido, piedra gris, hierro gris claro azulado, oro amarillo, diamante celeste, jade verde.
+
+Ahora hacé la HOJA 5 de 5: una sola imagen PNG de 256×256 px con fondo transparente, cuadrícula de 8×8 celdas de 32×32 px. Llená las celdas fila por fila, de izquierda a derecha, en este orden exacto (son 6; las demás celdas quedan vacías):
+
+1. (fila 1, columna 1) Guaco (clic derecho: cura la mordida de culebra)
+2. (fila 1, columna 2) Mascarilla de gases (en la mochila, protege de los gases del cráter)
+3. (fila 1, columna 3) Piel de bécquer
+4. (fila 1, columna 4) Botas de bécquer (las culebras no le pasan el colmillo) (pieza de armadura de leather)
+5. (fila 1, columna 5) Pañuelo de los Chatas (puesto, lo confunden con uno de la banda) (pieza de armadura de leather)
+6. (fila 1, columna 6) Cacho del Toro Guaco (clic derecho: lo sopla y espanta a las criaturas)
+
+No escribas números ni texto en la imagen. Solo los íconos.

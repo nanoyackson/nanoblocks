@@ -1,0 +1,24 @@
+{
+  "name": "nanoblocks",
+  "version": "13.0.0",
+  "private": true,
+  "description": "NanoBlocks: juego voxel de supervivencia y construcción hecho desde cero con IA",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && node tools/generar-sw.mjs",
+    "preview": "vite preview",
+    "lint": "eslint . --max-warnings 0",
+    "revisar": "node tools/revisar-version.mjs && node tools/revisar-trozos.mjs && node tools/revisar-nombres.mjs && node tools/revisar-recetas.mjs && node tools/revisar-iconos.mjs && node tools/revisar-agarre.mjs && node tools/revisar-avisos.mjs && node tools/revisar-pide.mjs && node tools/revisar-plata.mjs && node tools/revisar-importar.mjs && node tools/revisar-ext-item.mjs && node tools/revisar-luces.mjs && node tools/revisar-red.mjs && node tools/revisar-inventario-red.mjs && node tools/revisar-cofres.mjs && node tools/revisar-rey.mjs && node tools/revisar-red4.mjs"
+  },
+  "dependencies": {
+    "three": "0.170.0",
+    "trystero": "0.27.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.17.0",
+    "eslint": "9.39.5",
+    "globals": "15.14.0",
+    "vite": "6.4.6"
+  }
+}

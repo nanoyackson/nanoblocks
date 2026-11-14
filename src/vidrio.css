@@ -1,0 +1,310 @@
+/* NanoBlocks · componentes «vidrio» (v11.12.3), encima de style.css. Solo usa tokens (src/tokens.css).
+   Paneles de vidrio, botones y campos limpios, casillas redondeadas, barra rápida, tooltips, diálogos y HUD. */
+html, body { font-family: var(--font); font-size: var(--fs-body); -webkit-font-smoothing: antialiased; }
+h1, h2, h3 { font-family: var(--font); font-weight: 600; letter-spacing: -0.01em; text-shadow: none; color: var(--text); }
+h1 { font-size: 40px; } h2 { font-size: var(--fs-display); } h3 { font-size: var(--fs-title); }
+
+/* ---------- pantallas y paneles ---------- */
+.screen.dim { background: var(--velo); }
+.screen.red { background: radial-gradient(ellipse at center, var(--velo-rojo), var(--velo)); }
+.panel, .inv-panel, #shop-panel, .shop-panel, #lib-panel, .lib-panel, #map-panel, .dialog-box, #dialog {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-panel); box-shadow: var(--shadow-panel);
+  backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur); color: var(--text);
+}
+.inv-panel { padding: var(--sp-4); }
+.inv-panel h3 { font: 600 var(--fs-title)/1.25 var(--font); color: var(--text); margin: 0 0 var(--sp-2); }
+.screen .panel { padding: var(--sp-5); gap: var(--sp-3); }
+#screen-inventory .inv-wrap { gap: var(--sp-4); }
+#screen-inventory.opening .inv-wrap { animation: vidrio-entra calc(var(--t-slow) * var(--m)) var(--ease-out) both; }
+@keyframes vidrio-entra { from { opacity: 0; transform: translateY(12px) scale(0.985); } }
+
+/* ---------- botones, campos y selectores ---------- */
+button, select, input:not([type=range]):not([type=checkbox]) {
+  font: 500 var(--fs-body)/1.2 var(--font); color: var(--text); background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: var(--r-ctrl); box-shadow: none; text-shadow: none; padding: 8px 14px; min-height: 34px;
+  transition: background calc(var(--t-fast) * var(--m)) var(--ease-out), border-color calc(var(--t-fast) * var(--m)) var(--ease-out), transform calc(var(--t-fast) * var(--m)) var(--ease-out);
+}
+button:hover, button:focus-visible, select:hover { background: var(--surface-3); }
+button:active { transform: translateY(1px); }
+input:not([type=range]):not([type=checkbox]) { background: var(--campo); border-color: var(--border-strong); cursor: text; }
+input:not([type=range]):not([type=checkbox])::placeholder { color: var(--text-soft); opacity: 1; }
+input:not([type=range]):not([type=checkbox]):focus, select:focus { border-color: var(--accent); outline: none; }
+button.ghost { background: transparent; }
+button:disabled, [aria-disabled=true] { background: transparent; color: var(--text-soft); border-color: var(--border); box-shadow: none; }
+#btn-respawn, #btn-resume, #new-form button[type=submit], .btn-primario { background: var(--accent); color: var(--on-accent); border-color: transparent; font-weight: 600; }
+#btn-respawn:hover, #btn-resume:hover, #new-form button[type=submit]:hover { background: var(--accent); filter: brightness(1.08); }
+input[type=range] { accent-color: var(--accent); }
+input[type=checkbox] { accent-color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; box-shadow: none; }
+
+/* botón de ícono (acciones del inventario y de los cofres) */
+.btn-ico { display: inline-grid; place-items: center; width: 32px; min-width: 32px; height: 32px; min-height: 32px; padding: 0; border-radius: var(--r-ctrl); position: relative; }
+.btn-ico svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
+.btn-ico[data-tip]:hover::after { content: attr(data-tip); position: absolute; top: calc(100% + 6px); right: 0; white-space: nowrap; z-index: 30; pointer-events: none;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-ctrl); padding: 6px 10px; font: 500 var(--fs-small)/1 var(--font); color: var(--text); box-shadow: var(--shadow-pop); }
+.acciones { display: flex; gap: var(--sp-1); margin-left: auto; }
+.panel-cabeza { display: flex; align-items: center; gap: var(--sp-2); min-height: 32px; margin-bottom: var(--sp-2); }
+.panel-cabeza h3 { margin: 0; flex: 1; }
+
+/* ---------- casillas ---------- */
+.slot { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--r-slot); box-shadow: none;
+  transition: background calc(var(--t-fast) * var(--m)) var(--ease-out), box-shadow calc(var(--t-fast) * var(--m)) var(--ease-out); }
+.grid .slot:hover { background: var(--surface-3); }
+.slot img { image-rendering: auto; transition: transform calc(var(--t-fast) * var(--m)) var(--ease-out); }
+.grid .slot:hover img { transform: translateY(-1px); }
+.grid { gap: 4px; }
+.slot .count { font: 600 calc(var(--s) * 0.3)/1 var(--font); font-variant-numeric: tabular-nums; right: 4px; bottom: 3px; color: var(--text); text-shadow: var(--sombra-texto); }
+.grid .slot { box-shadow: none; }
+.grid .slot.calza { box-shadow: 0 0 0 2px var(--success); }
+.grid .slot.resalta { outline: none; box-shadow: 0 0 0 2px var(--accent); }
+.grid .slot.apagada { opacity: 0.35; filter: grayscale(0.6); }
+.slot.reacomoda img { animation: reacomoda calc(150ms * var(--m)) var(--ease-out); }
+@keyframes reacomoda { from { transform: translateY(-6px) scale(0.92); opacity: 0.4; } }
+.armor-col .slot { background: var(--surface-2); }
+
+/* ---------- barra rápida y HUD ---------- */
+#hotbar { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-panel); padding: 4px; gap: 4px; box-shadow: var(--shadow-pop);
+  backdrop-filter: var(--blur-small); -webkit-backdrop-filter: var(--blur-small); }
+#hotbar .slot { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--r-slot); }
+#hotbar .slot.sel { outline: none; box-shadow: var(--glow-accent); scale: 1; background: var(--surface-3); }
+#billetera-hud { font: 600 var(--fs-body)/1 var(--font); font-variant-numeric: tabular-nums; color: var(--warn); background: var(--surface);
+  border: 1px solid var(--border); border-radius: var(--r-pill); padding: 7px 12px; text-shadow: none; backdrop-filter: var(--blur-small); -webkit-backdrop-filter: var(--blur-small); }
+#tooltip { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-ctrl); box-shadow: var(--shadow-pop); color: var(--text);
+  font: 400 var(--fs-small)/1.35 var(--font); padding: 8px 10px; max-width: 280px; backdrop-filter: var(--blur-small); -webkit-backdrop-filter: var(--blur-small); text-shadow: none; }
+
+/* ---------- recetario, billetera del inventario y tienda ---------- */
+.recipe { background: var(--surface-2); border: 1px solid transparent; border-radius: var(--r-ctrl); box-shadow: none; color: var(--text); font: 500 var(--fs-body)/1.25 var(--font); text-shadow: none;
+  transition: background calc(var(--t-fast) * var(--m)) var(--ease-out), border-color calc(var(--t-fast) * var(--m)) var(--ease-out); }
+.recipe:hover { background: var(--surface-3); border-color: var(--border); }
+.recipe.no { background: transparent; color: var(--text-soft); }
+.recipe .ing span { font: 600 var(--fs-small)/1 var(--font); }
+.recipe-vacio { color: var(--text-soft); }
+.billetera { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--r-ctrl); }
+.billetera .bill-tit { color: var(--warn); font: 600 var(--fs-body)/1.2 var(--font); }
+.billetera .bill-tit small { color: var(--text-soft); }
+.billetera .pieza { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--r-pill); }
+.billetera .pieza:hover { background: var(--surface-3); border-color: var(--border-strong); }
+.shop-row { background: var(--surface-2); border: 1px solid transparent; border-radius: var(--r-ctrl); color: var(--text); text-shadow: none; font: 500 var(--fs-body)/1.25 var(--font);
+  transition: background calc(var(--t-fast) * var(--m)) var(--ease-out); }
+.shop-row:hover { background: var(--surface-3); border-color: var(--border); }
+.shop-row.off { background: transparent; color: var(--text-soft); }
+.shop-row .p { color: var(--warn); font-variant-numeric: tabular-nums; }
+#shop-colones { color: var(--warn); }
+.inv-tab { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); border-radius: var(--r-pill); font: 500 var(--fs-small)/1 var(--font); }
+.inv-tab.on { border-color: var(--accent); color: var(--accent); background: var(--acento-suave); }
+.sortbar button { font: 500 var(--fs-small)/1 var(--font); min-height: 30px; padding: 6px 10px; }
+
+/* ---------- avisos, diálogos y globos ---------- */
+#toast, .toast { font-family: var(--font); text-shadow: var(--sombra-texto); }
+#dialog { padding: var(--sp-3) var(--sp-4); }
+.inv-aviso { color: var(--warn); }
+
+/* ---------- v11.12.3: cabezas con acciones, buscador tras la lupa, menú chico, chips del recetario ---------- */
+.main-panel { position: relative; }
+.acciones-inv { position: absolute; top: var(--sp-3); right: var(--sp-3); }
+.acciones-cofre { margin-bottom: var(--sp-2); justify-content: flex-end; }
+#inv-filtros.cerrado { display: none; }
+#inv-filtros .inv-busca input { width: 100%; }
+.menu-chico { position: fixed; z-index: 60; min-width: 200px; max-width: 280px; display: flex; flex-direction: column; padding: var(--sp-1); background: var(--surface);
+  border: 1px solid var(--border); border-radius: var(--r-ctrl); box-shadow: var(--shadow-pop); backdrop-filter: var(--blur-small); -webkit-backdrop-filter: var(--blur-small);
+  animation: menu-entra calc(160ms * var(--m)) var(--ease-out); }
+@keyframes menu-entra { from { opacity: 0; transform: translateY(4px); } }
+.menu-chico button { text-align: left; background: transparent; border: 0; border-radius: var(--r-ctrl); min-height: 32px; padding: 6px 10px; font: 500 var(--fs-small)/1.2 var(--font); }
+.menu-chico button:hover, .menu-chico button:focus-visible { background: var(--surface-3); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: var(--sp-2); }
+.chip { display: inline-flex; align-items: center; gap: 6px; min-height: 28px; height: 28px; padding: 0 10px; border-radius: var(--r-pill); background: var(--surface-2);
+  border: 1px solid var(--border); color: var(--text); font: 500 var(--fs-small)/1 var(--font); cursor: pointer; }
+.chip::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--cat); transition: transform calc(var(--t-fast) * var(--m)) var(--ease-out); }
+.chip small { color: var(--text-soft); font-variant-numeric: tabular-nums; }
+.chip[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); background: var(--acento-suave); }
+.chip[aria-pressed="true"]::before { transform: scale(1.35); }
+.chip[data-n="0"] { opacity: 0.5; }
+#craft-buscar-fila small { display: none; }
+#craft-buscar { width: 100%; }
+.recipe { position: relative; }
+.recipe::before { content: ''; position: absolute; left: 4px; top: 50%; width: 6px; height: 6px; margin-top: -3px; border-radius: 50%; background: var(--cat, transparent); }
+.slot.bump img { animation: reacomoda calc(150ms * var(--m)) var(--ease-out) both; }
+.lapiz { font: 500 var(--fs-small)/1 var(--font); min-height: 26px; padding: 4px 8px; margin-left: var(--sp-2); }
+
+/* ---------- v11.12.3: estaciones centradas; en pantalla ancha, el cofre y el inventario lado a lado ---------- */
+#screen-inventory.station { justify-content: center; padding-right: 16px; }
+#screen-inventory.station .inv-panel { padding: var(--sp-4); }
+#screen-inventory.station .acciones-inv { position: static; justify-content: flex-end; margin: var(--sp-1) 0 var(--sp-2); }
+@media (min-width: 1100px) and (min-height: 560px) {
+  #screen-inventory.station .main-panel { display: grid; grid-template-columns: auto auto; column-gap: var(--sp-5); align-content: start; }
+  #screen-inventory.station .main-panel > * { grid-column: 2; }
+  #screen-inventory.station .main-panel > #inv-title { grid-column: 1 / -1; }
+  #screen-inventory.station .main-panel > #station-area { grid-column: 1; grid-row: 2 / span 20; align-self: start; }
+  #screen-inventory.station .main-panel > .acciones-inv { margin-top: 0; }
+}
+#inv-title .lapiz { display: none; } /* el ✎ de la cabeza del cofre hace lo mismo */
+/* el menú principal: los botones en vidrio, sin panel encima del logo */
+#screen-menu .panel { background: transparent; border: 0; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
+#screen-menu .panel button { background: var(--surface); border-color: var(--border); backdrop-filter: var(--blur-small); -webkit-backdrop-filter: var(--blur-small); min-height: 44px; font-size: 17px; }
+#screen-menu .panel button:hover { background: var(--surface-3); }
+#screen-inventory.station .main-panel { align-self: flex-start; }
+/* la durabilidad de lo que tiene en la mano, encima de la billetera (antes se encimaban) */
+#ind-dur { bottom: 58px; margin-left: 262px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-pill); padding: 3px 10px; font: 600 var(--fs-small)/1 var(--font); font-variant-numeric: tabular-nums; text-shadow: none; }
+
+/* ---------- v11.12.3: la billetera literal (arte de GPT) ---------- */
+#billetera-hud { display: inline-flex; align-items: center; gap: 6px; padding: 3px 12px 3px 4px; }
+#billetera-hud img { width: 40px; height: 40px; margin: -8px 0; filter: var(--sombra-objeto); }
+#billetera-hud.sube img { animation: bill-brinca calc(420ms * var(--m)) var(--ease-spring); }
+@keyframes bill-brinca { 40% { transform: translateY(-6px) scale(1.12); } }
+#billetera-hud.baja img { animation: bill-encoge calc(360ms * var(--m)) var(--ease-out); }
+@keyframes bill-encoge { 40% { transform: scale(0.88); } }
+.billetera { position: relative; padding: 0; overflow: visible; }
+.bill-fila { display: flex; align-items: center; gap: var(--sp-2); padding: 6px 10px; cursor: pointer; border-radius: var(--r-ctrl); }
+.bill-fila:hover { background: var(--surface-3); }
+.bill-ico { width: 34px; height: 34px; margin: -6px 0; filter: var(--sombra-objeto); }
+.bill-total { flex: 1; color: var(--warn); font: 600 var(--fs-body)/1 var(--font); font-variant-numeric: tabular-nums; }
+.bill-flecha { width: 8px; height: 8px; border-right: 2px solid var(--text-soft); border-top: 2px solid var(--text-soft); transform: rotate(-45deg); transition: transform calc(var(--t-base) * var(--m)) var(--ease-out); }
+.billetera.abierta .bill-flecha { transform: rotate(135deg); }
+.billetera-cajon { position: absolute; left: -6px; right: -6px; bottom: calc(100% + 8px); z-index: 40; opacity: 0; transform: translateY(10px) scale(0.98); pointer-events: none;
+  transition: opacity calc(var(--t-base) * var(--m)) var(--ease-out), transform calc(var(--t-base) * var(--m)) var(--ease-out); }
+.billetera.abierta .billetera-cajon { opacity: 1; transform: none; pointer-events: auto; }
+.billetera-abierta { position: relative; aspect-ratio: 640 / 350; background: url(/sprites/arte/billetera-abierta.png) center / contain no-repeat; filter: var(--sombra-cajon); }
+/* el bolsillo largo (izquierda) y el monedero (arriba a la derecha), medidos sobre el dibujo */
+.bolsillo { position: absolute; left: 4%; top: 6%; width: 43%; height: 86%; }
+.monedero { position: absolute; left: 57%; top: 30%; width: 36%; height: 26%; display: flex; flex-wrap: wrap; align-content: center; justify-content: center; gap: 2px 6px; }
+.billetera-abierta .pieza { position: relative; background: none; border: 0; padding: 0; cursor: pointer; }
+.billetera-abierta .pieza b { position: absolute; right: -2px; bottom: -2px; font: 700 var(--fs-small)/1 var(--font); color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-pill); padding: 2px 6px; font-variant-numeric: tabular-nums; }
+.billetera-abierta .billete { position: absolute; left: calc(4% + var(--i) * 5%); top: calc(var(--i) * 12%); width: 86%; transform: rotate(calc(-7deg + var(--i) * 3deg)); transform-origin: 20% 80%;
+  transition: transform calc(var(--t-fast) * var(--m)) var(--ease-out); z-index: calc(1 + var(--i)); }
+.billetera-abierta .billete img { width: 100%; height: auto; filter: var(--sombra-objeto); }
+.billetera-abierta .billete:hover { transform: rotate(calc(-7deg + var(--i) * 3deg)) translateY(-8px); z-index: 20; }
+.moneda { width: 22%; }
+.moneda img { width: 100%; height: auto; filter: var(--sombra-objeto); transition: transform calc(var(--t-fast) * var(--m)) var(--ease-out); }
+.moneda:hover img { transform: translateY(-3px) rotate(-8deg); }
+.moneda b { font-size: var(--fs-micro); /* chico: cantidad sobre la moneda */ }
+.bill-vacia { position: absolute; inset: 0; display: grid; place-items: center; color: var(--text-soft); font: 500 var(--fs-small)/1 var(--font); }
+.billetera-abierta .billete b { right: auto; bottom: auto; left: 8%; top: 20%; } /* la cantidad, en la esquina del billete */
+
+/* ---------- v11.13.2: libreta, mapa y paneles que faltaban ---------- */
+.map-panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-panel); box-shadow: var(--shadow-panel);
+  backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur); color: var(--text); padding: var(--sp-4) var(--sp-5); }
+.map-panel h3, .map-panel h4 { color: var(--text); text-shadow: none; }
+/* pestañas: texto con el subrayado de acento bajo la activa, sin cajas; si no caben, se desplazan a lo ancho */
+.lib-tabs { display: flex; flex-wrap: nowrap; gap: var(--sp-4); overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--border); margin-bottom: var(--sp-3);
+  mask-image: linear-gradient(90deg, black 92%, transparent); -webkit-mask-image: linear-gradient(90deg, black 92%, transparent); }
+.lib-tabs::-webkit-scrollbar { display: none; }
+.lib-tabs button { flex: 0 0 auto; min-height: 36px; padding: var(--sp-2) 0; background: none; border: 0; border-radius: 0; box-shadow: none; color: var(--text-soft);
+  font: 500 14px/1 var(--font); border-bottom: 2px solid transparent; white-space: nowrap; }
+.lib-tabs button:hover { background: none; color: var(--text); }
+.lib-tabs button.on { background: none; color: var(--text); border-bottom-color: var(--accent); }
+#lib-body { color: var(--text); font: 400 var(--fs-body)/1.45 var(--font); }
+#lib-body h3, #lib-body h4, #lib-body b { color: var(--text); }
+/* v11.13.5: lo que es papel (cartas, estampas) lleva tinta oscura también en sus títulos (el #lib-body b de arriba les ganaba) */
+#lib-body .carta, #lib-body .estampa:not(.falta) { color: var(--on-papel); }
+#lib-body .carta b, #lib-body .carta h3, #lib-body .carta h4, #lib-body .estampa:not(.falta) b { color: var(--on-papel); }
+.shop-hint, .map-panel .shop-hint { color: var(--text-soft); font: 400 var(--fs-small)/1.3 var(--font); }
+
+/* ---------- v11.13.2: HUD y avisos en vidrio ---------- */
+#dialog { font: 400 var(--fs-body)/1.4 var(--font); text-align: left; padding: 10px 16px; max-width: min(560px, 92vw); }
+#dialog b { font: 600 var(--fs-small)/1.2 var(--font); color: var(--warn); margin-bottom: 4px; }
+#bossbar { font: 600 var(--fs-body)/1.2 var(--font); color: var(--text); text-shadow: var(--sombra-texto); }
+#boss-img { image-rendering: auto; filter: var(--sombra-objeto); }
+#bossbar div { height: 8px; border: 0; border-radius: var(--r-chico); background: var(--velo); overflow: hidden; box-shadow: 0 0 0 1px var(--border); }
+#boss-fill { border-radius: inherit; background: linear-gradient(90deg, var(--danger), var(--warn)); }
+#mision-hud, #objetivo, #receta-fija { font: 500 var(--fs-small)/1.3 var(--font); background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--warn);
+  border-radius: var(--r-ctrl); padding: 6px 10px; backdrop-filter: var(--blur-small); -webkit-backdrop-filter: var(--blur-small); }
+#mision-hud { border-left-width: 1px; border-color: var(--border); color: var(--warn); }
+#compass { border-radius: var(--r-pill); background: var(--surface); border: 1px solid var(--border); backdrop-filter: var(--blur-small); -webkit-backdrop-filter: var(--blur-small); font-family: var(--font); }
+#region-banner b { font: 700 var(--fs-display)/1.1 var(--font); letter-spacing: 0.04em; }
+#region-banner span { font: 500 var(--fs-body)/1.3 var(--font); }
+#toast { font: 500 var(--fs-title)/1.3 var(--font); background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-pill); padding: 8px 18px;
+  backdrop-filter: var(--blur-small); -webkit-backdrop-filter: var(--blur-small); text-shadow: none; }
+#toast:empty { display: none; }
+#captions div { font: 500 var(--fs-small)/1.3 var(--font); border-radius: var(--r-ctrl); background: var(--surface); }
+#recogidos, #effects, #guardado, #vistas { font-family: var(--font); }
+#guardado, #vistas { border-radius: var(--r-pill); background: var(--surface); border: 1px solid var(--border); }
+#logro-card { font-family: var(--font); background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-ctrl); box-shadow: var(--shadow-pop); backdrop-filter: var(--blur-small); -webkit-backdrop-filter: var(--blur-small); }
+#click-hint { font: 500 var(--fs-small)/1 var(--font); background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-pill); padding: 6px 12px; }
+.screen .panel h2, .screen .panel h1 { font-family: var(--font); }
+#loading-bar { background: var(--accent); border-radius: inherit; }
+.progress { border-radius: var(--r-pill); overflow: hidden; background: var(--surface-2); border: 1px solid var(--border); }
+.world { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--r-ctrl); }
+.world:hover { background: var(--surface-3); }
+.ajustes-grupo { border: 1px solid var(--border); border-radius: var(--r-ctrl); }
+.ajustes-grupo legend { color: var(--accent); font: 600 var(--fs-small)/1 var(--font); text-transform: uppercase; letter-spacing: 0.06em; }
+label { font-family: var(--font); }
+/* las ranuras de tarjeta de la billetera abierta: el banco y el chanchito */
+.tarjeta { position: absolute; left: 56%; width: 38%; height: 10%; display: flex; align-items: center; padding: 0 6px; overflow: hidden; white-space: nowrap;
+  font: 600 var(--fs-micro)/1 var(--font); color: var(--text); text-shadow: var(--sombra-texto); font-variant-numeric: tabular-nums; pointer-events: none; /* chico: dentro de la ranura de la tarjeta */ }
+.tarjeta-banco { top: 63%; }
+.tarjeta-chanchito { top: 78%; }
+
+/* v11.13.3: la pregunta propia (borrar mundo, restablecer ajustes) */
+.pregunta-velo { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; background: var(--velo); }
+.pregunta { max-width: min(440px, calc(100vw - 32px)); padding: var(--sp-5); display: flex; flex-direction: column; gap: var(--sp-4); }
+.pregunta p { margin: 0; font: 500 var(--fs-body)/1.45 var(--font); color: var(--text); }
+.pregunta-botones { display: flex; justify-content: flex-end; gap: var(--sp-2); }
+
+/* v11.13.3: el logo se lee fuerte sobre el fondo cargado: un velo oscuro difuso detrás, contorno y sombra */
+#screen-menu .logo { position: relative; isolation: isolate; }
+#screen-menu .logo::before { content: ''; position: absolute; inset: -18% -8%; z-index: -1; pointer-events: none;
+  background: radial-gradient(closest-side, var(--velo) 0%, var(--velo) 55%, transparent 100%); filter: blur(6px); }
+#screen-menu .logo img { width: min(720px, 92vw); max-height: 30vh;
+  filter: drop-shadow(0 0 1.5px var(--surface-solida)) drop-shadow(0 0 1.5px var(--surface-solida)) drop-shadow(0 12px 22px var(--velo)); }
+#screen-menu .subtitle { text-shadow: var(--sombra-texto); }
+
+/* v11.13.3: ajustes más anchos y legibles. Letra de cuerpo de 16 px, deslizadores largos y, en pantalla ancha, dos columnas por grupo */
+#screen-settings .panel { width: min(640px, 100%); font-size: 16px; text-align: left; }
+#screen-settings label { font-size: 16px; line-height: 1.35; gap: 6px; }
+#screen-settings label span[id^="v-"] { color: var(--accent); font-weight: 600; font-variant-numeric: tabular-nums; }
+#screen-settings label.check small { font-size: var(--fs-small); color: var(--text-soft); }
+#screen-settings input[type=range] { width: 100%; height: 30px; }
+#screen-settings input[type=checkbox] { width: 18px; height: 18px; flex: none; }
+#screen-settings select { font-size: 15px; }
+#screen-settings .ajustes-grupo { padding: var(--sp-2) var(--sp-4) var(--sp-4); }
+#screen-settings .ajustes-grupo legend { font-size: 14px; }
+#screen-settings .panel > button { align-self: center; min-width: 220px; }
+@media (min-width: 1100px) {
+  #screen-settings .panel { width: min(1080px, 92vw); }
+  #screen-settings .ajustes-grupo { display: grid; grid-template-columns: 1fr 1fr; column-gap: var(--sp-6); row-gap: var(--sp-3); align-items: start; }
+  #screen-settings .ajustes-grupo legend { grid-column: 1 / -1; }
+  #screen-settings .ajustes-grupo > label { min-width: 0; }
+}
+
+/* v11.13.3: la leyenda del mapa (filtro por capa) */
+#map-leyenda { justify-content: center; }
+#map-leyenda .chip { font-size: var(--fs-small); }
+#map-leyenda .chip[aria-pressed="false"] { opacity: 0.45; text-decoration: line-through; }
+#map-leyenda .chip[aria-pressed="false"]::before { background: transparent; box-shadow: inset 0 0 0 1px var(--cat); }
+#map-leyenda .chip[aria-pressed="true"] { border-color: var(--border); color: var(--text); background: var(--surface-2); }
+
+/* v11.13.5: las barras de los minijuegos (pez vela y montar toros), antes con estilos en línea, monospace y colores a mano */
+#vela-barra { position: fixed; left: 50%; top: 22%; transform: translateX(-50%); width: 280px; pointer-events: none; z-index: 40; text-align: center;
+  font: 700 15px/1.2 var(--font); color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-ctrl); padding: var(--sp-2) var(--sp-3); box-shadow: var(--shadow-pop); }
+#vela-txt { margin-bottom: var(--sp-1); }
+.barra-pista { height: 14px; border: 1px solid var(--border-strong); border-radius: var(--r-pill); background: var(--campo); overflow: hidden; }
+.barra-pista.fina { height: 8px; margin-top: 6px; }
+#vela-ten { height: 100%; width: 0; background: linear-gradient(90deg, var(--success), var(--warn) 60%, var(--danger)); }
+#vela-dist { height: 100%; width: 100%; background: var(--accent); }
+#monta-barra { position: fixed; left: 50%; top: 22%; transform: translateX(-50%); width: 260px; height: 16px; pointer-events: none; z-index: 40;
+  border: 2px solid var(--border-strong); border-radius: var(--r-pill); box-shadow: var(--shadow-pop);
+  background: linear-gradient(90deg, var(--danger) 0 14%, var(--warn) 14% 32%, var(--success) 32% 68%, var(--warn) 68% 86%, var(--danger) 86%); }
+#monta-marca { position: absolute; top: -5px; width: 6px; height: 22px; margin-left: -3px; background: var(--text); border-radius: var(--r-chico); box-shadow: var(--shadow-pop); }
+#monta-tiempo { position: absolute; top: 22px; left: 0; right: 0; text-align: center; color: var(--text); font: 700 15px/1.2 var(--font); text-shadow: var(--sombra-texto); }
+
+/* v12.0.0: Opciones de video y el medidor de fps */
+#screen-video .panel { width: min(640px, 100%); font-size: 16px; text-align: left; }
+#screen-video label { font-size: 16px; line-height: 1.35; gap: 6px; }
+#screen-video label span[id^="v-"] { color: var(--accent); font-weight: 600; font-variant-numeric: tabular-nums; }
+#screen-video input[type=range] { width: 100%; height: 30px; }
+#screen-video input[type=checkbox] { width: 18px; height: 18px; flex: none; }
+#screen-video .ajustes-grupo { padding: var(--sp-2) var(--sp-4) var(--sp-4); }
+#screen-video .panel > button, #btn-ir-video { align-self: center; min-width: 220px; }
+.nota-ajuste { margin: 0; color: var(--text-soft); font-size: var(--fs-small); line-height: 1.4; }
+#perf { position: absolute; right: 10px; top: 36px; padding: 3px 10px; border-radius: var(--r-pill); background: var(--surface); border: 1px solid var(--border);
+  color: var(--text); font: 600 var(--fs-small)/1.2 var(--font); font-variant-numeric: tabular-nums; pointer-events: none; }
+@media (min-width: 1100px) {
+  #screen-video .panel { width: min(1000px, 92vw); }
+  #screen-video .ajustes-grupo { display: grid; grid-template-columns: 1fr 1fr; column-gap: var(--sp-6); row-gap: var(--sp-3); align-items: start; }
+  #screen-video .ajustes-grupo > label { min-width: 0; }
+  #screen-video .nota-ajuste { grid-column: 1 / -1; }
+}
+
+/* v12.1.3: lo que cambia dentro de una casilla o del recetario no obliga a recalcular el panel entero */
+.slot { contain: layout style; }
+#craft-list { contain: layout style; }

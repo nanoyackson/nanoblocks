@@ -1,0 +1,25 @@
+Arte y textos propios de NanoBlocks — Creative Commons Atribución 4.0 Internacional (CC BY 4.0)
+
+Copyright (c) 2026 Los autores de NanoBlocks
+
+Qué cubre: el arte propio del juego (las texturas y dibujos en pixel art de
+src/pixelart.js y src/textures.js, los íconos, retratos, logo, fondo del menú
+y texturas de public/sprites/arte/, public/ui/ y assets-src/chatgpt/, y los
+modelos armados en el código), y los textos propios (diálogos, cartas, misiones,
+nombres, la ayuda y los créditos del juego).
+
+Usted puede compartir (copiar y redistribuir en cualquier medio o formato) y
+adaptar (remezclar, transformar y construir a partir del material) para
+cualquier fin, incluso comercial, siempre que dé el crédito apropiado
+(«NanoBlocks»), enlace la licencia e indique si hizo cambios.
+
+Texto legal completo de la licencia:
+https://creativecommons.org/licenses/by/4.0/legalcode.es
+
+Notas:
+- Buena parte del arte nuevo (íconos, retratos, logo, fondo del menú y texturas
+  de la construcción tradicional) se generó con ayuda de un modelo de IA (ChatGPT)
+  a partir de indicaciones propias, y se ajustó para el juego. Ver THIRD_PARTY.md.
+- No cubre el material de terceros (fuente Inter, sonidos y sprites de Kenney y de
+  Freesound, three.js), que conserva su propia licencia: ver THIRD_PARTY.md.
+- El código del juego va bajo la licencia MIT: ver LICENSE.

@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NanoBlocks · maqueta B «minimal grafito»</title>
+<style>
+/* Maqueta estática (sin lógica del juego) de la interfaz nueva, dirección B «minimal grafito». Tokens de docs/revisiones/SISTEMA_DISENO_UI.md */
+:root {
+  --bg: rgba(10,11,14,.72); --surface: #1c1f25; --surface-2: #262a32; --surface-3: #313640; --border: #3a404c; --border-strong: #6b7585;
+  --text: #eceef2; --text-soft: #9aa3b2; --accent: #3dd6c4; --on-accent: #071412; --success: #6ee59a; --danger: #ff8f8f; --warn: #ffd166;
+  --r-panel: 10px; --r-ctrl: 8px; --r-slot: 6px; --r-pill: 999px; --gap: 3px;
+  --blur: none; --blur-small: none; --shadow-panel: 0 12px 32px rgba(0,0,0,.40); --shadow-pop: 0 8px 24px rgba(0,0,0,.45); --glow-accent: 0 0 0 2px #3dd6c4;
+  --t-fast: 120ms; --t-base: 200ms; --t-slow: 320ms; --ease-out: cubic-bezier(.2,.8,.2,1); --ease-spring: cubic-bezier(.34,1.4,.64,1);
+  --font: Inter, "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, sans-serif; --s: 54px; --m: 1;
+}
+@media (prefers-reduced-motion: reduce) { :root { --m: 0; } }
+* { box-sizing: border-box; }
+html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: #0b0e14; color: var(--text); font: 400 15px/1.4 var(--font); }
+.mundo { position: fixed; inset: 0; background: url("../capturas/v11.11.2/3-despues-espada.jpg") center/cover; filter: blur(8px) brightness(.5); transform: scale(1.04); }
+.velo { position: fixed; inset: 0; background: var(--bg); }
+.pantalla { position: relative; height: 100%; display: grid; place-items: center; }
+.fila { display: grid; grid-template-columns: 300px auto 400px; gap: 20px; align-items: stretch; animation: entra calc(var(--t-slow) * var(--m)) var(--ease-out) both; }
+@keyframes entra { from { opacity: 0; transform: translateY(12px) scale(.985); } }
+.panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-panel); box-shadow: var(--shadow-panel); padding: 16px; backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur); display: flex; flex-direction: column; gap: 12px; }
+.panel > header { display: flex; align-items: center; gap: 8px; min-height: 32px; }
+.panel > header h3 { margin: 0; font: 600 18px/1.25 var(--font); flex: 1; letter-spacing: -.01em; }
+.panel > header .k { color: var(--text-soft); font: 600 11px/1 var(--font); border: 1px solid var(--border); border-radius: 6px; padding: 4px 6px; }
+.btn { height: 32px; min-width: 32px; padding: 0 12px; border-radius: var(--r-ctrl); border: 1px solid var(--border); background: var(--surface-2); color: var(--text);
+  font: 500 14px/1 var(--font); display: inline-grid; place-items: center; cursor: pointer; transition: background calc(var(--t-fast) * var(--m)) var(--ease-out); position: relative; }
+.btn.ico { padding: 0; width: 32px; }
+.btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.btn:hover { background: var(--surface-3); }
+.btn.primario { background: var(--accent); color: var(--on-accent); border-color: transparent; font-weight: 600; }
+.btn[data-tip]:hover::after, .slot[data-tip]:hover::after { content: attr(data-tip); position: absolute; top: calc(100% + 8px); right: 0; white-space: nowrap; background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-ctrl); padding: 6px 10px; font: 500 13px/1 var(--font); color: var(--text); box-shadow: var(--shadow-pop); z-index: 5; }
+.rejilla { display: grid; grid-template-columns: repeat(9, var(--s)); gap: var(--gap); }
+.slot { width: var(--s); height: var(--s); display: grid; place-items: center; position: relative; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--r-slot);
+  transition: background calc(var(--t-fast) * var(--m)) var(--ease-out); }
+.slot:hover { background: var(--surface-3); }
+.slot img { width: 80%; height: 80%; object-fit: contain; transition: transform calc(var(--t-fast) * var(--m)) var(--ease-out); }
+.slot:hover img { transform: translateY(-1px); }
+.slot.sel { box-shadow: var(--glow-accent); }
+.slot .n { position: absolute; right: 5px; bottom: 3px; font: 600 15px/1 var(--font); font-variant-numeric: tabular-nums; text-shadow: 0 1px 2px #000; }
+.sep { height: 1px; background: var(--border); margin: 4px 0; }
+.billetera { display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 12px 0 6px; border-radius: var(--r-pill); background: var(--surface-2); border: 1px solid var(--border);
+  font: 600 15px/1 var(--font); font-variant-numeric: tabular-nums; color: var(--warn); }
+.billetera img { width: 22px; height: 22px; }
+.pie { display: flex; align-items: center; justify-content: space-between; }
+.pie small { color: var(--text-soft); font-size: 13px; }
+.busca { display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 10px; border-radius: var(--r-ctrl); background: var(--surface-2); border: 1px solid var(--border-strong); color: var(--text-soft); }
+.busca svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; }
+.busca span { flex: 1; font-size: 14px; }
+.busca kbd { font: 600 11px/1 var(--font); border: 1px solid var(--border); border-radius: 5px; padding: 3px 6px; color: var(--text-soft); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border-radius: var(--r-pill); background: var(--surface-2); border: 1px solid var(--border); color: var(--text);
+  font: 500 13px/1 var(--font); cursor: pointer; }
+.chip::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--cat); }
+.chip small { color: var(--text-soft); font-variant-numeric: tabular-nums; }
+.chip[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent); }
+.chip[data-n="0"] { opacity: .5; }
+.recetas { display: flex; flex-direction: column; gap: 6px; overflow: auto; }
+.rec { display: grid; grid-template-columns: 8px 36px 1fr auto; align-items: center; gap: 10px; padding: 8px 10px; border-radius: var(--r-ctrl); background: var(--surface-2); border: 1px solid transparent;
+  transition: background calc(var(--t-fast) * var(--m)) var(--ease-out), border-color calc(var(--t-fast) * var(--m)); cursor: pointer; }
+.rec:hover { background: var(--surface-3); border-color: var(--border); }
+.rec .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--cat); }
+.rec > img { width: 34px; height: 34px; object-fit: contain; }
+.rec b { font-weight: 500; }
+.ings { display: flex; gap: 8px; }
+.ing { display: inline-flex; align-items: center; gap: 2px; font: 600 13px/1 var(--font); color: var(--text-soft); font-variant-numeric: tabular-nums; }
+.ing img { width: 20px; height: 20px; }
+.ing.falta { color: var(--danger); }
+.mesa { display: flex; align-items: center; gap: 18px; justify-content: center; padding: 6px 0; }
+.mesa .rejilla { grid-template-columns: repeat(3, var(--s)); }
+.flecha { width: 28px; height: 28px; stroke: var(--text-soft); fill: none; stroke-width: 2; }
+.res { width: calc(var(--s) * 1.25); height: calc(var(--s) * 1.25); box-shadow: 0 0 0 1px var(--accent); }
+.muneco { flex: 1; border-radius: var(--r-ctrl); background: radial-gradient(circle at 50% 70%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 60%), var(--surface-2); border: 1px solid var(--border); display: grid; place-items: center; min-height: 300px; color: var(--text-soft); font-size: 13px; }
+.armadura { display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--gap); }
+.armadura .slot { width: 100%; height: 48px; }
+.armadura .slot span { color: var(--text-soft); font-size: 18px; opacity: .6; }
+.stats { display: flex; flex-direction: column; gap: 8px; font-size: 13px; color: var(--text-soft); }
+.stat { display: grid; grid-template-columns: 1fr auto; gap: 4px 8px; }
+.bar { grid-column: 1 / -1; height: 6px; border-radius: 3px; background: rgba(255,255,255,.08); overflow: hidden; }
+.bar i { display: block; height: 100%; width: var(--v); background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 50%, #fff)); border-radius: inherit; }
+.marca { position: fixed; left: 24px; bottom: 20px; color: var(--text-soft); font: 500 13px/1.3 var(--font); background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-ctrl); padding: 8px 12px; }
+</style></head>
+<body>
+<div class="mundo"></div><div class="velo"></div>
+<div class="pantalla"><div class="fila">
+  <section class="panel">
+    <header><h3>Personaje</h3><button class="btn ico" data-tip="Apariencia" aria-label="Apariencia"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button></header>
+    <div class="muneco" title="Arrastre para girar" style="cursor:grab"></div>
+    <div class="armadura"><div class="slot"><span>⛑</span></div><div class="slot"><span>🦺</span></div><div class="slot"><span>👖</span></div><div class="slot"><span>🥾</span></div><div class="slot"><span>🛡</span></div></div>
+    <div class="stats">
+      <div class="stat"><span>Protección</span><b>8</b><div class="bar"><i style="--v:40%"></i></div></div>
+      <div class="stat"><span>Dureza</span><b>2</b><div class="bar"><i style="--v:15%"></i></div></div>
+    </div>
+  </section>
+  <section class="panel">
+    <header><h3>Inventario</h3>
+      <button class="btn ico" data-tip="Buscar  /" aria-label="Buscar"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></button>
+      <button class="btn ico" data-tip="Ordenar  R" aria-label="Ordenar"><svg viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></svg></button>
+      <button class="btn ico" data-tip="A cofres cercanos · Traer receta · Orden" aria-label="Más acciones">⋯</button></header>
+    <div class="mesa"><div class="rejilla"><div class="slot" data-tip="stick"><img src="/sprites/arte/stick.png" alt=""><span class="n">2</span></div><div class="slot" data-tip="brick"><img src="/sprites/arte/brick.png" alt=""><span class="n">3</span></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div></div>
+      <svg class="flecha" viewBox="0 0 24 24"><path d="M4 12h15M14 6l6 6-6 6"/></svg><div class="slot res" data-tip="Pico de hierro"><img src="/sprites/arte/iron_pickaxe.png" alt=""></div></div>
+    <div class="rejilla"><div class="slot" data-tip="stone_axe"><img src="/sprites/arte/stone_axe.png" alt=""></div><div class="slot" data-tip="iron_pickaxe"><img src="/sprites/arte/iron_pickaxe.png" alt=""></div><div class="slot" data-tip="diamond_pickaxe"><img src="/sprites/arte/diamond_pickaxe.png" alt=""></div><div class="slot" data-tip="iron_axe"><img src="/sprites/arte/iron_axe.png" alt=""></div><div class="slot" data-tip="machete"><img src="/sprites/arte/machete.png" alt=""></div><div class="slot" data-tip="stone_shovel"><img src="/sprites/arte/stone_shovel.png" alt=""></div><div class="slot" data-tip="bread"><img src="/sprites/arte/bread.png" alt=""><span class="n">12</span></div><div class="slot" data-tip="casado"><img src="/sprites/arte/casado.png" alt=""><span class="n">3</span></div><div class="slot" data-tip="cafe_chorreado"><img src="/sprites/arte/cafe_chorreado.png" alt=""><span class="n">5</span></div><div class="slot" data-tip="empanada"><img src="/sprites/arte/empanada.png" alt=""><span class="n">8</span></div><div class="slot" data-tip="tamal"><img src="/sprites/arte/tamal.png" alt=""><span class="n">4</span></div><div class="slot" data-tip="pinto_huevo"><img src="/sprites/arte/pinto_huevo.png" alt=""><span class="n">2</span></div><div class="slot" data-tip="bucket"><img src="/sprites/arte/bucket.png" alt=""></div><div class="slot" data-tip="water_bucket"><img src="/sprites/arte/water_bucket.png" alt=""></div><div class="slot" data-tip="brick"><img src="/sprites/arte/brick.png" alt=""><span class="n">48</span></div><div class="slot" data-tip="tapa_dulce"><img src="/sprites/arte/tapa_dulce.png" alt=""><span class="n">6</span></div><div class="slot" data-tip="guaro"><img src="/sprites/arte/guaro.png" alt=""><span class="n">2</span></div><div class="slot" data-tip="stick"><img src="/sprites/arte/stick.png" alt=""><span class="n">64</span></div><div class="slot" data-tip="meat"><img src="/sprites/arte/meat.png" alt=""><span class="n">9</span></div><div class="slot" data-tip="cooked_meat"><img src="/sprites/arte/cooked_meat.png" alt=""><span class="n">5</span></div><div class="slot" data-tip="cajeta"><img src="/sprites/arte/cajeta.png" alt=""><span class="n">3</span></div><div class="slot" data-tip="ceviche"><img src="/sprites/arte/ceviche.png" alt=""><span class="n">2</span></div><div class="slot" data-tip="chanchito"><img src="/sprites/arte/chanchito.png" alt=""></div><div class="slot" data-tip="escritura"><img src="/sprites/arte/escritura.png" alt=""></div><div class="slot"></div><div class="slot"></div><div class="slot"></div></div>
+    <div class="sep"></div>
+    <div class="rejilla"><div class="slot sel" data-tip="stone_axe"><img src="/sprites/arte/stone_axe.png" alt=""></div><div class="slot" data-tip="iron_pickaxe"><img src="/sprites/arte/iron_pickaxe.png" alt=""></div><div class="slot" data-tip="iron_axe"><img src="/sprites/arte/iron_axe.png" alt=""></div><div class="slot" data-tip="bread"><img src="/sprites/arte/bread.png" alt=""><span class="n">12</span></div><div class="slot" data-tip="cafe_chorreado"><img src="/sprites/arte/cafe_chorreado.png" alt=""><span class="n">5</span></div><div class="slot" data-tip="bucket"><img src="/sprites/arte/bucket.png" alt=""></div><div class="slot" data-tip="brick"><img src="/sprites/arte/brick.png" alt=""><span class="n">48</span></div><div class="slot"></div><div class="slot" data-tip="machete"><img src="/sprites/arte/machete.png" alt=""></div></div>
+    <div class="pie"><span class="billetera" title="Billetera: clic para ver el desglose"><img src="/sprites/plata_500.png" alt="">₡ 12 500</span><button class="btn ico" data-tip="Ayuda: clic toma, clic derecho reparte, Mayús+clic al cofre" aria-label="Ayuda">?</button></div>
+  </section>
+  <section class="panel">
+    <header><h3>Recetas</h3><span class="k">MESA 3×3</span></header>
+    <div class="busca"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span>Buscar receta o ingrediente</span><kbd>/</kbd></div>
+    <div class="chips"><button class="chip" aria-pressed="false" style="--cat:#9aa3b2" data-n="9">Todo <small>9</small></button><button class="chip" aria-pressed="true" style="--cat:#6ee59a" data-n="5">Puedo hacer <small>5</small></button><button class="chip" aria-pressed="false" style="--cat:#ff9f5a" data-n="3">Herramientas <small>3</small></button><button class="chip" aria-pressed="false" style="--cat:#7fb2ff" data-n="0">Armadura <small>0</small></button><button class="chip" aria-pressed="false" style="--cat:#ff7f7f" data-n="4">Comida <small>4</small></button><button class="chip" aria-pressed="false" style="--cat:#8fd3e8" data-n="1">Construcción <small>1</small></button><button class="chip" aria-pressed="false" style="--cat:#d9a86c" data-n="1">Materiales <small>1</small></button><button class="chip" aria-pressed="false" style="--cat:#aab4c4" data-n="0">Varios <small>0</small></button></div>
+    <div class="recetas"><div class="rec" title="Pico de hierro"><span class="dot" style="--cat:#ff9f5a"></span><img src="/sprites/arte/iron_pickaxe.png" alt=""><b>Pico de hierro</b><span class="ings"><span class="ing"><img src="/sprites/arte/stick.png" alt="">2</span><span class="ing"><img src="/sprites/arte/brick.png" alt="">3</span></span></div><div class="rec" title="Hacha de hierro"><span class="dot" style="--cat:#ff9f5a"></span><img src="/sprites/arte/iron_axe.png" alt=""><b>Hacha de hierro</b><span class="ings"><span class="ing"><img src="/sprites/arte/stick.png" alt="">2</span><span class="ing"><img src="/sprites/arte/brick.png" alt="">3</span></span></div><div class="rec" title="Gallo pinto"><span class="dot" style="--cat:#ff7f7f"></span><img src="/sprites/arte/bread.png" alt=""><b>Gallo pinto</b><span class="ings"><span class="ing"><img src="/sprites/arte/tapa_dulce.png" alt="">1</span><span class="ing"><img src="/sprites/arte/bucket.png" alt="">1</span></span></div><div class="rec" title="Café chorreado"><span class="dot" style="--cat:#ff7f7f"></span><img src="/sprites/arte/cafe_chorreado.png" alt=""><b>Café chorreado</b><span class="ings"><span class="ing"><img src="/sprites/arte/water_bucket.png" alt="">1</span></span></div><div class="rec" title="Ladrillo"><span class="dot" style="--cat:#8fd3e8"></span><img src="/sprites/arte/brick.png" alt=""><b>Ladrillo</b><span class="ings"><span class="ing"><img src="/sprites/arte/stone_shovel.png" alt="">1</span></span></div></div>
+  </section>
+</div></div>
+<div class="marca">Maqueta B «minimal grafito» · inventario + mesa + recetario · 1920×1080 · solo HTML y CSS</div>
+</body></html>

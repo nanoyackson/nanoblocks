@@ -1,0 +1,19 @@
+{
+  "name": "NanoBlocks",
+  "short_name": "NanoBlocks",
+  "description": "Juego de bloques de supervivencia y construcción, con sabor tico.",
+  "id": "./",
+  "start_url": "./?origen=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#1d1a16",
+  "theme_color": "#5ca038",
+  "lang": "es-CR",
+  "categories": ["games"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
