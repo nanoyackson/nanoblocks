@@ -20,6 +20,11 @@ export const GEN_PROF = 23;
 // v13.3.0 (generador 24): las obras (pueblos, estructuras, caminos) quedan integradas al terreno: sin bocas de cueva debajo, con suelo firme, puentes sobre los ríos,
 // el agua de una estructura nunca más alta que el mar en la costa, árboles limpios. Los mundos 23 o menos no pasan por aquí: salen idénticos (tools/huella-mundos.mjs).
 export const GEN_INTEGRACION = 24;
+// v13.3.2 (CM1 del plan de integración): la Red Honda y los Salones (generador 25). Todo lo de cmMask solo corre con gen.version >= GEN_RED; los mundos <= 24 quedan idénticos.
+export const GEN_RED = 25;
+// hash3 reparte igual a celdas distintas (salones gemelos en pares de regiones): la Red Honda mezcla en dos pasos, así cada región sale independiente
+const cmH = (s, x, z, q) => hash3((hash3(s, x, q, 7) * 4294967296) | 0, z, q ^ 0x2f, 13);
+const CM_SALON = 0.6; // la proporción de nodos que son salón (el resto, solo cruce de venas)
 export const LAVA_TOPE = 30, LAVA_FONDO = 10;
 const LAVA_ZONA = 28, LAVA_PROB = 0.75;
 const BOCA_CELDA = 16, BOCA_PROB = 0.9, QUESO_BASE = 0.55, QUESO_PEND = 0.62, ESP_BASE = 0.05, ESP_PEND = 0.03;
@@ -242,7 +247,69 @@ export class GenV2 {
     return LAVA_FONDO + 1 + Math.floor(t * t * (LAVA_TOPE - LAVA_FONDO - 1));
   }
 
-  cueva22(x, y, z, h, cc, bocas) {
+
+  // ---------- v25: la Red Honda (CM1). Una cuadrícula de regiones de 96 x 96: cada una tiene un NODO (todo de hash3, nada de Math.random); el 60 % de los nodos son
+  // SALÓN (elipsoide de 40-96 de ancho y 18-46 de alto, borde rugoso, pilares en la mitad) y cada nodo se une con el del este y el del sur por una VENA (túnel de radio
+  // 2,6-4,4 con curvas, subidas y bajadas) y con el diagonal en el 30 % de los casos: el grafo es conexo por construcción, sin depender del ruido.
+  cmNodo(gx, gz) {
+    if (!this.cmC || this.cmC.size > 3000) this.cmC = new Map();
+    const k = gx * 100003 + gz; let n = this.cmC.get(k); if (n) return n;
+    const s = this.gen.seed, RC = 96, H = (a) => cmH(s, gx, gz, a);
+    const salon = H(9301) < CM_SALON;
+    n = { gx, gz, x: gx * RC + 14 + H(9302) * (RC - 28), z: gz * RC + 14 + H(9303) * (RC - 28), y: 26 + H(9304) * 20, salon,
+      rx: salon ? 20 + H(9305) * 28 : 5, rz: salon ? 20 + H(9306) * 28 : 5, ry: salon ? 9 + H(9307) * 14 : 4, pil: salon && H(9309) < 0.5 };
+    this.cmC.set(k, n); return n;
+  }
+  cmArista(a, b) {
+    if (!this.cmE || this.cmE.size > 6000) this.cmE = new Map();
+    const k = `${a.gx},${a.gz}>${b.gx},${b.gz}`; let e = this.cmE.get(k); if (e) return e;
+    const s = this.gen.seed, dd = (b.gx - a.gx + 1) * 3 + (b.gz - a.gz + 1), H = (q) => cmH(s, a.gx, a.gz, q * 16 + dd);
+    const len = Math.hypot(b.x - a.x, b.z - a.z), N = Math.ceil(len / 5), pts = [];
+    const px = -(b.z - a.z) / len, pz = (b.x - a.x) / len, amp = (H(9401) - 0.5) * 2 * 16, ph = H(9402) * 6.28, rb = 2.6 + H(9403) * 1.8;
+    for (let i = 0; i <= N; i++) {
+      const t = i / N, w = Math.sin(t * Math.PI) * amp + Math.sin(t * 9 + ph) * 2.5;
+      pts.push({ x: a.x + (b.x - a.x) * t + px * w, z: a.z + (b.z - a.z) * t + pz * w, y: a.y + (b.y - a.y) * t + Math.sin(t * 6.28 * 2 + ph) * 5, r: rb + 0.9 * Math.sin(t * 5 + ph) + (H(9410 + (i % 7)) < 0.12 ? 3 : 0) });
+    }
+    e = { pts }; this.cmE.set(k, e); return e;
+  }
+  // la máscara del trozo (1 = hay que vaciar): se arma una vez por trozo recorriendo solo el volumen de cada salón o vena que lo toca
+  cmMask(cx, cz) {
+    const x0 = cx * 16, z0 = cz * 16, M = new Uint8Array(32768), RC = 96;
+    const carve = (fn, bx0, bx1, by0, by1, bz0, bz1) => {
+      for (let z = Math.max(z0, Math.floor(bz0)); z <= Math.min(z0 + 15, Math.ceil(bz1)); z++) for (let x = Math.max(x0, Math.floor(bx0)); x <= Math.min(x0 + 15, Math.ceil(bx1)); x++)
+        for (let y = Math.max(11, Math.floor(by0)); y <= Math.min(110, Math.ceil(by1)); y++) if (fn(x, y, z)) M[(x - x0) + (z - z0) * 16 + y * 256] = 1;
+    };
+    const gx0 = Math.floor((x0 - 60) / RC), gx1 = Math.floor((x0 + 76) / RC), gz0 = Math.floor((z0 - 60) / RC), gz1 = Math.floor((z0 + 76) / RC);
+    for (let gz = gz0 - 1; gz <= gz1 + 1; gz++) for (let gx = gx0 - 1; gx <= gx1 + 1; gx++) {
+      const n = this.cmNodo(gx, gz);
+      if (n.salon && n.x + n.rx + 3 > x0 && n.x - n.rx - 3 < x0 + 16 && n.z + n.rz + 3 > z0 && n.z - n.rz - 3 < z0 + 16) {
+        const rx = n.rx, rz = n.rz, ry = n.ry;
+        carve((x, y, z) => {
+          const dx = (x - n.x) / rx, dz = (z - n.z) / rz, dy = (y - n.y) / ry; let d = dx * dx + dz * dz + dy * dy; d += this.gen.nCaveC.noise3(x * 0.07, y * 0.09, z * 0.07) * 0.12; if (d >= 1) return false;
+          if (n.pil) { const px = ((x - n.x) % 14 + 14) % 14, pz = ((z - n.z) % 14 + 14) % 14; if (Math.hypot(px - 7, pz - 7) < 2.2 && d < 0.8) return false; }
+          return true;
+        }, n.x - rx - 2, n.x + rx + 2, n.y - ry - 2, n.y + ry + 2, n.z - rz - 2, n.z + rz + 2);
+      }
+      for (const [dx, dz] of [[1, 0], [0, 1], [1, 1]]) {
+        if (dx && dz && cmH(this.gen.seed, gx, gz, 9420) > 0.3) continue;
+        const m = this.cmNodo(gx + dx, gz + dz), e = this.cmArista(n, m);
+        for (let i = 0; i < e.pts.length - 1; i++) {
+          const p = e.pts[i], q = e.pts[i + 1], r = Math.max(p.r, q.r) + 1;
+          if (Math.max(p.x, q.x) + r < x0 || Math.min(p.x, q.x) - r > x0 + 16 || Math.max(p.z, q.z) + r < z0 || Math.min(p.z, q.z) - r > z0 + 16) continue;
+          carve((x, y, z) => {
+            const vx = q.x - p.x, vy = q.y - p.y, vz = q.z - p.z, wx = x - p.x, wy = y - p.y, wz = z - p.z;
+            let u = (wx * vx + wy * vy + wz * vz) / (vx * vx + vy * vy + vz * vz); u = u < 0 ? 0 : u > 1 ? 1 : u;
+            const ex = wx - vx * u, ey = (wy - vy * u) * 1.25, ez = wz - vz * u, rr = p.r + (q.r - p.r) * u;
+            return ex * ex + ey * ey + ez * ez < rr * rr;
+          }, Math.min(p.x, q.x) - r, Math.max(p.x, q.x) + r, Math.min(p.y, q.y) - r, Math.max(p.y, q.y) + r, Math.min(p.z, q.z) - r, Math.max(p.z, q.z) + r);
+        }
+      }
+    }
+    return M;
+  }
+
+  cueva22(x, y, z, h, cc, bocas, cm) {
+    if (cm) { const m = cm.M[(x - cm.x0) + (z - cm.z0) * 16 + y * 256]; if (m && y <= h - (h < SEA ? 14 : 8)) return true; } // Red Honda: el techo queda a >= 8 bajo el suelo (>= 14 bajo el mar)
     for (let i = 0; i < bocas.length; i++) {
       const m = bocas[i], t = m.h - y;
       if (t < -2 || t > m.D + 5) continue;
@@ -284,6 +351,7 @@ export class GenV2 {
     const v22 = g.version >= GEN_CUEVAS;
     const bocas = v22 ? this.bocasDe(cx, cz) : null;
     const v23 = g.version >= GEN_PROF;
+    const cm = g.version >= GEN_RED ? { M: this.cmMask(cx, cz), x0, z0 } : null;
 
     for (let lz = 0; lz < CHUNK; lz++) for (let lx = 0; lx < CHUNK; lx++) {
       const wx = x0 + lx, wz = z0 + lz;
@@ -355,7 +423,7 @@ export class GenV2 {
         else if (y < deepTop + 3 && hash3(seed, wx, y, wz) < (deepTop + 3 - y) / 4) id = K.deep_rock;
         else id = biome === 'volcano' && y > h - 12 ? K.basalt : K.stone;
         const sealed = v22 ? ((aq22 > 0 && y > selloLo && y <= aq22 && y > 10 && selloLo < aq22) || (nearSea && y > SEA - 9) || (lv23 > 0 && y > lavaLo && y <= lv23)) : ((aqBorder && y <= 37 && y > 10) || (nearSea && y > SEA - 9));
-        if (id !== K.bedrock && y > 4 && y <= carveTop && !sealed && (v22 ? this.cueva22(wx, y, wz, h, cc22, bocas) : this.isCave(wx, y, wz, h))) {
+        if (id !== K.bedrock && y > 4 && y <= carveTop && !sealed && (v22 ? this.cueva22(wx, y, wz, h, cc22, bocas, cm) : this.isCave(wx, y, wz, h))) {
           if (y <= 10 || (lv23 && y <= lv23)) id = K.lava; // lagos de lava en lo más hondo (v23: y charcos más arriba)
           else if (v22 ? y <= aq22 : (aqOn && y <= aqLevel)) id = K.water; // lagos subterráneos
           else id = 0;

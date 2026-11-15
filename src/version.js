@@ -4,8 +4,8 @@
 export const GAME_NAME = 'NanoBlocks';
 // v13.1.0: la versión de generador de terreno MÁS NUEVA que este juego sabe hacer (la de los mundos nuevos). Si el anfitrión de una sala manda
 // una mayor, este cliente generaría un terreno distinto al suyo (cuevas flotando): se rechaza la entrada (red/sesion.js).
-export const GEN_MAX = 24; // v13.3.0: 24 = obras integradas al terreno (GEN_INTEGRACION en worldgen2.js) · v13.2.0: 23 = lava más abajo (GEN_PROF en worldgen2.js)
-export const GAME_VERSION = '13.3.1';
+export const GEN_MAX = 25; // v13.3.2: 25 = la Red Honda y los Salones (GEN_RED en worldgen2.js) · v13.3.0: 24 = obras integradas al terreno (GEN_INTEGRACION en worldgen2.js) · v13.2.0: 23 = lava más abajo (GEN_PROF en worldgen2.js)
+export const GAME_VERSION = '13.3.2';
 // v12.4.6: la versión MÁS VIEJA del juego que puede abrir lo que esta versión guarda. Se sube cuando un mundo guardado trae algo que un
 // juego anterior no entiende y lo rompería: bloques nuevos (ids que el mallador no conoce), un SAVE_FORMAT nuevo o un campo que cambia
 // de forma. Se guarda en meta.minVersion y el menú no abre un mundo cuyo minVersion sea más nuevo que este juego (12.4.0: los bloques 656–662).
@@ -26,6 +26,17 @@ export const CREDITS = [
 ];
 
 export const CHANGELOG = [
+  {
+    version: '13.3.2',
+    date: '2026-11-15',
+    title: 'La Red Honda y los Salones (generador 25)',
+    items: [
+      'Generador 25, la Red Honda y los Salones (CM1 del plan de integracion del mundo; decisiones de Isaac: cuevas masivas, salones de 40 a 96 de ancho y unos 8 % de aire): los mundos nuevos nacen con generador 25 (GEN_RED en worldgen2.js, GEN_MAX = 25) y piden la 13.3.2 (meta.minVersion); un cliente viejo ante un anfitrion de generador 25 se rechaza con «Actualice el juego». Los mundos 21, 22, 23 y 24 quedan IDENTICOS: tools/huella-mundos.mjs ahora vigila tambien el 24 (huella tomada con el codigo ya publicado de la 13.3.1).',
+      'La red: una cuadricula de regiones de 96 x 96 con un NODO por region (posicion y profundidad 26-46); el 60 % de los nodos son SALON (elipsoide de 40-96 de ancho y 18-46 de alto, borde rugoso, pilares cada 14 en la mitad de ellos) y cada nodo se une al del este y al del sur por una VENA (tunel de radio 2,6-4,4 con curvas, subidas y bajadas; y al diagonal en el 30 % de los casos), asi el grafo es conexo por construccion y no depende del ruido. El techo queda a 8 bloques o mas bajo el suelo (14 o mas bajo el mar); los lagos y la lava de siempre rellenan los fondos. Todo sale de hash con la semilla (nada de Math.random); la mascara se arma una vez por trozo. hash3 repite valores entre celdas distintas, asi que la red usa un mezclado de dos pasos propio (cmH) y no salen salones gemelos.',
+      'Medido (ventana de 512 x 512, dos semillas): aire subterraneo 8,0 y 7,7 % (generador 24: 4,3 y 4,0 %); sistema mayor con el 86 y el 92 % de todo el aire, que cruza la ventana entera (en el 24, 43 y 36 %); tiempo por trozo, mediana de 6,0 y 5,2 ms (24: 5,7 y 5,0). Dentro de un salon de 58 x 53 con pilares: 60 fps, igual que en la superficie. Capturas en docs/revisiones/capturas_cm1/.',
+      'Prueba nueva en npm run revisar: tools/revisar-red-honda.mjs (flood fill: aire 7-10,5 %, al menos 85 % del aire en un solo sistema, el sistema cruza la ventana, tamaño y proporcion de los salones, tiempo por trozo). Probado en red real con anfitrion e invitado en un mundo 25: el hash de dos salones y de una vena coincide en los dos y nadie es expulsado.',
+    ],
+  },
   {
     version: '13.3.1',
     date: '2026-11-15',
