@@ -12,17 +12,17 @@
   <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="icon" href="./icons/favicon-32.png" sizes="32x32" />
   <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
-  <script type="module" crossorigin src="/nanoblocks/assets/index-CT6sd2FM.js"></script>
+  <script type="module" crossorigin src="/nanoblocks/assets/index-CcguX4qe.js"></script>
   <link rel="modulepreload" crossorigin href="/nanoblocks/assets/three-CgOGtdc0.js">
   <link rel="modulepreload" crossorigin href="/nanoblocks/assets/arte-DjRsrot6.js">
-  <link rel="modulepreload" crossorigin href="/nanoblocks/assets/base-DWBZJ1fv.js">
-  <link rel="modulepreload" crossorigin href="/nanoblocks/assets/mundo-B8Tk3NWJ.js">
-  <link rel="modulepreload" crossorigin href="/nanoblocks/assets/criaturas-CDqPId69.js">
-  <link rel="modulepreload" crossorigin href="/nanoblocks/assets/textos-BZKoQug_.js">
-  <link rel="modulepreload" crossorigin href="/nanoblocks/assets/red-CnrIV67D.js">
-  <link rel="modulepreload" crossorigin href="/nanoblocks/assets/graficos-B-oTw3Eb.js">
-  <link rel="modulepreload" crossorigin href="/nanoblocks/assets/trama-CWDkA-4T.js">
-  <link rel="stylesheet" crossorigin href="/nanoblocks/assets/index-B-SBymFm.css">
+  <link rel="modulepreload" crossorigin href="/nanoblocks/assets/base-DDuVSlMt.js">
+  <link rel="modulepreload" crossorigin href="/nanoblocks/assets/mundo-ck3L6xXy.js">
+  <link rel="modulepreload" crossorigin href="/nanoblocks/assets/criaturas-Dm5l3FXd.js">
+  <link rel="modulepreload" crossorigin href="/nanoblocks/assets/textos-DYx6Dkjo.js">
+  <link rel="modulepreload" crossorigin href="/nanoblocks/assets/red-CTLf4ocY.js">
+  <link rel="modulepreload" crossorigin href="/nanoblocks/assets/graficos-UGyiEyzv.js">
+  <link rel="modulepreload" crossorigin href="/nanoblocks/assets/trama-GlOi2XGe.js">
+  <link rel="stylesheet" crossorigin href="/nanoblocks/assets/index-TNXoaOeL.css">
 </head>
 <body>
   <canvas id="game"></canvas>
@@ -304,5 +304,7 @@
   <div id="bar-top" class="cinebar"></div>
   <div id="bar-bottom" class="cinebar"></div>
 
+  <!-- v13.2.1: fuera de #hud (que tiene su propio apilado) para que se vea sobre el menú y el juego -->
+  <div id="aviso-pwa" class="hidden" role="status" aria-live="polite"><span id="aviso-pwa-txt"></span> <button id="btn-pwa-ahora" class="ghost">Actualizar ahora</button></div>
 </body>
 </html>
