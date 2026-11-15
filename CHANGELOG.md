@@ -1,5 +1,13 @@
 # Registro de versiones
 
+## 13.2.1 — 2026-11-15 · Se actualiza solo
+
+- El juego se actualiza solo cuando sale una versión nueva (Isaac tuvo que borrar las cookies para ver la 13.2.0 y perdió su mundo). Antes el service worker nuevo esperaba hasta que alguien encontrara Ajustes → Aplicación → Actualizar. Ahora (src/pwa.js, función decidir): en el menú o al arrancar, si hay una versión nueva esperando, se activa y la página se recarga UNA vez, con el aviso «Actualizando a la versión X…»; con un mundo abierto NUNCA recarga a media partida: sale un aviso fijo (no un toast de 7 s) «Hay una versión nueva. Actualizar ahora», cuyo botón guarda el mundo y recarga, y la versión se aplica sola al volver al menú, ya guardado.
+- Multijugador: un anfitrión que sale con invitados dentro no recibe la versión sola (solo el aviso fijo y el botón); un invitado guarda lo suyo y la recibe al salir. Un invitado viejo ante un anfitrión nuevo ve «Actualice el juego: recargue la página» y una sola recarga basta (en el menú el service worker nuevo ya se activa solo).
+- Se busca versión nueva al arrancar, cada 15 minutos (antes 6 horas) y al volver a la pestaña o a la ventana. El service worker generado contesta «version» para que el aviso diga qué versión llega.
+- Sin bucles: la versión ya intentada se guarda en sessionStorage antes de activarla y nunca hay más de una recarga automática por versión; si el service worker nuevo falla al instalarse (o lo reemplaza otro) el juego sigue con el que hay, sin errores. Antes de cualquier recarga el mundo queda guardado; no se borra ningún dato.
+- Nuevo tools/revisar-pwa.mjs (en npm run revisar): la decisión en cada caso (menú, mundo abierto, anfitrión con invitados, versión ya intentada), cinco revisiones seguidas = una sola aplicación, intervalo de 15 min y el cableado de ui.js y del service worker. Probado en el navegador con dos builds de producción servidos en el mismo origen.
+
 ## 13.2.0 — 2026-11-15 · Más lava y menos luz abajo
 
 - Lo hondo es más difícil (decisión de Isaac sobre PLAN_CUEVAS.md punto 5: «¿más lava y menos luz abajo?», «Sí, más difícil»). Solo esas dos cosas: nada de criaturas de noche ni de las vetas grandes (C2) ni C5.

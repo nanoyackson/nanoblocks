@@ -5,7 +5,7 @@ export const GAME_NAME = 'NanoBlocks';
 // v13.1.0: la versión de generador de terreno MÁS NUEVA que este juego sabe hacer (la de los mundos nuevos). Si el anfitrión de una sala manda
 // una mayor, este cliente generaría un terreno distinto al suyo (cuevas flotando): se rechaza la entrada (red/sesion.js).
 export const GEN_MAX = 23; // v13.2.0: 23 = lava más abajo (GEN_PROF en worldgen2.js)
-export const GAME_VERSION = '13.2.0';
+export const GAME_VERSION = '13.2.1';
 // v12.4.6: la versión MÁS VIEJA del juego que puede abrir lo que esta versión guarda. Se sube cuando un mundo guardado trae algo que un
 // juego anterior no entiende y lo rompería: bloques nuevos (ids que el mallador no conoce), un SAVE_FORMAT nuevo o un campo que cambia
 // de forma. Se guarda en meta.minVersion y el menú no abre un mundo cuyo minVersion sea más nuevo que este juego (12.4.0: los bloques 656–662).
@@ -26,6 +26,18 @@ export const CREDITS = [
 ];
 
 export const CHANGELOG = [
+  {
+    version: '13.2.1',
+    date: '2026-11-15',
+    title: 'Se actualiza solo',
+    items: [
+      'El juego se actualiza solo cuando sale una versión nueva (Isaac tuvo que borrar las cookies para ver la 13.2.0 y perdió su mundo). Antes el service worker nuevo esperaba hasta que alguien encontrara Ajustes → Aplicación → Actualizar. Ahora (src/pwa.js, función decidir): en el menú o al arrancar, si hay una versión nueva esperando, se activa y la página se recarga UNA vez, con el aviso «Actualizando a la versión X…»; con un mundo abierto NUNCA recarga a media partida: sale un aviso fijo (no un toast de 7 s) «Hay una versión nueva. Actualizar ahora», cuyo botón guarda el mundo y recarga, y la versión se aplica sola al volver al menú, ya guardado.',
+      'Multijugador: un anfitrión que sale con invitados dentro no recibe la versión sola (solo el aviso fijo y el botón); un invitado guarda lo suyo y la recibe al salir. Un invitado viejo ante un anfitrión nuevo ve «Actualice el juego: recargue la página» y una sola recarga basta (en el menú el service worker nuevo ya se activa solo).',
+      'Se busca versión nueva al arrancar, cada 15 minutos (antes 6 horas) y al volver a la pestaña o a la ventana. El service worker generado contesta «version» para que el aviso diga qué versión llega.',
+      'Sin bucles: la versión ya intentada se guarda en sessionStorage antes de activarla y nunca hay más de una recarga automática por versión; si el service worker nuevo falla al instalarse (o lo reemplaza otro) el juego sigue con el que hay, sin errores. Antes de cualquier recarga el mundo queda guardado; no se borra ningún dato.',
+      'Nuevo tools/revisar-pwa.mjs (en npm run revisar): la decisión en cada caso (menú, mundo abierto, anfitrión con invitados, versión ya intentada), cinco revisiones seguidas = una sola aplicación, intervalo de 15 min y el cableado de ui.js y del service worker. Probado en el navegador con dos builds de producción servidos en el mismo origen.',
+    ],
+  },
   {
     version: '13.2.0',
     date: '2026-11-15',

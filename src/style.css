@@ -338,6 +338,9 @@ body.parry #game { filter: brightness(1.5) saturate(1.3); transition: filter 0.0
 #region-banner b::after { content: ''; display: block; height: 3px; margin: 2px auto 4px; width: 60%; background: linear-gradient(90deg, transparent, var(--warn), transparent); }
 #region-banner.show { animation: region-in 4.6s ease both; }
 @keyframes region-in { 0% { opacity: 0; transform: translate(-50%, -12px); letter-spacing: 8px; } 14% { opacity: 1; transform: translate(-50%, 0); letter-spacing: 2px; } 78% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -6px); } }
+/* v13.2.1: el aviso fijo de versión nueva (sobre las pantallas y el hotbar; no se va solo) */
+#aviso-pwa { position: fixed; left: 50%; bottom: 92px; transform: translateX(-50%); z-index: 400; display: flex; gap: 12px; align-items: center; max-width: min(640px, 92vw); padding: 8px 14px; background: rgba(20, 24, 30, 0.94); border: 2px solid var(--accent); color: var(--text, #fff); font-size: 15px; box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5); }
+#aviso-pwa.hidden { display: none; }
 #toast { position: absolute; top: 27%; left: 50%; transform: translateX(-50%); width: max-content; max-width: min(760px, 86vw); text-shadow: var(--sombra-texto); font-size: 19px; line-height: 1.15; text-align: center; transition: opacity 0.45s; opacity: 0; color: var(--warn); pointer-events: none; }
 #toast[data-cat="urgente"] { color: var(--danger); }
 #toast[data-cat="consejo"] { color: var(--accent); font-size: 17px; }

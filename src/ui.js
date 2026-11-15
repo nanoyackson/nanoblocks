@@ -517,11 +517,14 @@ export class UI {
   }
 
   async quitToMenu() {
+    // v13.2.1: un anfitrión con invitados dentro no recibe la versión nueva sola al salir (solo el aviso); lo demás sí, ya guardado
+    const r = this.game.red, gente = r && r.rol === 'anfitrion' && r.gente ? (r.gente.size ?? Object.keys(r.gente).length) : 0;
     this.state = 'menu';
     this.game.paused = true;
     this.closeInventoryDom();
     await this.game.stop();
     this.show('menu');
+    pwa.salioDelMundo(gente > 0);
   }
 
   showDeath(cause) {
@@ -2788,10 +2791,18 @@ export class UI {
       $('#pwa-estado').textContent = pwa.instalada() ? 'Está instalado como aplicación.' + (est === 'activo' ? ' Listo para jugar sin conexión.' : '') : est === 'activo' ? 'Listo para jugar sin conexión. Desde el navegador (Chrome) también se puede instalar.' : 'Se juega desde el navegador.';
       $('#btn-instalar').classList.toggle('hidden', !pwa.puedeInstalar());
       $('#btn-actualizar').classList.toggle('hidden', !pwa.hayNueva());
-      if (pwa.hayNueva() && this.game.world) this.toast('🆕 Hay una versión nueva. Ajustes → Aplicación → Actualizar', 7000, { cat: 'consejo', clave: 'pwa:nueva' });
+      // v13.2.1: el aviso fijo (no un toast de 7 s): «Hay una versión nueva · Actualizar ahora»; mientras se aplica, «Actualizando a la versión X…»
+      const av = $('#aviso-pwa'), v = pwa.versionNueva();
+      av.classList.toggle('hidden', !pwa.hayNueva());
+      $('#aviso-pwa-txt').textContent = pwa.aplicando() ? `Actualizando${v ? ' a la versión ' + v : ''}…` : `🆕 Hay una versión nueva${v ? ' (' + v + ')' : ''}.`;
+      $('#btn-pwa-ahora').classList.toggle('hidden', pwa.aplicando());
     };
+    const actualizarAhora = async () => { try { await this.game.save(); } catch { /* el juego guarda también solo */ } pwa.actualizar(); };
+    // v13.2.1: ¿hay un mundo abierto? (entonces nunca se recarga solo) y cómo guardarlo antes de pasar a la versión nueva
+    pwa.enlazar({ mundoAbierto: () => !!this.game.world && this.state !== 'menu', guardar: async () => { if (this.game.world && this.state !== 'menu') await this.game.save(); } });
+    $('#btn-pwa-ahora').addEventListener('click', actualizarAhora);
     $('#btn-instalar').addEventListener('click', () => pwa.instalar());
-    $('#btn-actualizar').addEventListener('click', async () => { try { await this.game.save(); } catch { /* el juego guarda también solo */ } pwa.actualizar(); });
+    $('#btn-actualizar').addEventListener('click', actualizarAhora);
     pwa.alCambiar(pintaPwa); pintaPwa();
     $('#s-far').addEventListener('change', (e) => { s.farDistance = Number(e.target.value); apply(); if (this.game.far) this.game.far.setDistance(s.farDistance); });
     $('#s-scale').addEventListener('input', (e) => { s.renderScale = Number(e.target.value); if (this.regulador) this.regulador.olvidar(); apply(); this.game.resize(); });

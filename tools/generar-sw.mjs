@@ -31,7 +31,10 @@ self.addEventListener('install', (e) => e.waitUntil((async () => {
   if (!self.registration.active) self.skipWaiting(); // primera instalación: no hay versión vieja a la que esperar
 })()));
 
-self.addEventListener('message', (e) => { if (e.data === 'activar') self.skipWaiting(); });
+self.addEventListener('message', (e) => {
+  if (e.data === 'activar') self.skipWaiting();
+  else if (e.data === 'version' && e.ports && e.ports[0]) e.ports[0].postMessage(VERSION); // v13.2.1: la página pregunta qué versión espera
+});
 
 async function bajarSonidos() {
   const c = await caches.open('nb-sonidos');
