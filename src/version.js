@@ -2,7 +2,10 @@
 // Cada idea nueva que se agregue sube GAME_VERSION y suma una entrada a CHANGELOG.
 // Si cambia la forma de los datos guardados, sube SAVE_FORMAT y se agrega una migración en save.js.
 export const GAME_NAME = 'NanoBlocks';
-export const GAME_VERSION = '13.0.5';
+// v13.1.0: la versión de generador de terreno MÁS NUEVA que este juego sabe hacer (la de los mundos nuevos). Si el anfitrión de una sala manda
+// una mayor, este cliente generaría un terreno distinto al suyo (cuevas flotando): se rechaza la entrada (red/sesion.js).
+export const GEN_MAX = 22;
+export const GAME_VERSION = '13.1.2';
 // v12.4.6: la versión MÁS VIEJA del juego que puede abrir lo que esta versión guarda. Se sube cuando un mundo guardado trae algo que un
 // juego anterior no entiende y lo rompería: bloques nuevos (ids que el mallador no conoce), un SAVE_FORMAT nuevo o un campo que cambia
 // de forma. Se guarda en meta.minVersion y el menú no abre un mundo cuyo minVersion sea más nuevo que este juego (12.4.0: los bloques 656–662).
@@ -23,6 +26,42 @@ export const CREDITS = [
 ];
 
 export const CHANGELOG = [
+  {
+    version: '13.1.2',
+    date: '2026-11-14',
+    title: 'Vida y sonido de la cueva',
+    items: [
+      'Vida y sonido de la cueva (C4 de docs/revisiones/PLAN_CUEVAS.md). No cambia el terreno: no sube el generador y vale en cualquier mundo, nuevo o viejo.',
+      'Tres criaturas propias de cueva, con modelo original y ficha en el bestiario: el cangrejo ciego (pálido y sin ojos, junto al agua), el grillo de cueva (antenas largas y patas de brincar, en lo seco y oscuro) y el escarabajo de calcita (con costra de calcita; si uno se le arrima se hace bolita y parece una piedra). Son pacíficas. Las hace aparecer solo el anfitrión (spawnMob ya descarta lo de un invitado; las personas las reciben por los mensajes de criaturas de siempre) con tope por zona: a lo más 3 en 22 bloques, 2 de cada especie y 6 en total.',
+      'Sonido de cueva, todo sintetizado (sin archivos nuevos) y local a cada persona (sin tráfico de red): goteo desde las estalactitas, agua corriendo donde hay agua a cielo abierto de cueva, y un eco que crece con el tamaño de la sala (se mide hasta dónde llega el aire en 8 direcciones y hacia arriba). A lo más 3 emisores de sonido cerca, de cada clase a lo más 2, y un charco grande cuenta como uno. Los subtítulos los nombran.',
+      'El brillo de los hongos y del cristal cambia con el lugar: motas de luz que flotan, verde azulado en selva, manglar y bosque nuboso; ámbar en lo seco; rojizo en volcán; azul pálido en altura; y el cristal con un tono distinto por región.',
+      'Libreta: una línea la primera vez que se pisa cada tipo de cueva (sala enorme, goteo, agua corriendo, hongos y cristal). Nueva prueba /prueba cuevavida (las tres criaturas delante) y tools/revisar-cuevavida.mjs en npm run revisar: modelos y animaciones, topes del spawn (total, zona y especie), que un invitado no haga nacer nada, qué especie le toca a cada sitio, máximo 3 emisores, tamaño de sala y color del brillo.',
+    ],
+  },
+  {
+    version: '13.1.1',
+    date: '2026-11-14',
+    title: 'Sitios kársticos',
+    items: [
+      'Sitios kársticos con nombre tico (C3 de docs/revisiones/PLAN_CUEVAS.md), solo en mundos de generador 22 (minV 22): la Cueva de Barra Honda (galería caliza con estalactitas y columnas gigantes de calcita, tres pozos con agua al fondo y una repisa de cuarzo con el cofre), la Cueva de Venado (sala larga con un río subterráneo, dos puentes de piedra, estalactitas y hongos, y el cofre en un banco de la orilla) y la Geoda mayor (esfera de basalto, caliza y cuarzo con racimos de cristal y el cofre sobre un pedestal en el centro).',
+      'Cada sitio tiene una boca de piedra en la superficie con su placa y dos antorchas, un pozo con escalera de caracol, un cofre con botín propio y una entrada en la libreta al descubrirlo («Descubrí Cueva de Barra Honda (rara)»; la Geoda mayor es legendaria). Hay uno cada ~800 bloques por tipo, en tierra firme.',
+      'En red: todo sale de la semilla (la construcción usa el azar de semilla + posición, nunca Math.random), así que cada máquina genera los mismos cofres con el mismo botín; los cofres siguen siendo los de siempre (candado y mensajes cofre_* del anfitrión). Los pozos y el río llevan agua forrada de piedra y por debajo del piso, para que no se desborde.',
+      'Nuevo tools/revisar-karst.mjs (en npm run revisar): para tres semillas y cada sitio comprueba que hay un cofre en su lugar, que el botín es idéntico con otro Generator y otro orden de trozos, que el cofre se alcanza a pie desde la boca, que el mundo 21 no los tiene y que traen nombre, rareza y placa.',
+    ],
+  },
+  {
+    version: '13.1.0',
+    date: '2026-11-14',
+    title: 'Cuevas nuevas',
+    items: [
+      'Cuevas rediseñadas (C1 de docs/revisiones/PLAN_CUEVAS.md). Los mundos nuevos nacen con generador 22 (GEN_CUEVAS); los de 21 o menos quedan IDÉNTICOS (nuevo tools/revisar-cuevas.mjs: huella de 36 trozos de tres mundos viejos, calculada con el código de la 13.0.5; en el navegador y en Node da lo mismo).',
+      'Menos cuevas y más grandes. Un tipo de cueva por región (ruido de baja frecuencia, inclinado por bioma: salas más húmedas y grandes en selva, manglar y bosque nuboso; más túnel en el desierto y el bosque seco): salas grandes y raras («queso»), espagueti largo y fideos finos solo pegados a una sala para unirla con el resto. La capa de y 51–60 casi no tiene huecos.',
+      'Bocas a la superficie: rampas en diagonal de 2–3 bloques de ancho (una por celda de 16, con cierta probabilidad, nunca en mar, manglar, volcán ni cauces) que bajan hasta una sala chica. Todo sale de la semilla (Simplex y hash3), nada de Math.random.',
+      'Adiós a las paredes rectas del acuífero (el muro de 2 bloques cada 48): el agua va por cuencas, con niveles escalonados que siguen los contornos de un ruido, y solo se tapa donde una columna vecina tiene menos agua.',
+      'Medido con el script del plan (256 trozos alrededor del origen), antes (v21) → después (v22). Semilla 123457: aire bajo tierra (y 1–60) 15,6 % → 10,0 %; trozos con la boca dentro del propio trozo 44 % → 38 % (y alcanzables desde arriba 70 % → 75 %); franja de 48 con aire 0,0 % frente a 23,6 % del interior → 12,0 % frente a 11,7 % (sin muro); 10,5 → 10,7 ms por trozo. Semilla 777: aire 9,6 %, bocas propias 43 %, 11,4 ms por trozo. Metas del plan: aire 8–12 %, sin pared recta, ≥ 1 de cada 3 con entrada, ≤ 12 ms: cumplidas.',
+      'Red: un anfitrión que manda un generador más nuevo que el que sabe este juego (GEN_MAX = 22 en version.js) se rechaza al entrar, con el mensaje «Actualice el juego: recargue la página». Probado en revisar-cuevas con una sesión de invitado de verdad (entra con 21 y 22, no entra con 23). Un mundo guardado con generador 22 pide la 13.1.0 (meta.minVersion).',
+    ],
+  },
   {
     version: '13.0.5',
     date: '2026-11-14',

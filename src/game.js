@@ -166,6 +166,7 @@ import { armarBrazoMano, AGARRE, PALMA } from './personaje.js';
 import { ponerMuneco, tickMunecos } from './muneco.js';
 import { tickSereno, cuadroSereno, limpiarSereno } from './sereno.js';
 import { cuadroHongos, limpiarHongos } from './hongos.js';
+import { cuadroCueva, limpiarCueva } from './cuevavida.js';
 import { ganarMaestria, bonoDano, bonoAguante } from './maestria.js';
 import { empezarPlaneo, planeoUpdate, usarBombeta, fovPlaneo, terminarPlaneo } from './alas.js';
 import { cuadroCombo } from './armas3.js';
@@ -482,7 +483,7 @@ export class Game {
     limpiarBombas(this);
     limpiarLunaRoja(this); this.lunaRojaPrueba = false;
     limpiarPezVela(this); if (this.fishing) { this.fishing.remove(); this.fishing = null; }
-    quitarMonta(this); limpiarVagon(this); limpiarFestival(this); limpiarAbigeato(this); quitarConcurso(this); limpiarSerenata(this); limpiarClasico(this); limpiarTerremoto(this); limpiarImpostor(this); limpiarFurtivos(this, true); limpiarPerezosoCalle(this); limpiarIncendio(this); limpiarGlobo(this); limpiarRanas(this); limpiarArcoirisCielo(this); quitarCarrera(this); limpiarFumiga(this); this.fumigaCd = 0; limpiarPanga(this); this.pangaDia = 0; limpiarAlfarero(this); limpiarTrenFantasma(this); this.trenFantasmaNoche = 0; if (this.muerte) hudMuerte(1); this.muerte = null; limpiarBichos3(this); limpiarIncursion(this); soltarGancho(this); limpiarSereno(this); limpiarHongos(this); this.planeo = null; this.rayosRey = null; this.slowmo = 0; this.contra = 0; this.hitStop = 0; this.perfectoCd = 0; this.lastHitT = 0; this.comboVis = null; this.comboPaso = -1; for (const id of ['ermitas', 'creditos-final']) { const el = document.getElementById(id); if (el) el.remove(); }
+    quitarMonta(this); limpiarVagon(this); limpiarFestival(this); limpiarAbigeato(this); quitarConcurso(this); limpiarSerenata(this); limpiarClasico(this); limpiarCueva(this); limpiarTerremoto(this); limpiarImpostor(this); limpiarFurtivos(this, true); limpiarPerezosoCalle(this); limpiarIncendio(this); limpiarGlobo(this); limpiarRanas(this); limpiarArcoirisCielo(this); quitarCarrera(this); limpiarFumiga(this); this.fumigaCd = 0; limpiarPanga(this); this.pangaDia = 0; limpiarAlfarero(this); limpiarTrenFantasma(this); this.trenFantasmaNoche = 0; if (this.muerte) hudMuerte(1); this.muerte = null; limpiarBichos3(this); limpiarIncursion(this); soltarGancho(this); limpiarSereno(this); limpiarHongos(this); this.planeo = null; this.rayosRey = null; this.slowmo = 0; this.contra = 0; this.hitStop = 0; this.perfectoCd = 0; this.lastHitT = 0; this.comboVis = null; this.comboPaso = -1; for (const id of ['ermitas', 'creditos-final']) { const el = document.getElementById(id); if (el) el.remove(); }
     this.locutorT = 0; this.noticiasVistas = null;
     limpiarZopilotes(this); limpiarAire(this); limpiarAros(this); limpiarSurf(this); limpiarTorneo(this); limpiarInfluencer(this); limpiarTiro(this); limpiarMariposas(this); limpiarCuidacarros(this); limpiarCintas(this); limpiarNaturaleza3(this); limpiarSacos(this); limpiarPuebloVivo(this); limpiarMarCielo(this); limpiarVida2(this); limpiarNaturaleza4(this); limpiarCampo(this); limpiarCosta(this); limpiarPlaya(this); limpiarLavanderas(this); limpiarChanchos(this); limpiarNoches(this); limpiarHistoria(this); limpiarAsedio(this); limpiarApuro(this); this.seguroPago = false; this.ui.limpiarAvisos(true); limpiarBuhonero(this); limpiarDerrumbe(this); limpiarCeniza(this); limpiarChancleta(this); this.candela = null;
     limpiarArmas(this); limpiarMangos(this); limpiarArena(this); limpiarJuegos(this);
@@ -3498,7 +3499,7 @@ export class Game {
       if (this.ready && !headWater) this.ui.gotas();
       this.wasUnderwater = headWater;
     }
-    this.audio.ambience(dt, { ...this.env, y: e.y, daylight: this.daylight, underwater: headWater, rain: this.weather ? this.weather.intensity : 0 });
+    this.audio.ambience(dt, { ...this.env, sala: this.salaCueva ?? 0.5, y: e.y, daylight: this.daylight, underwater: headWater, rain: this.weather ? this.weather.intensity : 0 });
     // música de marimba (o arpa de noche y en cuevas) de vez en cuando
     this.music = this.music || new Music(this.audio);
     if (!this.musRegT || (this.musRegT -= dt) <= 0) { this.musRegT = 3; const pp = this.player.body.pos; this.musRegion = this.dim === 'tierra' ? regionAt(this.world.gen, pp.x, pp.z) : null; }
@@ -3553,6 +3554,7 @@ export class Game {
         }
       }
     }
+    cuadroCueva(this, dt); // v13.1.2: goteo, agua corriendo, eco por sala y el brillo por región (cuevavida.js)
     // polvo flotando en las cuevas
     if (this.env && this.env.cave > 0.6) {
       for (let i = 0; i < 2; i++) {

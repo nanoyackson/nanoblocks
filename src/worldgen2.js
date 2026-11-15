@@ -11,6 +11,10 @@ export const SEA = 62;
 const idx = (x, y, z) => x + z * CHUNK + y * CHUNK * CHUNK;
 
 const VOLCANO_CELL = 640;
+// v13.1.0 (C1 de cuevas): el cavado nuevo (generador 22). Todo lo de abajo solo corre con gen.version >= GEN_CUEVAS; los mundos 21 o
+// menos se generan igual que siempre. Todo sale de la semilla (Simplex con seed y hash3), nunca de Math.random: cada máquina genera igual.
+export const GEN_CUEVAS = 22;
+const BOCA_CELDA = 16, BOCA_PROB = 0.9, QUESO_BASE = 0.55, QUESO_PEND = 0.62, ESP_BASE = 0.05, ESP_PEND = 0.03;
 
 export class GenV2 {
   constructor(gen) {
@@ -22,6 +26,9 @@ export class GenV2 {
     this.nLush = new Simplex(s ^ 0x4444);
     this.nDrip = new Simplex(s ^ 0x5555);
     this.nDeep = new Simplex(s ^ 0x6666);
+    this.nTipo = new Simplex(s ^ 0x7777); // v22: tipo de cueva por región (sala, túnel o mixta)
+    this.nCuenca = new Simplex(s ^ 0x8888); // v22: niveles de agua por cuenca (curvas, no cuadrícula)
+    this.bocaCache = new Map();
     this.volcanoCache = new Map();
   }
 
@@ -161,11 +168,99 @@ export class GenV2 {
     return false;
   }
 
+  // ---------- v22: cuevas rediseñadas ----------
+  // Bocas: rampas que bajan en diagonal desde la superficie hasta una sala chica. Una por celda de 40 con cierta probabilidad; todo por hash.
+  bocaIn(gx, gz) {
+    const k = gx * 100003 + gz;
+    let b = this.bocaCache.get(k);
+    if (b !== undefined) return b;
+    b = null;
+    const seed = this.gen.seed;
+    if (hash3(seed, gx, 9101, gz) < BOCA_PROB) {
+      const ex = Math.floor(gx * BOCA_CELDA + 6 + hash3(seed, gx, 9102, gz) * (BOCA_CELDA - 12)), ez = Math.floor(gz * BOCA_CELDA + 6 + hash3(seed, gx, 9103, gz) * (BOCA_CELDA - 12));
+      const col = this.gen.column(ex, ez);
+      if (col.h >= SEA + 3 && !['ocean', 'volcano', 'manglar'].includes(col.biome) && !(col.rio < 0.07)) {
+        const ang = hash3(seed, gx, 9104, gz) * 6.2832;
+        const D = Math.min(22 + hash3(seed, gx, 9105, gz) * 16, col.h - 16);
+        if (D >= 12) b = { x: ex, z: ez, h: col.h, dx: Math.cos(ang), dz: Math.sin(ang), D, r: 2.3 + hash3(seed, gx, 9106, gz) * 1.2, fase: hash3(seed, gx, 9107, gz) * 6.2832, k: 1.5 };
+      }
+    }
+    this.bocaCache.set(k, b);
+    return b;
+  }
+
+  // Las bocas que tocan un trozo (su rectángulo más el largo máximo de la rampa).
+  bocasDe(cx, cz) {
+    const out = [], x0 = cx * CHUNK, z0 = cz * CHUNK, m = 38 * 1.5 + 6;
+    for (let gz = Math.floor((z0 - m) / BOCA_CELDA); gz <= Math.floor((z0 + CHUNK + m) / BOCA_CELDA); gz++) for (let gx = Math.floor((x0 - m) / BOCA_CELDA); gx <= Math.floor((x0 + CHUNK + m) / BOCA_CELDA); gx++) {
+      const b = this.bocaIn(gx, gz);
+      if (!b) continue;
+      const ex = b.x + b.dx * b.D * b.k, ez = b.z + b.dz * b.D * b.k, r = b.r + 6;
+      if (Math.max(b.x, ex) + r < x0 || Math.min(b.x, ex) - r > x0 + CHUNK || Math.max(b.z, ez) + r < z0 || Math.min(b.z, ez) - r > z0 + CHUNK) continue;
+      out.push(b);
+    }
+    return out;
+  }
+
+  // Por columna: tipo de cueva (se calcula una vez por columna, no por bloque).
+  cuevaColumna(wx, wz, col) {
+    let t = this.nTipo.noise2(wx * 0.0035, wz * 0.0035);
+    // el bioma inclina el tipo: más sala (húmeda) en selva, manglar y bosque nuboso; más túnel (seca, caliza) en el seco
+    const b = col.biome;
+    if (b === 'jungle' || b === 'manglar' || b === 'nuboso') t += 0.14;
+    else if (b === 'desert' || b === 'bosque_seco') t -= 0.12;
+    const q = Math.max(-0.35, Math.min(0.45, t));
+    return { thr: QUESO_BASE - q * QUESO_PEND, esp: ESP_BASE + (0.35 - q) * ESP_PEND };
+  }
+
+  // Nivel del agua subterránea de una columna (0 = seca): escalones por cuenca, contornos de un ruido y no una cuadrícula.
+  nivelAgua(wx, wz) {
+    const n = this.nCuenca.noise2(wx * 0.006 + 40, wz * 0.006 - 17);
+    if (n < 0.14) return 0;
+    return 18 + 3 * Math.min(5, Math.floor((n - 0.14) * 11));
+  }
+
+  cueva22(x, y, z, h, cc, bocas) {
+    for (let i = 0; i < bocas.length; i++) {
+      const m = bocas[i], t = m.h - y;
+      if (t < -2 || t > m.D + 5) continue;
+      const tt = Math.max(0, Math.min(m.D, t));
+      const w = Math.sin(tt * 0.35 + m.fase) * 1.3;
+      const px = m.x + m.dx * tt * m.k - m.dz * w, pz = m.z + m.dz * tt * m.k + m.dx * w;
+      const ddx = x - px, ddz = z - pz;
+      const rr = t > m.D ? 4.6 : m.r * (1 - tt / m.D * 0.25);
+      if (ddx * ddx + ddz * ddz < rr * rr) return true;
+    }
+    const g = this.gen;
+    // capa 51-60: casi sin huecos (menos agujeros que rompen la superficie)
+    const fade = y > 50 ? Math.max(0, 1 - (y - 50) / 9) : 1;
+    // sala: grandes y raras, según la región
+    let c = -9;
+    if (y > 12 && y < 52 && y < h - 8) {
+      c = g.nCaveC.noise3(x * 0.011, y * 0.019, z * 0.011);
+      if (c > cc.thr + Math.abs(y - 30) * 0.004 + (1 - fade) * 0.3) return true;
+    }
+    // espagueti: túneles largos
+    const e = cc.esp * fade;
+    if (e > 0.004) {
+      const a = g.nCaveA.noise3(x * 0.018, y * 0.03, z * 0.018);
+      if (Math.abs(a) < e && Math.abs(g.nCaveB.noise3(x * 0.018, y * 0.03, z * 0.018)) < e) return true;
+    }
+    // fideos: finos y solo pegados a una sala, para unirla con el resto
+    if (c > cc.thr - 0.14) {
+      const na = this.nNoodleA.noise3(x * 0.045, y * 0.06, z * 0.045);
+      if (Math.abs(na) < 0.05 && Math.abs(this.nNoodleB.noise3(x * 0.045, y * 0.06, z * 0.045)) < 0.05) return true;
+    }
+    return false;
+  }
+
   generate(cx, cz, blocks, tint, colAt) {
     const g = this.gen, seed = g.seed;
     const x0 = cx * CHUNK, z0 = cz * CHUNK;
     const rnd = mulberry32((seed ^ Math.imul(cx, 73856093) ^ Math.imul(cz, 19349663) ^ 0x5eed) >>> 0);
     const structures = [];
+    const v22 = g.version >= GEN_CUEVAS;
+    const bocas = v22 ? this.bocasDe(cx, cz) : null;
 
     for (let lz = 0; lz < CHUNK; lz++) for (let lx = 0; lx < CHUNK; lx++) {
       const wx = x0 + lx, wz = z0 + lz;
@@ -209,6 +304,14 @@ export class GenV2 {
       const mx = ((wx % AQ) + AQ) % AQ, mz = ((wz % AQ) + AQ) % AQ;
       const aqBorder = mx < 2 || mx >= AQ - 2 || mz < 2 || mz >= AQ - 2;
       // cerca del mar no se cavan cuevas a la altura del agua (si no, el mar se metería al tocarlas)
+      // v22: agua por cuencas. Se tapa con una pared fina (que sigue el contorno de la cuenca, no una recta) solo donde un vecino tiene menos agua
+      let aq22 = 0, selloLo = 0, cc22 = null;
+      if (v22) {
+        cc22 = this.cuevaColumna(wx, wz, col);
+        aq22 = this.nivelAgua(wx, wz);
+        selloLo = aq22;
+        if (aq22) for (let k = 0; k < 4; k++) selloLo = Math.min(selloLo, this.nivelAgua(wx + (k === 0) - (k === 1), wz + (k === 2) - (k === 3)));
+      }
       let nearSea = false;
       if (!underwater) for (let dz = -2; dz <= 2 && !nearSea; dz++) for (let dx = -2; dx <= 2; dx++) { if (colAt(lx + dx, lz + dz).h < SEA) { nearSea = true; break; } }
       const carveTop = underwater || biome === 'beach' ? h - 4 : h - (biome === 'volcano' ? 3 : 0);
@@ -222,10 +325,10 @@ export class GenV2 {
         else if (y < deepTop) id = K.deep_rock;
         else if (y < deepTop + 3 && hash3(seed, wx, y, wz) < (deepTop + 3 - y) / 4) id = K.deep_rock;
         else id = biome === 'volcano' && y > h - 12 ? K.basalt : K.stone;
-        const sealed = (aqBorder && y <= 37 && y > 10) || (nearSea && y > SEA - 9);
-        if (id !== K.bedrock && y > 4 && y <= carveTop && !sealed && this.isCave(wx, y, wz, h)) {
+        const sealed = v22 ? ((aq22 > 0 && y > selloLo && y <= aq22 && y > 10 && selloLo < aq22) || (nearSea && y > SEA - 9)) : ((aqBorder && y <= 37 && y > 10) || (nearSea && y > SEA - 9));
+        if (id !== K.bedrock && y > 4 && y <= carveTop && !sealed && (v22 ? this.cueva22(wx, y, wz, h, cc22, bocas) : this.isCave(wx, y, wz, h))) {
           if (y <= 10) id = K.lava; // lagos de lava en lo más hondo
-          else if (aqOn && y <= aqLevel) id = K.water; // lagos subterráneos
+          else if (v22 ? y <= aq22 : (aqOn && y <= aqLevel)) id = K.water; // lagos subterráneos
           else id = 0;
         }
         blocks[idx(lx, y, lz)] = id;

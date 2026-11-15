@@ -115,6 +115,7 @@ const CAPTIONS = {
   cara_blanca: 'Mono cara blanca', tepezcuintle: 'Tepezcuintle', serpiente: 'Serpiente sisea', cocodrilo: 'Cocodrilo', danta: 'Danta', tren: 'Tren', gol: '¡Gol!', campana: 'Campanas',
   aplausos: 'Aplausos', splash: 'Chapuzón', hurt: 'Golpe', tajo: 'Tajo', swish: 'Zumbido', lapa: 'Lapa', tucan: 'Tucán', quetzal: 'Quetzal', colibri: 'Colibrí', rumble: 'Retumbo',
   portal: 'Portal', 'cofre.abrir': 'Cofre se abre', 'cofre.cerrar': 'Cofre se cierra', chest_open: 'Cofre se abre', bombeta: 'Bombeta', flecha: 'Flecha', arco: 'Arco', ballena: 'Ballena',
+  gota: 'Gotea agua', agua_corre: 'Agua corriendo', grillo_cueva: 'Grillo de cueva', cangrejo_ciego: 'Cangrejo chasquea',
   delfin: 'Delfín', gaviota: 'Gaviota', rana: 'Rana', murcielago: 'Murciélagos', pizote: 'Pizote', perezoso: 'Perezoso', lanzar: 'Algo lanzado', monedas: 'Monedas', ignite: 'Fuego',
 };
 const captionText = (name) => CAPTIONS[name] || null;
@@ -340,7 +341,7 @@ export class UI {
         created: Date.now(),
         spawn, tipoMundo: tipo,
         jugadores: {}, epoca: 1, // v12.10.0: las fichas de otras personas (F3) y la época
-        genVersion: 21, // v12.4.7: la casita de bahareque; v12.4.12: el tablón de encargos; v12.6.0: el coral blanqueado
+        genVersion: 22, // v13.1.0: las cuevas nuevas (generador 22); v12.4.7: la casita de bahareque; v12.4.12: el tablón de encargos; v12.6.0: el coral blanqueado
         time: 0.05, day: 1,
       };
       this.startGame(meta, new Map());

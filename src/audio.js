@@ -351,6 +351,23 @@ export class Audio {
       case 'aleteo':
         this.noise(0.12, 900, 0.8, 0.12, 'bandpass', 0, out, 0.01);
         break;
+      // v13.1.2 (C4 de cuevas): goteo, agua corriendo, grillo y cangrejo de cueva
+      case 'gota': {
+        const f = 900 + Math.random() * 500;
+        this.tone(f, 0.09, 0.16, 'sine', f * 0.45, 0, out, 0.002);
+        this.tone(f * 2.1, 0.05, 0.05, 'sine', f * 1.2, 0.01, out, 0.002);
+        break;
+      }
+      case 'agua_corre':
+        this.noise(1.3, 1500, 0.5, 0.09, 'bandpass', 0, out, 0.35);
+        this.noise(1.1, 3200, 0.8, 0.035, 'bandpass', 0.1, out, 0.3);
+        break;
+      case 'grillo_cueva':
+        for (let i = 0; i < 3; i++) this.tone(3600 + i * 120, 0.05, 0.05, 'square', 3300, i * 0.09, out, 0.004);
+        break;
+      case 'cangrejo_ciego':
+        this.noise(0.03, 3500, 2, 0.1, 'bandpass', 0, out, 0.001); this.noise(0.03, 2800, 2, 0.08, 'bandpass', 0.08, out, 0.001);
+        break;
       case 'sombra.hurt':
         this.tone(160, 0.4, 0.15, 'sawtooth', 70, 0, out);
         this.noise(0.4, 700, 1, 0.15, 'bandpass', 0, out);
@@ -473,7 +490,7 @@ export class Audio {
   ambience(dt, s) {
     if (!this.ctx) return;
     const now = this.ctx.currentTime;
-    this.reverbSend.gain.setTargetAtTime(0.04 + s.cave * 0.5, now, 0.6);
+    this.reverbSend.gain.setTargetAtTime(0.04 + s.cave * 0.5 * (0.6 + 0.8 * (s.sala ?? 0.5)), now, 0.6); // v13.1.2: el eco crece con el tamaño de la sala (s.sala 0–1)
     this.waterFilter.frequency.setTargetAtTime(s.underwater ? 600 : 20000, now, 0.08);
     this.updateEmitters();
     if (!this.amb) return;

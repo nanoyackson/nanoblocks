@@ -60,6 +60,7 @@ import { pruebaEstrellas } from './estrellas.js';
 import { pruebaIncursion } from './incursiones.js';
 import { pruebaAbejas } from './abejas.js';
 import { pruebaHongos } from './hongos.js';
+import { pruebaCuevaVida } from './cuevavida.js';
 import { pruebaArchivo } from './archivo.js';
 import { pruebaEpilogo } from './epilogo.js';
 
@@ -233,6 +234,7 @@ export function comandoPrueba(g, parts) {
     case 'incursion': return [pruebaIncursion(g)];
     case 'abejas': return [pruebaAbejas(g)];
     case 'hongos': return [pruebaHongos(g)];
+    case 'cuevavida': return [pruebaCuevaVida(g)];
     case 'muneco': g.giveItem(559, 1); return ['Un muñeco de práctica en la mochila: póngalo en el suelo'];
     case 'sereno': { g.time = 0.75; return ['Ya es de noche: vaya a un pueblo y verá a Don Fermín haciendo la ronda con su farol']; }
     case 'ermitas': g.giveItem(K.ermita, 2); return ['Dos ermitas en la mochila: ponga una aquí y otra lejos'];

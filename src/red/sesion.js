@@ -7,6 +7,7 @@ import { nuevoInvitado, recibir, mirada, nuevoGlobal, gastarGlobal } from './lim
 import { abrirSala, MAX_JUGADORES } from './transporte.js';
 import { permisoDe, topeProps, cofreOk, contarInv, cierre as cierreCofre, COFRE_TIEMPO_MAX } from './cofres.js';
 import { armarCodigo, salaNueva, claveNueva } from './codigo.js';
+import { GEN_MAX } from '../version.js';
 import { LLAVE, MAX_FICHAS, fichaNueva, invOk, cambioOk, vitalOk, cupoNuevo, recargar, creditoBloque, creditoBotin, copiaInv } from './ficha.js';
 
 export const HZ_POS = 10, HZ_JUG = 10, HZ_TIEMPO = 1, HZ_MOBS = 5;
@@ -37,6 +38,7 @@ export function palabrasDeError(e) {
     expulsado: 'La persona anfitriona no lo dejó entrar.', banned: 'La persona anfitriona no lo dejó entrar.',
     'no-acepta': 'La persona anfitriona no lo dejó entrar.',
     version: 'Su versión de NanoBlocks no es la misma que la de la sala. Recargue la página para actualizar.',
+    'gen-nueva': 'Actualice el juego: recargue la página. La sala usa un mundo más nuevo que su versión de NanoBlocks.',
     'ya-conectado': 'Esta cuenta ya está en la sala desde otra pestaña.',
     fichas: 'Esta sala ya tiene todas sus fichas de jugador ocupadas.',
     'sin-respuesta': 'La persona anfitriona no respondió a tiempo.',
@@ -485,6 +487,8 @@ export class Invitado extends Base {
     if (tipo === 'rechazo' || tipo === 'expulsa') return this.fin(m.motivo);
     if (tipo === 'acepta') {
       if (this.estado !== 'esperando') return;
+      // v13.1.0: un anfitrión con un generador de terreno más nuevo que el de este juego: no se entra (el terreno saldría distinto)
+      if (m.mundo.genVersion > GEN_MAX) { if (this.alResultado) this.alResultado(false, 'gen-nueva'); return; }
       this.estado = 'dentro'; this.pid = m.pid; this.mundo = m.mundo;
       if (this.alResultado) this.alResultado(true, m);
       return;

@@ -14,6 +14,7 @@ import { buildCacaotal, buildLecheria } from './agro2.js';
 import { buildCanopy } from './canopy.js';
 import { buildSitioArqueologico } from './ruinas2.js';
 import { buildCaverna } from './caverna.js';
+import { buildCuevaBarraHonda, buildCuevaVenado, buildGeodaMayor } from './cuevas.js';
 import { buildTermales } from './fuego.js';
 import { buildTemplo } from './templo.js';
 import { buildCatarataEscondida } from './catarata2.js';
@@ -908,6 +909,10 @@ const TYPES = [
   { key: 'canopy', minV: 9, cell: 1300, chance: 0.8, R: 52, clearR: 8, salt: 5959, tries: 80, fits: land(10, 4, ['nuboso', 'jungle', 'forest']), build: buildCanopy },
   // v12.15.2 (C7, generador v21): el balneario de aguas termales al pie de un volcán
   { key: 'termales', minV: 21, cell: 640, chance: 1, R: 14, clearR: 14, salt: 7373, tries: 160, fits: (gen, x, z, c) => (c.volcanoK > 0.06 && c.volcanoK < 0.4 && c.h > SEA + 2 && c.h < 100 && flat(gen, x, z, c.h, 9, 5) ? {} : null), build: buildTermales },
+  // v13.1.1 (C3 de cuevas, generador 22): tres sitios kársticos bajo tierra, cada uno con su cofre, su placa y su entrada en la libreta
+  { key: 'cueva_barra_honda', minV: 22, cell: 1100, chance: 0.7, R: 26, clearR: 6, salt: 7474, tries: 80, fits: land(5, 3, ['bosque_seco', 'plains', 'forest', 'nuboso']), build: buildCuevaBarraHonda },
+  { key: 'cueva_venado', minV: 22, cell: 1200, chance: 0.7, R: 30, clearR: 6, salt: 7575, tries: 80, fits: land(5, 3, ['forest', 'jungle', 'nuboso', 'plains']), build: buildCuevaVenado },
+  { key: 'geoda_mayor', minV: 22, cell: 1400, chance: 0.65, R: 22, clearR: 6, salt: 7676, tries: 80, fits: land(5, 3, ['forest', 'jungle', 'plains', 'bosque_seco', 'nuboso']), build: buildGeodaMayor },
   { key: 'fuente', cell: 640, chance: 0.45, R: 9, salt: 707, fits: land(8, 2, ['plains', 'bosque_seco', 'forest']), build: buildFuente },
   // v12.4.7; v12.4.9: al final, para que ceda ante todos los demás (no le quita lugar a nadie)
   { key: 'casita_bahareque', minV: 18, cell: 520, chance: 0.6, R: 7, salt: 7171, tries: 50, fits: land(6, 2, ['plains', 'forest']), build: buildCasitaBahareque }, // v12.4.7
@@ -1068,7 +1073,7 @@ export const STRUCT_NAMES = { faro: 'Faro', churchill: 'Puesto de Churchill', ca
   cerro_muerte: 'Cerro de la Muerte', conchal: 'Playa Conchal', turrialba: 'Volcán Turrialba', san_lucas: 'Isla San Lucas',
   feria_pueblo: 'Feria del agricultor', cementerio_pueblo: 'Cementerio del pueblo', canopy: 'Canopy Pura Adrenalina', sitio_arqueologico: 'Sitio arqueológico', caverna_rey: 'La Caverna del Rey', templo_hundido: 'El templo hundido', catarata_escondida: 'La catarata escondida', amistad_parque: 'Parque Internacional La Amistad', rincon_parque: 'Rincón de la Vieja (Las Pailas)',
   braulio: 'Parque Nacional Braulio Carrillo', juan_castro: 'Parque Nacional Juan Castro Blanco', carara: 'Parque Nacional Carara',
-  cacaotal: 'Cacaotal bribri', lecheria: 'Lechería La Vaquita', termales: 'Aguas termales' };
+  cacaotal: 'Cacaotal bribri', lecheria: 'Lechería La Vaquita', termales: 'Aguas termales', cueva_barra_honda: 'Cueva de Barra Honda', cueva_venado: 'Cueva de Venado', geoda_mayor: 'Geoda mayor' };
 // rareza y logro al descubrir cada lugar
 export const STRUCT_RARE = { faro: 'rara', churchill: 'común', caldera: 'poco común', fortin: 'legendaria', carreta: 'común', estatua: 'común', fuente: 'poco común', capital: 'legendaria',
   mirador_poas: 'rara', mirador_arenal: 'rara', cumbre: 'legendaria', refugio: 'rara', basilica: 'legendaria', ruinas: 'legendaria', orosi: 'rara', tarcoles: 'rara', guanacaste: 'legendaria',
@@ -1082,7 +1087,7 @@ export const STRUCT_RARE = { faro: 'rara', churchill: 'común', caldera: 'poco c
   zapote: 'rara', aeropuerto: 'legendaria', zurqui: 'rara',
   cerro_muerte: 'rara', conchal: 'rara', turrialba: 'legendaria', san_lucas: 'rara',
   braulio: 'rara', juan_castro: 'rara', carara: 'rara', feria_pueblo: 'común', cementerio_pueblo: 'común', canopy: 'poco común', sitio_arqueologico: 'rara', caverna_rey: 'épica', templo_hundido: 'legendaria', catarata_escondida: 'rara', amistad_parque: 'legendaria', rincon_parque: 'rara',
-  cacaotal: 'poco común', lecheria: 'poco común', termales: 'poco común' };
+  cacaotal: 'poco común', lecheria: 'poco común', termales: 'poco común', cueva_barra_honda: 'rara', cueva_venado: 'rara', geoda_mayor: 'legendaria' };
 export const STRUCT_ACH = { fortin: ['fortin', 'De Heredia para el mundo'], guanacaste: ['guanacaste_eterno', 'Guanacaste eterno'], ruinas: ['ruinas', 'La iglesia que nunca se terminó'],
   basilica: ['basilica', 'Romero de corazón'], faro: ['faro', 'Luz del Pacífico'], cumbre: ['chirripo', 'En el techo de Costa Rica'], mirador_poas: ['poas', 'Cráter del Poás'], mirador_arenal: ['arenal', 'Frente al Arenal'],
   estadio_nacional: ['sabana', 'La Sabana se llenó'], estadio_obra: ['sigue_construccion', 'Sigue en construcción'], estacion: ['tren', 'Pasajero del tren'], templo_musica: ['retreta', 'Domingo de retreta'], playa_lujo: ['gentrificacion', 'Bienvenidos al paraíso (en dólares)'], refineria: ['refinamiento', 'Visité la refinería que no refina'],

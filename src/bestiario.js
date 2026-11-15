@@ -44,6 +44,9 @@ const DESC = {
   aguamala: 'Flota a la deriva cerca de la orilla. Su toque deja ardor; la sábila lo calma.', raya: 'Enterrada en la arena del agua bajita. Arrastrando los pies (agachado) se espanta.',
   bailarin: 'Forastero elegante de las noches de fiesta. No le mire los pies.',
   anima: 'Pasan en procesión con velas, de noche cerca de los pueblos. Se acompañan; no se les pega.',
+  cangrejo_ciego: 'Pálido y sin ojos: vive en las pozas y los ríos de las cuevas. Se guía por las vibraciones del agua.',
+  grillo_cueva: 'Largas antenas y patas de brincar: canta en lo seco y oscuro de la cueva, donde no llega la luz.',
+  escarabajo_calcita: 'Cubierto de costra de calcita: entre las estalagmitas parece una piedra más. Si uno se le arrima, se hace bolita.',
   puma: 'El león de montaña. Acecha por detrás; si uno lo mira de frente, no se tira.',
   becquer: 'Boa enorme: quieta parece un tronco caído. Agarra y aprieta; pegándole se zafa uno.', alma_en_pena: 'Sale en la neblina del Cerro de la Muerte si uno se queda quieto y sin fuego.',
 };
