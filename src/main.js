@@ -41,7 +41,18 @@ function frame(now) {
   requestAnimationFrame(frame);
   // un error en un cuadro no debe congelar el juego: se anota y se sigue con el próximo
   const t0 = performance.now();
-  try { if (game.running && ui) game.update(dt); } catch (err) { if (!frame.warned) { frame.warned = true; console.error(err); } }
+  try { if (game.running && ui) game.update(dt); frame.fallos = 0; } catch (err) {
+    // v13.2.3: antes solo se anotaba el primer error (y si se repetía cada cuadro el mundo quedaba congelado sin decir nada). Ahora cada error distinto
+    // se anota (consola y window.__nbErrores), se avisa una vez y, si el cuadro falla 90 veces seguidas, se regeneran los trozos cargados
+    const msg = String((err && err.message) || err);
+    const vistos = (frame.vistos ||= new Set());
+    if (!vistos.has(msg) && vistos.size < 8) {
+      vistos.add(msg); console.error('[NanoBlocks] error en el cuadro:', err); (window.__nbErrores ||= []).push('cuadro: ' + msg);
+      try { ui.toast('⚠️ Hubo un error en el juego; se intenta seguir. Si se queda quieto, recargue la página.', 4500, { cat: 'urgente', clave: 'error-cuadro' }); } catch { /* sin aviso */ }
+    }
+    frame.fallos = (frame.fallos || 0) + 1;
+    if (frame.fallos === 90) { try { game.recuperarTrozos(); console.warn('[NanoBlocks] se regeneran los trozos cargados'); } catch (e2) { console.error(e2); } }
+  }
   game.msCuadro = (game.msCuadro || 0) * 0.9 + (performance.now() - t0) * 0.1; // v12.0.0: lo que tarda el cuadro (CPU y envío a la GPU)
 }
 requestAnimationFrame(frame);

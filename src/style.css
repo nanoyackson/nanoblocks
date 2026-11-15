@@ -354,7 +354,9 @@ body.parry #game { filter: brightness(1.5) saturate(1.3); transition: filter 0.0
 .lib-scroll.dicho .dicho-e small { color: var(--text-soft); font-size: 14px; }
 .lib-scroll.dicho .dicho-e.urgente span { color: var(--danger); }
 .lib-scroll.dicho .dicho-e.tenue { opacity: 0.6; }
-#debug { position: absolute; left: 6px; top: 6px; white-space: pre; font-size: 14px; line-height: 1.05; background: var(--surface); padding: 4px 8px; text-shadow: var(--sombra-texto); }
+/* v13.2.3: F3 va a la derecha del minimapa (que ocupa 8..158 px, 8..108 en móvil) y bajo la brújula (que llega a 32 px): ya no se encima */
+#debug { position: absolute; left: 170px; top: 40px; max-width: calc(100vw - 180px); overflow: hidden; white-space: pre; font-size: 14px; line-height: 1.15; background: rgba(8, 10, 14, 0.62); color: #fff; border-radius: var(--r-chico); padding: 4px 8px; text-shadow: var(--sombra-texto); pointer-events: none; z-index: 3; }
+@media (max-width: 700px) { #debug { left: 116px; top: 36px; font-size: 11px; max-width: calc(100vw - 124px); } }
 #effects { position: absolute; left: 8px; bottom: 80px; display: flex; flex-direction: column; gap: 3px; }
 #effects div { background: var(--surface); padding: 1px 8px; font-size: 14px; text-shadow: var(--sombra-texto); border-left: 3px solid var(--border-strong); }
 #effects .veneno { border-color: var(--success); color: var(--success); }

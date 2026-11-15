@@ -2693,6 +2693,21 @@ export class Game {
     fx.material.opacity = (t < 0.42 ? 0.55 : 0.55 * (1 - (t - 0.42) / 0.24));
   }
 
+  // v13.2.3: «Cargando terreno…» mientras el trozo del jugador no está (cada 3 s como mucho)
+  avisarCargando() {
+    const t = performance.now();
+    if (t - (this.cargandoAviso || 0) < 3000) return;
+    this.cargandoAviso = t;
+    if (this.ui) this.ui.toast('⏳ Cargando terreno…', 2200, { cat: 'consejo', clave: 'cargando-terreno' });
+  }
+  // v13.2.3: si el cuadro falla una y otra vez (un error que no se va), se tira lo cargado y se genera de nuevo: el mundo no queda congelado
+  recuperarTrozos() {
+    const w = this.world; if (!w) return;
+    for (const c of w.chunks.values()) w.disposeMeshes(c);
+    w.chunks.clear(); if (w.fluidQueue) w.fluidQueue.clear(); if (w.caidas) w.caidas.length = 0; if (w.caidasSet) w.caidasSet.clear();
+    this.esperaT = 0;
+  }
+
   // ---------- cuadro ----------
   update(dt) {
     if (!this.running || !this.world) return;
@@ -2772,8 +2787,9 @@ export class Game {
       else if (this.globoViaje) globoUpdate(this, dt);
       else if (this.planeo) planeoUpdate(this, dt);
       else if (this.gancho) ganchoUpdate(this, dt);
-      else if (this.riding) this.rideUpdate(dt, input);
-      else if (this.world.isLoaded(pos.x, pos.z)) p.update(dt, input, this);
+      else if (this.riding && this.terrenoListo(pos)) this.rideUpdate(dt, input);
+      else if (this.terrenoListo(pos)) { p.update(dt, input, this); this.esperaT = 0; }
+      else if ((this.esperaT = (this.esperaT || 0) + dt) > 1.2) this.avisarCargando(); // v13.2.3: retenido esperando terreno: se avisa
       this.updateTarget();
       this.handleMouse(dt);
     } else {
@@ -3658,6 +3674,8 @@ export class Game {
     this.ui.renderEffects(e);
   }
 
+  /** v13.2.3: ¿está cargado el terreno bajo el jugador (su columna y las de su alrededor)? Si no, se queda retenido arriba («Cargando terreno…»), nunca cae. */
+  terrenoListo(pos) { const w = this.world, r = 0.45; return w.isLoaded(pos.x, pos.z) && w.isLoaded(pos.x - r, pos.z - r) && w.isLoaded(pos.x + r, pos.z - r) && w.isLoaded(pos.x - r, pos.z + r) && w.isLoaded(pos.x + r, pos.z + r); }
   debugText() {
     if (!this.world) return '';
     const p = this.player.body.pos;

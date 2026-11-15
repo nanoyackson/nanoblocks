@@ -5,7 +5,7 @@ export const GAME_NAME = 'NanoBlocks';
 // v13.1.0: la versión de generador de terreno MÁS NUEVA que este juego sabe hacer (la de los mundos nuevos). Si el anfitrión de una sala manda
 // una mayor, este cliente generaría un terreno distinto al suyo (cuevas flotando): se rechaza la entrada (red/sesion.js).
 export const GEN_MAX = 23; // v13.2.0: 23 = lava más abajo (GEN_PROF en worldgen2.js)
-export const GAME_VERSION = '13.2.2';
+export const GAME_VERSION = '13.2.3';
 // v12.4.6: la versión MÁS VIEJA del juego que puede abrir lo que esta versión guarda. Se sube cuando un mundo guardado trae algo que un
 // juego anterior no entiende y lo rompería: bloques nuevos (ids que el mallador no conoce), un SAVE_FORMAT nuevo o un campo que cambia
 // de forma. Se guarda en meta.minVersion y el menú no abre un mundo cuyo minVersion sea más nuevo que este juego (12.4.0: los bloques 656–662).
@@ -26,6 +26,21 @@ export const CREDITS = [
 ];
 
 export const CHANGELOG = [
+  {
+    version: '13.2.3',
+    date: '2026-11-15',
+    title: 'Sin congelarse',
+    items: [
+      'Arreglo: el juego se congelaba volando en creativo lejos del origen (Isaac, v13.2.2: «se quedó pegado y no volvió a moverse más»; el mapa, Escape y los menús seguían, el mundo no cargaba más).',
+      'Causa exacta (src/carreteras.js, drawFeature, la placa de las carreteras): anotaba la estructura con coordenadas del MUNDO (x, z) en vez de las del trozo, y world.ensureChunk las usa como índice del arreglo del trozo (idx(st.x, st.y, st.z)). Cerca del origen el índice caía en otro bloque y la placa simplemente no se registraba; a más de ~1 000 bloques el índice se salía del arreglo (en la prueba, x = −1374, z = −1515 daba −7438), BLOCKS[undefined].key lanzaba un TypeError y, como el trozo nunca llegaba a cargarse, la excepción se repetía en cada cuadro: world.update no pasaba de ese trozo, el jugador (que solo se mueve si su trozo está cargado) quedaba quieto y main.js solo anotaba el PRIMER error, así que no se veía nada. Venía desde el generador 6 (carreteras): no es de la lava del generador 23 ni de los workers (no hay workers de trozos).',
+      'Ahora las placas de las carreteras se anotan con coordenadas locales (x − origen del trozo): sus textos por fin se registran. Los bloques no cambian: los mundos 22 y anteriores siguen idénticos bloque a bloque.',
+      'Que nunca más quede congelado: (1) world.ensureChunk reintenta una vez un trozo que falla al generarse y, si sigue fallando, lo llena con un respaldo seguro (bedrock, roca hasta y 59 y aire arriba: depende solo de la altura, igual en todas las máquinas) y anota el error; (2) una estructura con coordenadas fuera del trozo o sobre un bloque desconocido se salta en vez de tumbar la carga; (3) un trozo que no se puede mallar se deja sin malla y se sigue; (4) main.js anota cada error distinto del cuadro (consola y window.__nbErrores), avisa una vez en pantalla y, si el cuadro falla 90 veces seguidas, regenera los trozos cargados (game.recuperarTrozos); (5) si el jugador queda retenido esperando terreno más de 1,2 s sale «⏳ Cargando terreno…».',
+      'Nuevo tools/revisar-masa.mjs (en npm run revisar): genera 960 trozos de los generadores 23 y 22 en 6 semillas y 5 lugares hasta ±3 200 bloques del origen (11 biomas, desde y = 1 hasta y = 119) y comprueba que ninguno lanza una excepción, que cada estructura trae coordenadas locales válidas sobre un bloque que existe, que no hay ids de bloque desconocidos y que el tiempo por trozo es razonable (promedio 21 ms; el peor, 706 ms, un pueblo). Sin el arreglo falla: x = −1374, z = −1515, índice −7438.',
+      'Probado en el navegador (Chrome real y el del panel): vuelo en línea recta, en espiral y en órbita sobre pueblos de hasta ~2 400 bloques con el generador 23 sin una sola excepción (build de desarrollo y de producción); el mundo semilla 3 en el trozo que antes fallaba (−1374, −1515) carga normal; un trozo roto a propósito se rellena con el respaldo y el juego sigue; un error persistente se anota y recuperarTrozos regenera los 225 trozos; y el aviso «Cargando terreno…» sale.',
+      'Arreglo: una pestaña con un mundo abierto se recargaba sola (Isaac: «Leave site? Changes you made may not be saved» a media partida, con dos pestañas abiertas). Causa exacta (src/pwa.js, el oyente de controllerchange): el service worker es uno solo para todas las pestañas; al activar la versión nueva desde una pestaña (la del menú, o por la actualización automática de la 13.2.1) TODAS reciben controllerchange y todas hacían location.reload(), también la que estaba jugando. Ahora, con un mundo abierto, no recarga nunca: deja el aviso fijo «Hay una versión nueva» y se aplica sola al volver al menú, ya guardado (si el anfitrión sale con invitados solo avisa). Sin mundo abierto recarga como antes. El beforeunload (cerrar con cambios sin guardar) no cambia. Probado en Chrome con dos pestañas del build de producción en localhost (una en el menú, otra en un mundo; se publicó otra versión): la del menú se actualizó, la del mundo siguió sin recargar con el aviso fijo y recargó al salir al menú; revisar-pwa lo comprueba.',
+      'Arreglo: el panel de depuración (F3) caía encima del minimapa y no se leía. Ahora va a la derecha del minimapa y bajo la brújula (también en pantalla chica), con fondo semitransparente. Y el jugador no cae al fondo esperando un trozo: game.terrenoListo exige cargadas su columna y las cuatro de alrededor; si no, queda retenido arriba con «Cargando terreno…» (también al ir en vehículo o montura).',
+    ],
+  },
   {
     version: '13.2.2',
     date: '2026-11-15',

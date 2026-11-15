@@ -1,6 +1,6 @@
 {
   "name": "nanoblocks",
-  "version": "13.2.2",
+  "version": "13.2.3",
   "private": true,
   "description": "NanoBlocks: juego voxel de supervivencia y construcción hecho desde cero con IA",
   "type": "module",
@@ -9,7 +9,7 @@
     "build": "vite build && node tools/generar-sw.mjs",
     "preview": "vite preview",
     "lint": "eslint . --max-warnings 0",
-    "revisar": "node tools/revisar-version.mjs && node tools/revisar-trozos.mjs && node tools/revisar-nombres.mjs && node tools/revisar-recetas.mjs && node tools/revisar-iconos.mjs && node tools/revisar-agarre.mjs && node tools/revisar-avisos.mjs && node tools/revisar-pide.mjs && node tools/revisar-plata.mjs && node tools/revisar-importar.mjs && node tools/revisar-ext-item.mjs && node tools/revisar-luces.mjs && node tools/revisar-red.mjs && node tools/revisar-inventario-red.mjs && node tools/revisar-cofres.mjs && node tools/revisar-rey.mjs && node tools/revisar-red4.mjs && node tools/revisar-separar.mjs && node tools/revisar-picar.mjs && node tools/revisar-cuevas.mjs && node tools/revisar-karst.mjs && node tools/revisar-cuevavida.mjs && node tools/revisar-profundidad.mjs && node tools/revisar-pwa.mjs"
+    "revisar": "node tools/revisar-version.mjs && node tools/revisar-trozos.mjs && node tools/revisar-nombres.mjs && node tools/revisar-recetas.mjs && node tools/revisar-iconos.mjs && node tools/revisar-agarre.mjs && node tools/revisar-avisos.mjs && node tools/revisar-pide.mjs && node tools/revisar-plata.mjs && node tools/revisar-importar.mjs && node tools/revisar-ext-item.mjs && node tools/revisar-luces.mjs && node tools/revisar-red.mjs && node tools/revisar-inventario-red.mjs && node tools/revisar-cofres.mjs && node tools/revisar-rey.mjs && node tools/revisar-red4.mjs && node tools/revisar-separar.mjs && node tools/revisar-picar.mjs && node tools/revisar-cuevas.mjs && node tools/revisar-karst.mjs && node tools/revisar-cuevavida.mjs && node tools/revisar-profundidad.mjs && node tools/revisar-pwa.mjs && node tools/revisar-masa.mjs"
   },
   "dependencies": {
     "three": "0.170.0",

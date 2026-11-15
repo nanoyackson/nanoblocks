@@ -142,6 +142,7 @@ const hcol = (s, x, z, k) => (Math.abs((x * 73856093) ^ (z * 19349663) ^ (s * 83
 export function buildRoadsInChunk(gen, cx, cz, blocks, idx, out) {
   const x0 = cx * CH, z0 = cz * CH;
   const inChunk = (x, z) => x >= x0 && x < x0 + CH && z >= z0 && z < z0 + CH;
+  inChunk.x0 = x0; inChunk.z0 = z0; // v13.2.3: el origen del trozo (las placas se anotan con coordenadas locales)
   const set = (x, y, z, id) => { if (inChunk(x, z) && y > 0 && y < 127) blocks[idx(x - x0, y, z - z0)] = id; };
   const get = (x, y, z) => (inChunk(x, z) && y > 0 && y < 127 ? blocks[idx(x - x0, y, z - z0)] : -1);
   for (const seg of roadsNear(gen, x0 + 8, z0 + 8, 12)) {
@@ -207,7 +208,8 @@ function drawFeature(gen, seg, ft, k, set, get, inChunk, out) {
   const placa = (al, ac, dy, title, text) => {
     const [x, z] = W(al, ac);
     set(x, oy + dy, z, K.placa);
-    if (inChunk(x, z)) out.push({ x, y: oy + dy, z, id: K.placa, be: { type: 'placa', facing: facingTo(ac), title, text } });
+    // v13.2.3: coordenadas LOCALES del trozo (antes iban las del mundo: world.ensureChunk calculaba un índice fuera del arreglo lejos del origen y fallaba en cada cuadro)
+    if (inChunk(x, z)) out.push({ x: x - inChunk.x0, y: oy + dy, z: z - inChunk.z0, id: K.placa, be: { type: 'placa', facing: facingTo(ac), title, text } });
   };
   const npc = (al, ac, role, name) => {
     const [cx, cz] = W(0, 0);

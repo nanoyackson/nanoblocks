@@ -9,6 +9,7 @@ let instalador = null;   // el evento beforeinstallprompt
 let recargando = false;
 let versionNueva = '';   // la versión del SW que espera (la dice él mismo)
 let aplicando = false;   // se está pasando a la versión nueva (el aviso dice «Actualizando…»)
+let cambio = false;      // v13.2.3: otra pestaña activó la versión nueva y ESTA tiene un mundo abierto: no se recarga, se aplica al salir
 let aplazada = false;    // el anfitrión salió con invitados: no se aplica sola, se avisa
 const K_INTENTO = 'nb.pwa.intento';
 let enlace = { mundoAbierto: () => false, guardar: async () => {} };
@@ -31,7 +32,7 @@ export const pwa = {
   /** ¿corre ya como app instalada? */
   instalada: () => (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true,
   puedeInstalar: () => !!instalador && !pwa.instalada(),
-  hayNueva: () => !!esperando,
+  hayNueva: () => !!esperando || cambio,
   aplicando: () => aplicando,
   versionNueva: () => versionNueva,
   /** 'sin' (no hay SW: desarrollo o navegador viejo) · 'activo' (juega sin conexión) */
@@ -40,7 +41,7 @@ export const pwa = {
   /** ui.js: cómo saber si hay un mundo abierto y cómo guardarlo */
   enlazar(o) { enlace = { ...enlace, ...o }; },
   /** se salió del mundo (ya guardado): si hay versión nueva se aplica sola, salvo un anfitrión que dejó invitados (entonces solo se avisa) */
-  salioDelMundo(conInvitados) { aplazada = !!conInvitados; revisar(); },
+  salioDelMundo(conInvitados) { aplazada = !!conInvitados; if (cambio && !conInvitados) { recargar(); return; } revisar(); },
   revisar,
   async instalar() {
     if (!instalador) return false;
@@ -50,10 +51,11 @@ export const pwa = {
     return true;
   },
   /** el botón «Actualizar ahora»: guarda (enlace.guardar) y pasa a la versión nueva */
-  async actualizar() { if (esperando) await aplicar(false); else buscar(); },
+  async actualizar() { if (cambio && !esperando) { try { await enlace.guardar(); } catch { /* guarda solo */ } recargar(); } else if (esperando) await aplicar(false); else buscar(); },
   buscar,
 };
 
+function recargar() { if (recargando) return; recargando = true; location.reload(); }
 function preguntarVersion(sw) {
   return new Promise((res) => {
     try {
@@ -110,5 +112,12 @@ export function iniciarPwa() {
     document.addEventListener('visibilitychange', () => { if (!document.hidden) buscar(); });
     window.addEventListener('focus', buscar);
   }).catch(() => { /* sin service worker el juego sigue igual */ });
-  navigator.serviceWorker.addEventListener('controllerchange', () => { if (recargando) return; if (!habia) { habia = true; return; } recargando = true; location.reload(); });
+  // v13.2.3: el service worker es UNO para todas las pestañas: si otra pestaña (en el menú) activa la versión nueva, esta recibe el cambio también.
+  // Con un mundo abierto NUNCA se recarga (antes sí: «Leave site?» a media partida): se deja el aviso fijo y se aplica al salir al menú, ya guardado.
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (recargando) return;
+    if (!habia) { habia = true; return; }
+    if (enlace.mundoAbierto()) { cambio = true; esperando = null; aplicando = false; avisar(); return; }
+    recargar();
+  });
 }

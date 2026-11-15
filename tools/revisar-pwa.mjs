@@ -26,6 +26,8 @@ ok(INTERVALO_BUSCAR === 15 * 60 * 1000, 'se busca versión nueva cada 15 minutos
 const pwa = fs.readFileSync(new URL('../src/pwa.js', import.meta.url), 'utf8');
 ok(/window\.addEventListener\('focus', buscar\)/.test(pwa) && /visibilitychange/.test(pwa) && /\n {4}buscar\(\);/.test(pwa), 'busca al arrancar, al volver a la pestaña y al volver a la ventana');
 ok(/sessionStorage\.setItem\(K_INTENTO/.test(pwa) && /marcarIntento\(versionNueva/.test(pwa), 'la versión ya intentada se guarda en sessionStorage antes de activar');
+{ const cc = pwa.slice(pwa.indexOf("'controllerchange'")); const m = cc.indexOf('mundoAbierto()'), r = cc.indexOf('recargar()');
+  ok(m > 0 && r > m && /cambio = true/.test(cc.slice(m, r)) && /cambio && !conInvitados/.test(pwa), 'v13.2.3: con un mundo abierto controllerchange NUNCA recarga (aviso fijo; se recarga al salir al menú); sin mundo sí'); }
 ok(/redundant/.test(pwa), 'si el SW nuevo falla o lo reemplaza otro, el juego sigue con el viejo (sin error)');
 const sw = fs.readFileSync(new URL('./generar-sw.mjs', import.meta.url), 'utf8');
 ok(/e\.data === 'version'/.test(sw) && /postMessage\(VERSION\)/.test(sw) && /e\.data === 'activar'/.test(sw), 'el service worker contesta «version» y sigue activándose con «activar»');

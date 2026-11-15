@@ -513,7 +513,16 @@ export class World {
     let c = this.chunks.get(k);
     if (c) return c;
     c = new Chunk(cx, cz);
-    const structures = this.gen.generate(cx, cz, c.blocks, c.tint) || [];
+    // v13.2.3: un trozo que falla al generarse no puede dejar el mundo congelado (la excepción se repetía cada cuadro y world.update nunca pasaba
+    // de ese trozo): se reintenta una vez y, si sigue fallando, se llena con un respaldo seguro (roca hasta y 59, aire arriba: igual en todas las máquinas)
+    let structures = [];
+    try { structures = this.gen.generate(cx, cz, c.blocks, c.tint) || []; } catch (e1) {
+      this.anotarError(`trozo ${cx},${cz}`, e1);
+      try { c.blocks.fill(0); structures = this.gen.generate(cx, cz, c.blocks, c.tint) || []; } catch (e2) {
+        this.anotarError(`trozo ${cx},${cz} (respaldo)`, e2);
+        structures = []; rellenarRespaldo(c);
+      }
+    }
     apuntalar(c.blocks);
     const m = this.mods.get(k);
     if (m) for (const [i, id] of m) c.blocks[i] = id;
@@ -522,8 +531,11 @@ export class World {
       if (st.npc) { this.villageNpcs.set(`${st.npc.village}:${st.npc.name}`, st.npc); continue; }
       if (st.zone) { this.zones.set(st.zone.id, st.zone); continue; }
       if (st.beacon) { this.beacons.add(`${st.beacon.x},${st.beacon.y},${st.beacon.z}`); continue; }
+      // v13.2.3: una estructura con coordenadas fuera del trozo (o un bloque desconocido) se salta, no tumba la carga
+      if (!(st.x >= 0 && st.x < CHUNK && st.z >= 0 && st.z < CHUNK && st.y >= 0 && st.y < HEIGHT)) continue;
       const i = idx(st.x, st.y, st.z);
-      if (st.id ? c.blocks[i] !== st.id : BLOCKS[c.blocks[i]].key !== st.be.type) continue;
+      const bq = BLOCKS[c.blocks[i]];
+      if (!bq || (st.id ? c.blocks[i] !== st.id : bq.key !== st.be.type)) continue;
       let bm = this.blockEntities.get(k);
       if (!bm) { bm = new Map(); this.blockEntities.set(k, bm); }
       if (!bm.has(i)) bm.set(i, st.be);
@@ -535,6 +547,16 @@ export class World {
     this.chunks.set(k, c);
     this.stats.generated++;
     return c;
+  }
+
+  // v13.2.3: los errores de carga se anotan (consola, window.__nbErrores y un aviso) en vez de perderse en silencio
+  anotarError(donde, e) {
+    const L = (this.errores ||= []);
+    const msg = `${donde}: ${e && e.message ? e.message : e}`;
+    if (L.length < 40) L.push(msg);
+    if (typeof window !== 'undefined') { (window.__nbErrores ||= []).push(msg); }
+    console.error('[NanoBlocks]', msg, e && e.stack ? e.stack.split(/\r?\n/).slice(0, 3).join(' | ') : '');
+    if (this.alError) { try { this.alError(msg); } catch { /* el aviso no tumba nada */ } }
   }
 
   neighborsReady(cx, cz) {
@@ -628,8 +650,20 @@ export class World {
       const cx = pcx + dx, cz = pcz + dz;
       const inner = Math.abs(dx) <= R && Math.abs(dz) <= R;
       let c = this.getChunk(cx, cz);
-      if (!c) { c = this.ensureChunk(cx, cz); work++; continue; }
-      if (inner && c.dirty && this.neighborsReady(cx, cz)) { this.meshChunk(c); work++; }
+      if (!c) {
+        try { c = this.ensureChunk(cx, cz); } catch (e) { // v13.2.3: último recurso: un trozo de respaldo en vez de repetir el error cada cuadro
+          this.anotarError(`cargar ${cx},${cz}`, e);
+          c = new Chunk(cx, cz); rellenarRespaldo(c); this.chunks.set(key(cx, cz), c);
+        }
+        work++; continue;
+      }
+      if (inner && c.dirty && this.neighborsReady(cx, cz)) {
+        try { this.meshChunk(c); } catch (e) { // v13.2.3: un trozo que no se puede mallar se deja sin malla (un hueco) y se sigue
+          this.anotarError(`mallar ${cx},${cz}`, e);
+          c.dirty = false; c.shown = true; this.disposeMeshes(c);
+        }
+        work++;
+      }
     }
     return work;
   }
@@ -712,6 +746,12 @@ export class World {
 // Es sobre lo generado, antes de aplicar lo que uno cambió: se calcula igual cada vez y no hace falta guardarlo
 const CAPA = CHUNK * CHUNK;
 let FIRME = null;
+// v13.2.3: el trozo de respaldo: bedrock, roca hasta y 59 y aire arriba. Solo depende de la altura (igual en todas las máquinas)
+function rellenarRespaldo(c) {
+  c.blocks.fill(0);
+  for (let y = 0; y < 60; y++) { const id = y === 0 ? K.bedrock : K.stone; for (let z = 0; z < CHUNK; z++) for (let x = 0; x < CHUNK; x++) c.blocks[idx(x, y, z)] = id; }
+  c.countGlow();
+}
 function apuntalar(bl) {
   if (!FIRME) { FIRME = new Uint16Array(BLOCKS.length); for (let i = 0; i < BLOCKS.length; i++) if (BLOCKS[i].gravity) FIRME[i] = BLOCKS[i].key === 'gravel' ? K.stone : BLOCKS[i].key === 'ceniza' ? (K.basalt || K.stone) : K.sandstone; }
   for (let i = CAPA; i < bl.length; i++) { const f = FIRME[bl[i]]; if (f && !SOLID[bl[i - CAPA]]) bl[i] = f; }
