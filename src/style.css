@@ -25,7 +25,7 @@ h1, h2, h3 { margin: 0 0 6px; text-shadow: var(--sombra-texto); font-weight: nor
 h1 { font-size: 44px; }
 h2 { font-size: 27px; }
 .logo { margin: 0; line-height: 0; }
-.logo img { width: min(640px, 92vw); max-height: 26vh; object-fit: contain; height: auto; filter: drop-shadow(0 10px 18px var(--velo)); animation: logo-in 0.9s cubic-bezier(.2, 1.4, .4, 1) both; }
+.logo img { width: min(640px, 92vw); max-height: 26vh; object-fit: contain; height: auto; filter: drop-shadow(0 10px 18px var(--velo)); animation: logo-in 0.9s cubic-bezier(.2, 1.4, .4, 1) backwards; }
 @keyframes logo-in { from { transform: translateY(-30px) scale(0.92); opacity: 0; } to { transform: none; opacity: 1; } }
 .bg-menu { background: var(--surface) url(/ui/menu-fondo.jpg) center / cover no-repeat; box-shadow: var(--luz-borde); animation: menu-pan 40s ease-in-out infinite alternate; }
 @keyframes menu-pan { from { background-position: 30% 50%; background-size: 110% auto; } to { background-position: 70% 50%; background-size: 118% auto; } }

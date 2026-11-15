@@ -1,5 +1,11 @@
 # Registro de versiones
 
+## 13.2.2 — 2026-11-15 · Logo sin cortes
+
+- Arreglo: en el menú principal se cortaba el logo (Isaac, en el sitio en vivo con la 13.2.1, ventana de ~1193×773: faltaba la «s» de NanoBlocks y el velo oscuro de detrás terminaba en bordes rectos arriba y a la derecha).
+- Causa (medida en el navegador): el logo del menú mide hasta 720 px de ancho (vidrio.css, v11.13.3) pero el panel del menú es de 640 px (.panel.wide) y .panel recorta con overflow (x oculto, y con scroll). En 1193×773 el panel va de x = 281 a 911 y el logo llegaba a 985: se cortaba en x ≈ 911; el velo (::before, que sale 18 % arriba y 8 % a los lados) también se recortaba en el borde del panel, por eso terminaba recto. No era un fallo de repintado ni de la 13.2.1: pasaba siempre que el logo pasaba de los 640 px.
+- Ahora el panel del menú mide hasta 760 px, el logo ocupa solo lo suyo y se centra (max-width 100 %), los botones siguen midiendo 630 px, el velo va sin filter: blur (el degradado radial ya es suave) y con un margen arriba para que quepa dentro del panel, y la animación del logo usa backwards en vez de both para no dejar una capa de composición con el transform final. Medido a 1193×773, 1366×768, 1920×1080, 375×812 y 667×375: la imagen cabe siempre dentro del panel y el velo no se recorta.
+
 ## 13.2.1 — 2026-11-15 · Se actualiza solo
 
 - El juego se actualiza solo cuando sale una versión nueva (Isaac tuvo que borrar las cookies para ver la 13.2.0 y perdió su mundo). Antes el service worker nuevo esperaba hasta que alguien encontrara Ajustes → Aplicación → Actualizar. Ahora (src/pwa.js, función decidir): en el menú o al arrancar, si hay una versión nueva esperando, se activa y la página se recarga UNA vez, con el aviso «Actualizando a la versión X…»; con un mundo abierto NUNCA recarga a media partida: sale un aviso fijo (no un toast de 7 s) «Hay una versión nueva. Actualizar ahora», cuyo botón guarda el mundo y recarga, y la versión se aplica sola al volver al menú, ya guardado.

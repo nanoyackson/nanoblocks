@@ -245,10 +245,15 @@ label { font-family: var(--font); }
 .pregunta-botones { display: flex; justify-content: flex-end; gap: var(--sp-2); }
 
 /* v11.13.3: el logo se lee fuerte sobre el fondo cargado: un velo oscuro difuso detrás, contorno y sombra */
-#screen-menu .logo { position: relative; isolation: isolate; }
-#screen-menu .logo::before { content: ''; position: absolute; inset: -18% -8%; z-index: -1; pointer-events: none;
-  background: radial-gradient(closest-side, var(--velo) 0%, var(--velo) 55%, transparent 100%); filter: blur(6px); }
-#screen-menu .logo img { width: min(720px, 92vw); max-height: 30vh;
+/* v13.2.2: el logo se cortaba a la derecha y el velo terminaba en bordes rectos: la imagen (720 px) era más ancha que el panel del menú (640 px) y
+   .panel recorta con overflow (x oculto, y con scroll). Ahora el panel del menú es más ancho que el logo, el logo ocupa solo lo suyo y se centra,
+   el velo (sin blur: el degradado ya es suave) cabe dentro del panel con un margen arriba, y los botones siguen midiendo 630 px. */
+#screen-menu .panel.wide { width: min(760px, 100%); }
+#screen-menu .panel > button { width: min(630px, 100%); align-self: center; }
+#screen-menu .logo { position: relative; isolation: isolate; width: fit-content; max-width: 100%; margin: clamp(10px, 4vh, 34px) auto 0; }
+#screen-menu .logo::before { content: ''; position: absolute; inset: -14% -6%; z-index: -1; pointer-events: none;
+  background: radial-gradient(closest-side, var(--velo) 0%, var(--velo) 55%, transparent 100%); }
+#screen-menu .logo img { width: min(720px, calc(100vw - 64px)); max-width: 100%; max-height: 30vh;
   filter: drop-shadow(0 0 1.5px var(--surface-solida)) drop-shadow(0 0 1.5px var(--surface-solida)) drop-shadow(0 12px 22px var(--velo)); }
 #screen-menu .subtitle { text-shadow: var(--sombra-texto); }
 
