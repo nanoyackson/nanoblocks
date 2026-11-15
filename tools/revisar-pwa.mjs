@@ -24,7 +24,7 @@ ok(aplicaciones === 1, `cinco revisiones seguidas con la misma versión: ${aplic
 ok(INTERVALO_BUSCAR === 15 * 60 * 1000, 'se busca versión nueva cada 15 minutos');
 
 const pwa = fs.readFileSync(new URL('../src/pwa.js', import.meta.url), 'utf8');
-ok(/window\.addEventListener\('focus', buscar\)/.test(pwa) && /visibilitychange/.test(pwa) && /\n {4}buscar\(\);/.test(pwa), 'busca al arrancar, al volver a la pestaña y al volver a la ventana');
+ok(/window\.addEventListener\('focus', buscar\)/.test(pwa) && /visibilitychange/.test(pwa) && /\r?\n {4}buscar\(\);/.test(pwa), 'busca al arrancar, al volver a la pestaña y al volver a la ventana');
 ok(/sessionStorage\.setItem\(K_INTENTO/.test(pwa) && /marcarIntento\(versionNueva/.test(pwa), 'la versión ya intentada se guarda en sessionStorage antes de activar');
 { const cc = pwa.slice(pwa.indexOf("'controllerchange'")); const m = cc.indexOf('mundoAbierto()'), r = cc.indexOf('recargar()');
   ok(m > 0 && r > m && /cambio = true/.test(cc.slice(m, r)) && /cambio && !conInvitados/.test(pwa), 'v13.2.3: con un mundo abierto controllerchange NUNCA recarga (aviso fijo; se recarga al salir al menú); sin mundo sí'); }
@@ -33,7 +33,7 @@ const sw = fs.readFileSync(new URL('./generar-sw.mjs', import.meta.url), 'utf8')
 ok(/e\.data === 'version'/.test(sw) && /postMessage\(VERSION\)/.test(sw) && /e\.data === 'activar'/.test(sw), 'el service worker contesta «version» y sigue activándose con «activar»');
 const ui = fs.readFileSync(new URL('../src/ui.js', import.meta.url), 'utf8');
 ok(/pwa\.enlazar\(\{ mundoAbierto/.test(ui) && /guardar: async/.test(ui), 'ui.js le dice a pwa.js cuándo hay un mundo abierto y cómo guardarlo');
-ok(/pwa\.salioDelMundo\(gente > 0\)/.test(ui) && /await this\.game\.stop\(\);\n {4}this\.show\('menu'\);\n {4}pwa\.salioDelMundo/.test(ui), 'al volver al menú (ya guardado por stop()) se aplica la versión nueva; un anfitrión con invitados solo recibe el aviso');
+ok(/pwa\.salioDelMundo\(gente > 0\)/.test(ui) && /await this\.game\.stop\(\);\r?\n {4}this\.show\('menu'\);\r?\n {4}pwa\.salioDelMundo/.test(ui), 'al volver al menú (ya guardado por stop()) se aplica la versión nueva; un anfitrión con invitados solo recibe el aviso');
 ok(/id="aviso-pwa"/.test(fs.readFileSync(new URL('../index.html', import.meta.url), 'utf8')) && /Actualizando\$\{v \?/.test(ui), 'el aviso fijo «Actualizar ahora» y el «Actualizando a la versión X…» existen');
 process.exitCode = fallas ? 1 : 0;
 console.log(fallas ? `\n✘ ${fallas} falla(s)` : '\nActualización automática: todo bien.');

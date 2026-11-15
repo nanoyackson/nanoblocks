@@ -7,7 +7,7 @@ import { buildFuegoInChunk } from './fuego.js';
 import { buildVillageInChunk } from './pueblogen.js';
 import { genInfra, columnInfra } from './infragen.js';
 import { genCielo, columnCielo } from './cielogen.js';
-import { buildStructuresInChunk } from './estructuras.js';
+import { buildStructuresInChunk, cercaDeObra } from './estructuras.js';
 
 export const CHUNK = 16;
 export const HEIGHT = 128;
@@ -44,6 +44,7 @@ export class Generator {
     this.nCaveB = new Simplex(s ^ 0x89ab);
     this.nCaveC = new Simplex(s ^ 0x9abc);
     this.v2 = version >= 2 ? new GenV2(this) : null;
+    if (this.v2) this.v2.cercaDeObra = (x, z) => cercaDeObra(this, x, z); // v13.3.0 (I1): bocaIn pregunta si hay una obra cerca
   }
 
   // Altura y bioma de una columna del mundo.

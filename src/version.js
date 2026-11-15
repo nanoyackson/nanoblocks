@@ -4,8 +4,8 @@
 export const GAME_NAME = 'NanoBlocks';
 // v13.1.0: la versión de generador de terreno MÁS NUEVA que este juego sabe hacer (la de los mundos nuevos). Si el anfitrión de una sala manda
 // una mayor, este cliente generaría un terreno distinto al suyo (cuevas flotando): se rechaza la entrada (red/sesion.js).
-export const GEN_MAX = 23; // v13.2.0: 23 = lava más abajo (GEN_PROF en worldgen2.js)
-export const GAME_VERSION = '13.2.6';
+export const GEN_MAX = 24; // v13.3.0: 24 = obras integradas al terreno (GEN_INTEGRACION en worldgen2.js) · v13.2.0: 23 = lava más abajo (GEN_PROF en worldgen2.js)
+export const GAME_VERSION = '13.3.0';
 // v12.4.6: la versión MÁS VIEJA del juego que puede abrir lo que esta versión guarda. Se sube cuando un mundo guardado trae algo que un
 // juego anterior no entiende y lo rompería: bloques nuevos (ids que el mallador no conoce), un SAVE_FORMAT nuevo o un campo que cambia
 // de forma. Se guarda en meta.minVersion y el menú no abre un mundo cuyo minVersion sea más nuevo que este juego (12.4.0: los bloques 656–662).
@@ -26,6 +26,19 @@ export const CREDITS = [
 ];
 
 export const CHANGELOG = [
+  {
+    version: '13.3.0',
+    date: '2026-11-15',
+    title: 'Obras integradas al terreno (generador 24)',
+    items: [
+      'Generador 24, obras integradas al terreno (base de la serie 13.3): los mundos nuevos nacen con generador 24 (GEN_MAX = 24, GEN_INTEGRACION en worldgen2.js) y piden la 13.3.0 (meta.minVersion); un cliente viejo ante un anfitrion de generador 24 se rechaza con el aviso de actualizar. Los mundos 21, 22 y 23 quedan IDENTICOS: tools/huella-mundos.mjs genera trozos reales de los tres (4 semillas x 6 lugares x 3x3 trozos) y compara su hash con tools/huella-gen.json, tomado con el codigo de la v13.2.6.',
+      'I1, nada de vacio ni de bocas de cueva bajo las obras: ninguna boca de cueva a menos de R+22 de una estructura ni de R+26 de un pueblo (en el generador 23 hay 43 mil celdas de boca dentro de esos radios en 4 semillas, en el 24 cero); y rellenarBajoObras tapa los huecos de hasta 14 bloques bajo lo construido con roca firme (menos en las estructuras que SI van sobre una cueva: caverna del rey, puente colgante, templo hundido, Barra Honda, geoda, catarata, termales). Vacio a 1-2 bloques bajo las calles de pueblo: de 7,9 % a 0,0 %.',
+      'I2 e I11, agua y puentes: el cauce de un rio es agua para las carreteras y para las calles del pueblo, y donde cruza hay puente en vez de calle hundida; el agua que una estructura deja en la costa o el oceano se recorta al nivel del mar (el domo de agua del templo hundido).',
+      'I5 e I8, detalles y radios: las bromelias cuelgan solo de hojas, clearTrees limpia hasta R+6 sin tope, y los radios de irazu (34), san Lucas (26), cueva del Venado (35) y Marino Ballena (75) estan corregidos solo en el generador 24 (RADIOS24).',
+      'Pruebas nuevas en npm run revisar: huella-mundos (los mundos 21/22/23 no cambian) y revisar-integracion (bocas, vacio bajo calles, agua sobre el mar, coordenadas validas, datos de estructura que se pierden, radios, y tiempo por trozo: mediana de 7-8 ms, igual o mejor que el generador 23).',
+      'Pruebas tolerantes a los finales de linea CRLF (una copia del repo con autocrlf las rompia: revisar-pwa buscaba \n exacto): revisar-pwa usa \r?\n y revisar-datos, revisar-estilo, revisar-pide y revisar-plata separan lineas con /\r?\n/. Comprobado en una copia convertida a CRLF (pasan pwa, datos, plata, version y nombres).',
+    ],
+  },
   {
     version: '13.2.6',
     date: '2026-11-15',

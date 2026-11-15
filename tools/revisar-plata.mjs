@@ -65,7 +65,7 @@ ok(precioBonito(0.9, true) * K === 450 && precioBonito(0.91, true) * K === 475 &
   let n = 0;
   const malos = [];
   for (const f of readdirSync(dir).filter((x) => x.endsWith('.js') && !['plata.js', 'version.js'].includes(x))) {
-    const t = readFileSync(dir + f, 'utf8').split('\n').filter((l) => !/^\s*\/\//.test(l)).join('\n');
+    const t = readFileSync(dir + f, 'utf8').split(/\r?\n/).filter((l) => !/^\s*\/\//.test(l)).join('\n');
     for (const m of t.matchAll(/(['`])((?:(?!\1)[^\\\n]|\\.)*?(?:₡|colones|colón)(?:(?!\1)[^\\\n]|\\.)*?)\1/g)) {
       const lit = m[2], sal = aColones(lit.replace(/\$\{[^}]*\}/g, '7'));
       n++;

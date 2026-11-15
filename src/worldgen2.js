@@ -17,6 +17,9 @@ export const GEN_CUEVAS = 22;
 // v13.2.0 (generador 23): lo hondo es más caliente. Lagos y charcos de lava por zonas (mismo molde que el agua por cuencas), cada vez
 // más frecuentes y más altos conforme se baja. Los mundos 22 o menos no pasan por aquí: salen idénticos. Solo hash3 y Simplex (sin Math.random).
 export const GEN_PROF = 23;
+// v13.3.0 (generador 24): las obras (pueblos, estructuras, caminos) quedan integradas al terreno: sin bocas de cueva debajo, con suelo firme, puentes sobre los ríos,
+// el agua de una estructura nunca más alta que el mar en la costa, árboles limpios. Los mundos 23 o menos no pasan por aquí: salen idénticos (tools/huella-mundos.mjs).
+export const GEN_INTEGRACION = 24;
 export const LAVA_TOPE = 30, LAVA_FONDO = 10;
 const LAVA_ZONA = 28, LAVA_PROB = 0.75;
 const BOCA_CELDA = 16, BOCA_PROB = 0.9, QUESO_BASE = 0.55, QUESO_PEND = 0.62, ESP_BASE = 0.05, ESP_PEND = 0.03;
@@ -190,6 +193,8 @@ export class GenV2 {
         if (D >= 12) b = { x: ex, z: ez, h: col.h, dx: Math.cos(ang), dz: Math.sin(ang), D, r: 2.3 + hash3(seed, gx, 9106, gz) * 1.2, fase: hash3(seed, gx, 9107, gz) * 6.2832, k: 1.5 };
       }
     }
+    // v13.3.0 (I1): ninguna boca a menos de R+22 de una estructura ni de R+26 de un pueblo (antes se abrían debajo de las casas)
+    if (b && this.gen.version >= GEN_INTEGRACION && this.cercaDeObra && this.cercaDeObra(b.x, b.z)) b = null;
     this.bocaCache.set(k, b);
     return b;
   }
@@ -662,7 +667,12 @@ export class GenV2 {
     }
     for (let k = 0; k < 4; k++) {
       const dx = Math.floor(rr() * 5) - 2, dz = Math.floor(rr() * 5) - 2;
-      put(wx + dx, top + 3, wz + dz, K.bromelia, true);
+      if (this.gen.version >= GEN_INTEGRACION) {
+        // v13.3.0 (I5): la bromelia va sobre la hoja más alta de ese lugar (antes flotaba a top + 3 aunque la copa llegaba solo a top + 2 en el centro)
+        let hojaY = null;
+        for (let dy = 2; dy >= -2; dy--) if (Math.hypot(dx, dy * 1.4, dz) <= 3.1 && hash3(2, wx + dx, top + dy, wz + dz) > 0.12) { hojaY = top + dy; break; }
+        if (hojaY !== null) put(wx + dx, hojaY + 1, wz + dz, K.bromelia, true);
+      } else put(wx + dx, top + 3, wz + dz, K.bromelia, true);
       const vx = wx + (rr() < 0.5 ? -3 : 3), vz = wz + Math.floor(rr() * 5) - 2;
       for (let y = top - 1; y > top - 2 - Math.floor(rr() * 4); y--) put(vx, y, vz, K.vine, true);
     }

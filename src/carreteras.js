@@ -44,10 +44,13 @@ function makeSegment(gen, A, B) {
   const n = xs.length;
   const h = xs.map((x, i) => gen.column(x, zs[i]).h);
   // agua honda: puente; agua baja (lagunas, manglar): relleno de tierra a la altura del mar
-  const water = h.map((v) => v < SEA - 3);
+  // v13.3.0 (I2, generador 24): el cauce de un río (rio < 0.045 y bajo el mar) también es agua: el camino lo cruza con puente en vez de taparlo con un dique de tierra; la regla
+  // de «más de 46 bloques de agua» sigue contando solo el mar
+  const mar = h.map((v) => v < SEA - 3);
+  const water = gen.version >= 24 ? h.map((v, i) => mar[i] || (v < SEA && gen.column(xs[i], zs[i]).rio < 0.045)) : mar;
   // no se hacen carreteras que crucen el mar
   let run = 0;
-  for (const w of water) { run = w ? run + 1 : 0; if (run > 46) return null; }
+  for (const w of mar) { run = w ? run + 1 : 0; if (run > 46) return null; }
   const ys = h.map((_, i) => {
     if (water[i]) return SEA + 1;
     let sum = 0, c = 0;

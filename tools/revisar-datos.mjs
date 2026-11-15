@@ -50,7 +50,7 @@ avisar('Sonidos que se piden y no están', [...pedidosSon].filter(([k]) => !banc
 // v11.9.2: propiedades que quedaron dentro de un comentario a media línea (pasó con el escarabajo: se tragó su sonido)
 const tragadas = [];
 for (const [f, t] of Object.entries(texto)) {
-  t.split('\n').forEach((ln, i) => {
+  t.split(/\r?\n/).forEach((ln, i) => {
     const k = ln.indexOf('// ');
     if (k > 0 && ln.slice(0, k).trim() && /\b(hurtSound|idleSound|idleEvery|health|attack|speed|drops|hostile|hardness|durability|stack): [^\s]/.test(ln.slice(k))) tragadas.push(`${f}:${i + 1}`);
   });

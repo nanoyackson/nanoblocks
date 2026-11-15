@@ -131,7 +131,16 @@ export function buildStreets(c, v) {
     for (let z = s.z; z < s.z + s.d; z++) for (let x = s.x; x < s.x + s.w; x++) {
       if (!c.inChunk(x, z)) continue;
       const h = c.gen.column(x, z).h;
-      if (h < SEA - 1) continue;
+      if (h < SEA - 1) {
+        // v13.3.0 (I2): sobre el agua la calle es un puente de concreto con baranda (antes se cortaba)
+        if (c.gen.version >= 24 && h >= SEA - 12) {
+          const ac = s.axis === 'x' ? z - s.z : x - s.x;
+          for (let yy = SEA + 1; yy < SEA + 6; yy++) c.set(x, yy, z, 0);
+          c.set(x, SEA, z, K.concreto);
+          if (ac === 0 || ac === 6) c.set(x, SEA + 1, z, K.cerca);
+        }
+        continue;
+      }
       const across = s.axis === 'x' ? z - s.z : x - s.x, along = s.axis === 'x' ? x : z;
       const y = Math.max(h, SEA);
       for (let yy = y + 1; yy < y + 8; yy++) c.set(x, yy, z, 0);

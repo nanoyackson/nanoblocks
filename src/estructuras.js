@@ -4,7 +4,7 @@
 // Sin gráficos (lo usa el generador).
 import { hash3, mulberry32 } from './noise.js';
 import { BLOCK_BY_KEY as K } from './blocks.js';
-import { villageAt, CELL as VCELL } from './pueblogen.js';
+import { villageAt, CELL as VCELL, rellenarBajoObras } from './pueblogen.js';
 import { buildRuinasGrande, buildFortinGrande, buildGuanacasteGigante } from './monumentos_grandes.js';
 import { buildPlayaLujo } from './lujo.js';
 import { buildRefineria } from './refineria.js';
@@ -45,6 +45,14 @@ class Ctx {
     this.x0 = cx * CH; this.z0 = cz * CH;
     this.ox = P.x; this.oy = P.y; this.oz = P.z; this.r = P.rot; this.id = P.id;
     this.rnd = mulberry32((P.x * 73856093) ^ (P.z * 19349663) ^ gen.seed);
+    this.toc = null; // v13.3.0 (I1): lo más bajo que escribió la obra por columna (lo pone buildStructuresInChunk)
+  }
+  // v13.3.0 (I1, I11): anota la columna tocada; y el agua de una obra en la costa o en mar abierto nunca queda más alta que el mar (el «domo» del templo hundido)
+  anota(wx, y, wz, id) {
+    if (id === 0) return true;
+    if (this.toc) { const k = (wx - this.x0) + (wz - this.z0) * CH; if (y < this.toc[k]) this.toc[k] = y; }
+    if (this.gen.version >= 24 && id === K.water && y > SEA) { const b = this.gen.column(wx, wz).biome; if (b === 'ocean' || b === 'beach') return false; }
+    return true;
   }
   w(dx, dz) { const [rx, rz] = rot(dx, dz, this.r); return [this.ox + rx, this.oz + rz]; }
   inChunk(wx, wz) { return wx >= this.x0 && wx < this.x0 + CH && wz >= this.z0 && wz < this.z0 + CH; }
@@ -52,6 +60,7 @@ class Ctx {
     if (this.r % 2 && GIRA[id]) id = GIRA[id]; // v12.4.9: al rotar la estructura, el postigo gira con ella
     const [wx, wz] = this.w(dx, dz), y = this.oy + dy;
     if (!this.inChunk(wx, wz) || y < 1 || y > 126) return;
+    if (this.gen.version >= 24 && !this.anota(wx, y, wz, id)) return;
     this.blocks[this.idx(wx - this.x0, y, wz - this.z0)] = id;
   }
   getMaybe(dx, dy, dz) {
@@ -64,6 +73,7 @@ class Ctx {
   setW(wx, dy, wz, id) {
     const y = this.oy + dy;
     if (!this.inChunk(wx, wz) || y < 1 || y > 126) return;
+    if (this.gen.version >= 24 && !this.anota(wx, y, wz, id)) return;
     this.blocks[this.idx(wx - this.x0, y, wz - this.z0)] = id;
   }
   fill(ax, ay, az, bx, by, bz, id) { for (let y = ay; y <= by; y++) for (let z = az; z <= bz; z++) for (let x = ax; x <= bx; x++) this.set(x, y, z, id); }
@@ -150,7 +160,7 @@ class Frame extends Ctx {
   constructor(parent, ox, oz, r) {
     super(parent.gen, parent.x0 / CH, parent.z0 / CH, parent.blocks, parent.idx, parent.out, { x: parent.ox, y: parent.oy, z: parent.oz, rot: (parent.r + r) % 4, id: parent.id });
     this.parent = parent; this.fox = ox; this.foz = oz; this.fr = r;
-    this.rnd = parent.rnd;
+    this.rnd = parent.rnd; this.toc = parent.toc;
   }
   w(dx, dz) { const [a, b] = rot(dx, dz, this.fr); return this.parent.w(this.fox + a, this.foz + b); }
 }
@@ -918,6 +928,28 @@ const TYPES = [
   { key: 'casita_bahareque', minV: 18, cell: 520, chance: 0.6, R: 7, salt: 7171, tries: 50, fits: land(6, 2, ['plains', 'forest']), build: buildCasitaBahareque }, // v12.4.7
 ];
 
+// v13.3.0 (I8): el radio de verdad de lo que dibujan (medido por tools/revisar-integracion.mjs)
+const RADIOS24 = { irazu: 34, san_lucas: 26, cueva_venado: 35, marino_ballena: 75 };
+// lo que se construye A PROPÓSITO sobre el vacío o bajo tierra: no se le rellena nada debajo (v13.3.0, I1)
+const SIN_RELLENO = new Set(['caverna_rey', 'canopy', 'puente_colgante', 'templo_hundido', 'cueva_barra_honda', 'cueva_venado', 'geoda_mayor', 'catarata', 'catarata_escondida', 'termales']);
+
+// v13.3.0 (I1): ¿hay una obra a menos de R+22 (estructura) o R+26 (pueblo) de (x, z)? Las bocas de cueva no se abren ahí.
+export function cercaDeObra(gen, x, z) {
+  for (const T of typesFor(gen)) {
+    const gap = T.R + 22;
+    for (let gz = Math.floor((z - gap) / T.cell); gz <= Math.floor((z + gap) / T.cell); gz++) for (let gx = Math.floor((x - gap) / T.cell); gx <= Math.floor((x + gap) / T.cell); gx++) {
+      const P = placeOf(gen, T, gx, gz);
+      if (P && Math.abs(P.x - x) < gap && Math.abs(P.z - z) < gap) return true;
+    }
+  }
+  const cx = Math.floor(x / VCELL), cz = Math.floor(z / VCELL);
+  for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) {
+    const v = villageAt(gen, cx + dx, cz + dz);
+    if (v) { const VR = (v.R || 46) + 26; if (Math.abs(v.x - x) < VR && Math.abs(v.z - z) < VR) return true; }
+  }
+  return false;
+}
+
 // tipos que existen en este mundo (lo nuevo solo en mundos nuevos; v6 trae versiones más grandes)
 function typesFor(gen) {
   if (!gen.structTypes) {
@@ -925,7 +957,9 @@ function typesFor(gen) {
       // v8: los lugares grandes (parques, monumentos) quedan ~25 % más juntos; los chiquitos y los de colocación propia, igual
       .map((T) => (gen.version >= 8 && !T.place && T.cell >= 1000 ? { ...T, cell: Math.round(T.cell * 0.78) } : T))
       // v11.13.0, mundo compacto: la grilla a un tercio (sin bajar de lo que ocupa la estructura más un margen)
-      .map((T) => (gen.compacto && !T.place ? { ...T, cell: Math.max(Math.round(T.cell / 3), 2 * T.R + 90) } : T));
+      .map((T) => (gen.compacto && !T.place ? { ...T, cell: Math.max(Math.round(T.cell / 3), 2 * T.R + 90) } : T))
+      // v13.3.0 (I8, generador 24): estos cuatro dibujaban más allá de su radio y quedaban recortados en línea recta según cómo cayera el trozo
+      .map((T) => (gen.version >= 24 && RADIOS24[T.key] ? { ...T, R: RADIOS24[T.key], clearR: T.clearR ? Math.max(T.clearR, RADIOS24[T.key]) : T.clearR } : T));
   }
   return gen.structTypes;
 }
@@ -1107,6 +1141,7 @@ export function structRadius(gen, type) { const T = typesFor(gen).find((t) => t.
 
 export function buildStructuresInChunk(gen, cx, cz, blocks, idx) {
   const out = [];
+  const toc = gen.version >= 24 ? new Int16Array(256).fill(32767) : null; // v13.3.0 (I1)
   const x0 = cx * CH, z0 = cz * CH;
   for (const T of typesFor(gen)) {
     const g0x = Math.floor((x0 - T.R) / T.cell), g1x = Math.floor((x0 + CH + T.R) / T.cell);
@@ -1115,9 +1150,12 @@ export function buildStructuresInChunk(gen, cx, cz, blocks, idx) {
       const P = placeOf(gen, T, gx, gz);
       if (!P || Math.abs(P.x - (x0 + 8)) > T.R + 9 || Math.abs(P.z - (z0 + 8)) > T.R + 9) continue;
       const ctx = new Ctx(gen, cx, cz, blocks, idx, out, P);
-      ctx.clearTrees(T.clearR || Math.min(T.R + 3, 14));
+      if (toc && !SIN_RELLENO.has(T.key)) ctx.toc = toc;
+      // v13.3.0 (I5): en el generador 24 el despeje de árboles no tiene el tope de 14 y llega 6 más allá del radio (copas sueltas del borde)
+      ctx.clearTrees(T.clearR || (gen.version >= 24 ? T.R + 6 : Math.min(T.R + 3, 14)));
       T.build(ctx, P);
     }
   }
+  if (toc) rellenarBajoObras(blocks, idx, toc);
   return out;
 }

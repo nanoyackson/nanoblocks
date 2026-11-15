@@ -13,7 +13,7 @@ const txt = readFileSync(fileURLToPath(new URL('../src/encargos2.js', import.met
 const i = txt.indexOf('export const PIDE = {');
 if (i < 0) { console.log('✘ No encontré «export const PIDE = {» en encargos2.js'); process.exit(1); }
 // sin comentarios (de bloque y de línea), y hasta la llave que cierra la del principio
-const limpio = txt.slice(i).replace(/\/\*[\s\S]*?\*\//g, ' ').split('\n').map((l) => l.replace(/\/\/.*$/, '')).join('\n');
+const limpio = txt.slice(i).replace(/\/\*[\s\S]*?\*\//g, ' ').split(/\r?\n/).map((l) => l.replace(/\/\/.*$/, '')).join('\n');
 let prof = 0, fin = -1;
 for (let k = limpio.indexOf('{'); k < limpio.length; k++) {
   if (limpio[k] === '{') prof++;

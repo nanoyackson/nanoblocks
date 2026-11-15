@@ -77,7 +77,7 @@ const reglas = [];
 for (const f of ['style.css', 'vidrio.css']) {
   const crudo = leer(f);
   // colores a mano: todo menos los comentarios (los @keyframes también cuentan desde la v11.13.5)
-  for (const [i, linea] of sinComentarios(crudo).split('\n').entries()) {
+  for (const [i, linea] of sinComentarios(crudo).split(/\r?\n/).entries()) {
     for (const c of linea.match(COLOR) || []) problemas.mano.push(`${f}:${i + 1} ${c}`);
     if (/border-radius\s*:\s*[^;]*\d+px/.test(linea)) problemas.mano.push(`${f}:${i + 1} radio a mano`);
     if (/monospace/.test(linea)) problemas.mono.push(`${f}:${i + 1}`);
@@ -130,7 +130,7 @@ for (const r of efectivo.values()) {
 // ---------- estilos en línea de src/*.js ----------
 for (const f of readdirSync(dir).filter((x) => x.endsWith('.js'))) {
   const t = leer(f);
-  for (const [i, linea] of t.split('\n').entries()) {
+  for (const [i, linea] of t.split(/\r?\n/).entries()) {
     if (/^\s*\/\//.test(linea) || /\/\/ contenido:/.test(linea)) continue; // «// contenido: …» marca un tinte del mundo, no interfaz
     const enEstilo = /\.style\.\w+\s*=|cssText|setProperty\(|style="|style='|style=\$\{|style: /.test(linea);
     if (enEstilo) for (const c of linea.match(/#[0-9a-fA-F]{3,8}\b|rgba?\(/g) || []) problemas.mano.push(`${f}:${i + 1} ${c} (en línea)`);

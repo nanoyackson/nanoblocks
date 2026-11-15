@@ -1,12 +1,25 @@
 // Generación de pueblos ticos (sin gráficos: también la usa el hilo del horizonte lejano).
 // Plaza de fútbol, iglesia con campanario, pulpería, soda, parada de bus y casitas de colores con techo de teja.
 import { hash3, mulberry32 } from './noise.js';
-import { BLOCK_BY_KEY as K } from './blocks.js';
+import { BLOCK_BY_KEY as K, SOLID } from './blocks.js';
 import { planVillage6, buildStreets, buildKind6 } from './pueblo6.js';
 
 export const CELL = 384;
 const SEA = 62;
 const TREE = new Set([K.log, K.leaves, K.birch_log, K.birch_leaves, K.jungle_log, K.jungle_leaves, K.vine]);
+
+// v13.3.0 (I1, generador 24): suelo firme bajo lo construido. `toc` trae por columna del trozo el bloque más bajo que escribió la obra (32767 = ninguno): si debajo
+// quedó un vacío de hasta 14 bloques con roca firme al fondo (un hueco de cueva que la obra dejó colgando), se rellena con piedra. No toca el agua ni lo hondo.
+export function rellenarBajoObras(blocks, idx, toc) {
+  for (let lz = 0; lz < 16; lz++) for (let lx = 0; lx < 16; lx++) {
+    const t = toc[lx + lz * 16];
+    if (t === 32767 || t <= 3) continue;
+    let y = t - 1, n = 0;
+    while (y >= 1 && n <= 14 && blocks[idx(lx, y, lz)] === 0) { y--; n++; }
+    if (n === 0 || n > 14 || y < 1 || !SOLID[blocks[idx(lx, y, lz)]]) continue;
+    for (let k = 1; k <= n; k++) blocks[idx(lx, y + k, lz)] = K.cobble;
+  }
+}
 
 // ---------- elegir dónde hay pueblo ----------
 export function villageAt(gen, cx, cz) {
@@ -82,6 +95,7 @@ function planVillage(gen, x, z, y, r) {
 export function buildVillageInChunk(gen, cx, cz, blocks, idx) {
   const x0 = cx * 16, z0 = cz * 16;
   const out = [];
+  const toc = gen.version >= 24 ? new Int16Array(256).fill(32767) : null; // v13.3.0 (I1): lo más bajo que escribió la obra en cada columna
   const vcx = Math.floor((x0 + 8) / CELL), vcz = Math.floor((z0 + 8) / CELL);
   for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) {
     const v = villageAt(gen, vcx + dx, vcz + dz);
@@ -92,6 +106,7 @@ export function buildVillageInChunk(gen, cx, cz, blocks, idx) {
       const lx = wx - x0, lz = wz - z0;
       if (lx < 0 || lx >= 16 || lz < 0 || lz >= 16 || wy < 1 || wy >= 128) return;
       blocks[idx(lx, wy, lz)] = id;
+      if (toc && id !== 0 && wy < toc[lx + lz * 16]) toc[lx + lz * 16] = wy;
     };
     const get = (wx, wy, wz) => {
       const lx = wx - x0, lz = wz - z0;
@@ -119,7 +134,11 @@ export function buildVillageInChunk(gen, cx, cz, blocks, idx) {
         if (!inChunk(px, pz) && !inChunk(px + 1, pz)) continue;
         for (const ox of [0, 1]) {
           const hh = gen.column(px + ox, pz).h;
-          if (hh < SEA) continue;
+          if (hh < SEA) {
+            // v13.3.0 (I2): el camino del caserío cruza el agua por un puentecito de tablones
+            if (gen.version >= 24 && hh >= SEA - 8) { set(px + ox, SEA, pz, K.planks); for (let y = SEA + 1; y < SEA + 5; y++) if (get(px + ox, y, pz) > 0) set(px + ox, y, pz, 0); }
+            continue;
+          }
           set(px + ox, hh, pz, K.gravel);
           for (let y = hh + 1; y < hh + 7; y++) if (get(px + ox, y, pz) > 0) set(px + ox, y, pz, 0);
         }
@@ -129,6 +148,7 @@ export function buildVillageInChunk(gen, cx, cz, blocks, idx) {
     // vecinos: se anotan cuando se carga el chunk del centro del pueblo
     if (inChunk(v.x, v.z)) for (const n of v.npcs) out.push({ npc: { ...n, village: v.id, vx: v.x, vz: v.z, vy: v.y + 1, y: (v.buildings[n.home] || v.buildings[0]).y + 1, bell: v.bell } });
   }
+  if (toc) rellenarBajoObras(blocks, idx, toc);
   // las estructuras van en coordenadas del chunk
   for (const o of out) if (o.be) { o.x -= x0; o.z -= z0; }
   return out;
