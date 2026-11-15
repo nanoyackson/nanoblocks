@@ -8,14 +8,14 @@ import { manasJefeHTML } from './manasjefe.js';
 const AIR = 0;
 export const FAMILIAS = { pelea: '⚔ Pelea', monte: '🌿 Monte', oficio: '🔨 Oficio' };
 export const MANAS = [
-  { k: 'mano_pesada', i: '👊', f: 'pelea', t: 'Mano pesada', d: '10 % más de daño con todo' },
-  { k: 'cuero_duro', i: '🛡', f: 'pelea', t: 'Cuero duro', d: 'Recibe 8 % menos de daño de las criaturas' },
+  { k: 'mano_pesada', i: '👊', f: 'pelea', t: 'Mano pesada', d: '5 % más de daño con todo' },
+  { k: 'cuero_duro', i: '🛡', f: 'pelea', t: 'Cuero duro', d: 'Recibe 6 % menos de daño de las criaturas' },
   { k: 'reflejos', i: '⚡', f: 'pelea', t: 'Reflejos', d: 'Tiene la mitad más de tiempo para hacer parry con el escudo' },
   { k: 'sangre_caliente', i: '🩸', f: 'pelea', t: 'Sangre caliente', d: 'Cada enemigo vencido le devuelve un corazón' },
   { k: 'por_un_pelito', i: '🍀', f: 'pelea', t: 'Por un pelito', d: 'Una vez al día, el golpe mortal le deja un corazón' },
-  { k: 'punteria', i: '🎯', f: 'pelea', t: 'Puntería', d: 'Flechas, honda, dardos y chancleta pegan 25 % más' },
-  { k: 'camello', i: '💧', f: 'monte', t: 'Camello', d: 'La sed baja 25 % más lento' },
-  { k: 'buche', i: '🍖', f: 'monte', t: 'Buche de hierro', d: 'Hambre y sed 15 % más lentas, y lo crudo nunca cae mal' },
+  { k: 'punteria', i: '🎯', f: 'pelea', t: 'Puntería', d: 'Flechas, honda, dardos y chancleta pegan 15 % más' },
+  { k: 'camello', i: '💧', f: 'monte', t: 'Camello', d: 'La sed baja 18 % más lento' },
+  { k: 'buche', i: '🍖', f: 'monte', t: 'Buche de hierro', d: 'Hambre y sed 10 % más lentas, y lo crudo nunca cae mal' },
   { k: 'pata_de_perro', i: '🐾', f: 'monte', t: 'Pata de perro', d: 'Camina y corre 7 % más rápido' },
   { k: 'cae_de_pie', i: '🐈', f: 'monte', t: 'Cae de pie', d: 'Las caídas pegan la mitad y no quiebran la pierna' },
   { k: 'sueno_pesado', i: '🛏', f: 'monte', t: 'Sueño pesado', d: 'Dormir en cualquier cama cura toda la vida y todos los males' },
@@ -25,8 +25,8 @@ export const MANAS = [
   { k: 'mano_verde', i: '🌱', f: 'oficio', t: 'Mano verde', d: 'Cada cosecha tiene 30 % de salir doble' },
   { k: 'buen_brazo', i: '⛏', f: 'oficio', t: 'Buen brazo', d: 'Pica y corta 5 % más rápido' },
   { k: 'cuidadoso', i: '🔧', f: 'oficio', t: 'Cuidadoso', d: 'Las herramientas se gastan 25 % menos' },
-  { k: 'se_le_pega', i: '💰', f: 'oficio', t: 'Se le pega la plata', d: 'Asedios, plazas, nidos y la Ceniza pagan 25 % más colones' },
-  { k: 'buena_mano', i: '🍲', f: 'oficio', t: 'Buena mano', d: 'La comida llena 15 % más y los platos duran la mitad más' },
+  { k: 'se_le_pega', i: '💰', f: 'oficio', t: 'Se le pega la plata', d: 'Asedios, plazas, nidos y la Ceniza pagan 15 % más colones' },
+  { k: 'buena_mano', i: '🍲', f: 'oficio', t: 'Buena mano', d: 'La comida llena 10 % más y los platos duran la mitad más' },
 ];
 const POR_K = Object.fromEntries(MANAS.map((m) => [m.k, m]));
 export const NIVELES = [2, 4, 7, 10, 13, 17, 21, 26, 31, 37];

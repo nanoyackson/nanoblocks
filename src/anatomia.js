@@ -52,11 +52,13 @@ export function brazoHumano(P, { s, lado, tela, piel, manga = -6.6, puno = null,
     P.loft(tela, [{ y: jy - 0.9 * s, rx: r(0.4), rz: r(0.4), x: jx }, { y: jy - 0.6 * s, rx: r(1.1), rz: r(1.12), x: jx }, { y: jy, rx: r(1.38), rz: r(1.42), x: jx }, ...S.slice(4)], opc);
     M = abajo;
   } else P.loft(tela, S, opc);
-  // la mano: palma, cuatro dedos y el pulgar
-  const x = afuera;
-  M.bulto(piel, 1.25 * s, 1.35 * s, 0.85 * s, { x, y: -10.7 * s, det: 2, grano: 0.04 });
-  for (const d of [-1, -0.33, 0.33, 1]) M.tubo(piel, [[x + d * 0.95 * s, -11.4 * s, 0.15 * s], [x + d * 1.02 * s, -12.3 * s, 0.3 * s], [x + d * 0.98 * s, -12.95 * s, 0.5 * s]], [0.34 * s, 0.3 * s, 0.2 * s], { lados: 4, pasos: 2, grano: 0.04 });
-  M.tubo(piel, [[x - lado * 1.05 * s, -10.2 * s, 0.6 * s], [x - lado * 1.45 * s, -11 * s, 1.1 * s], [x - lado * 1.4 * s, -11.7 * s, 1.35 * s]], [0.42 * s, 0.34 * s, 0.22 * s], { lados: 4, pasos: 2, grano: 0.04 });
+  // la mano (v13.2.5): en reposo la palma mira al cuerpo y el pulgar queda adelante. Antes la palma era ancha de lado a lado (miraba al frente) y el pulgar
+  // salía hacia adentro: las manos se veían giradas. Ahora la palma es ancha de adelante hacia atrás, los dedos se alinean en esa dirección (el índice adelante,
+  // el meñique atrás), se curvan un poco hacia el cuerpo y el pulgar va adelante. `dentro` (-lado) es hacia el torso.
+  const x = afuera, hacia = -lado;
+  M.bulto(piel, 0.85 * s, 1.35 * s, 1.25 * s, { x, y: -10.7 * s, det: 2, grano: 0.04 });
+  for (const d of [-1, -0.33, 0.33, 1]) M.tubo(piel, [[x, -11.4 * s, d * 0.95 * s], [x + hacia * 0.12 * s, -12.3 * s, d * 1.0 * s], [x + hacia * 0.3 * s, -12.95 * s, d * 0.98 * s]], [0.34 * s, 0.3 * s, 0.2 * s], { lados: 4, pasos: 2, grano: 0.04 });
+  M.tubo(piel, [[x + hacia * 0.3 * s, -10.2 * s, 1.0 * s], [x + hacia * 0.5 * s, -11 * s, 1.7 * s], [x + hacia * 0.5 * s, -11.8 * s, 2.0 * s]], [0.42 * s, 0.34 * s, 0.22 * s], { lados: 4, pasos: 2, grano: 0.04 });
   return junta;
 }
 // la pierna: muslo, rodilla, pantorrilla y tobillo

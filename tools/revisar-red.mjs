@@ -117,7 +117,7 @@ ok(!alcanceOk({ x: 0, y: 70, z: 0 }, 40, 70, 0), 'alcance: bloque lejano se rech
 {
   const viejo = { id: 'w1', name: 'Mundo viejo', format: 6, seed: 7, day: 12, inventory: { slots: [], billetera: { 360: 3 } } };
   const m = migrate(JSON.parse(JSON.stringify(viejo)));
-  ok(SAVE_FORMAT === 9 && m.format === 9, `formato ${viejo.format} → ${m.format}`);
+  ok(SAVE_FORMAT === 10 && m.format === 10, `formato ${viejo.format} → ${m.format}`);
   ok(m.jugadores && Object.keys(m.jugadores).length === 0 && m.epoca === 1, 'jugadores: {} y época 1');
   ok(m.name === 'Mundo viejo' && m.day === 12 && m.inventory.billetera[360] === 3, 'no se perdió nada del mundo viejo');
   const conFichas = migrate({ id: 'w2', format: 6, jugadores: { x: 1 }, epoca: 4 });
@@ -125,7 +125,7 @@ ok(!alcanceOk({ x: 0, y: 70, z: 0 }, 40, 70, 0), 'alcance: bloque lejano se rech
   const raro = migrate({ id: 'w3', format: 6, jugadores: [1, 2], epoca: -3 });
   ok(!Array.isArray(raro.jugadores) && raro.epoca === 1, 'jugadores raros (arreglo) y época negativa se corrigen');
   const doble = migrate(migrate({ id: 'w4', format: 3, inventory: { slots: [], billetera: {} } }));
-  ok(doble.format === 9, 'del formato 3 al 9 en cadena');
+  ok(doble.format === 10, 'del formato 3 al 10 en cadena');
 }
 
 // --- validarMundo y meta.jugadores

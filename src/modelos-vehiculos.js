@@ -30,6 +30,15 @@ export function armarCarro(color) {
   for (const s of [-1, 1]) P.bulto(0x2a2a2e, 0.09, 0.05, 0.03, { x: s * 0.86, y: 1, z: 0.5, det: 1, brillo: 1 });
   P.tubo(0x2a2a2e, [[-0.5, 1.46, -0.9], [-0.54, 1.96, -1.04]], [0.012, 0.004], { lados: 3, pasos: 1 });
   body.add(P.malla());
+  // v13.2.4: el interior (se ve en primera persona, con los ojos dentro de la cabina; las paredes de la cabina son de una sola cara y desde adentro no estorban):
+  // el tablero, el volante, los marcos del parabrisas y el borde del techo. Todo queda por debajo y a los lados de la vista hacia adelante.
+  const I = new Pieza();
+  I.bulto(0x2a2a2e, 0.62, 0.07, 0.15, { y: 0.93, z: 0.38, det: 2, brillo: 0.6, grano: 0.04, forma: cubico(0.3) }); // el tablero
+  I.tubo(0x1c1c20, Array.from({ length: 13 }, (_, i) => { const a = (i / 12) * Math.PI * 2; return [Math.cos(a) * 0.13, 0.9 + Math.sin(a) * 0.1 * 0.8, 0.22 + Math.sin(a) * 0.1]; }), [0.022, 0.022], { lados: 4, pasos: 1, brillo: 0.5 }); // el volante, al frente del asiento
+  I.tubo(0x1c1c20, [[0, 0.88, 0.3], [0, 0.8, 0.45]], [0.02, 0.02], { lados: 4, pasos: 1 }); // la columna
+  for (const s of [-1, 1]) I.tubo(color, [[s * 0.64, 0.86, 0.42], [s * 0.6, 1.44, 0.14]], [0.045, 0.04], { lados: 4, pasos: 1, brillo: 0.8, grano: 0.05 }); // los marcos del parabrisas
+  I.tubo(color, [[-0.6, 1.45, 0.14], [0.6, 1.45, 0.14]], [0.04, 0.04], { lados: 4, pasos: 1, brillo: 0.8 }); // el borde del techo
+  body.add(I.malla());
   for (const s of [-1, 1]) { body.add(luz(0xfff2b0, 0.16, 0.09, 0.03, s * 0.58, 0.68, 1.64)); body.add(luz(0xc81818, 0.15, 0.08, 0.03, s * 0.6, 0.68, -1.64)); }
   const wheels = [[-0.86, 1.05], [0.86, 1.05], [-0.86, -1.1], [0.86, -1.1]].map(([x, z]) => { const w = G(); w.position.set(x, 0.32, z); w.add(llanta(0.31, 0.26)); body.add(w); return w; });
   g.userData = { body, wheels };

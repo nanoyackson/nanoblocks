@@ -1,6 +1,6 @@
 // Maestría por arma (v7.4): cada clase de arma (espada, machete, hacha, mazo, garrote, lanza, cuchillo, puño, arco) sube de nivel
-// aparte, con el uso: cada golpe que entra da puntos según el daño. Cada nivel (hasta 20) da un 1.5 % más de daño con esa clase y
-// gasta un 1.5 % menos de aguante por golpe. A los niveles 10 y 20, un letrero. Se ve en la libreta (Habilidades) y en la ficha del
+// aparte, con el uso: cada golpe que entra da puntos según el daño. Cada nivel (hasta 20) da un 0,75 % más de daño con esa clase y
+// gasta un 1 % menos de aguante por golpe. A los niveles 10 y 20, un letrero. Se ve en la libreta (Habilidades) y en la ficha del
 // arma. Estado: meta.maestria = { clase: puntos } (se guarda).
 import { CLASES } from './armas3.js';
 
@@ -14,8 +14,8 @@ export function nivel(g, clase) {
   let n = 0; while (n < TOPE && p >= necesita(n + 1)) n++;
   return n;
 }
-export const bonoDano = (g, clase) => (g.mode === 'survival' ? 1 + nivel(g, clase) * 0.015 : 1);
-export const bonoAguante = (g, clase) => (g.mode === 'survival' ? 1 - nivel(g, clase) * 0.015 : 1);
+export const bonoDano = (g, clase) => (g.mode === 'survival' ? 1 + nivel(g, clase) * 0.0075 : 1);
+export const bonoAguante = (g, clase) => (g.mode === 'survival' ? 1 - nivel(g, clase) * 0.01 : 1);
 // cada golpe que entra con esa clase
 export function ganarMaestria(g, clase, dano) {
   if (g.mode !== 'survival' || !g.meta || !clase) return;

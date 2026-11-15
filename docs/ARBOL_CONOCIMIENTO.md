@@ -43,7 +43,7 @@ Build (`vite.config.js`, `manualChunks`): `three`, `mundo` (estructuras), `criat
 | `supervivencia.js` | Dificultad por mundo, bolso al morir, frío del páramo, bolsito y consejos de inicio |
 | `assets/items/` | Íconos nuevos de ítems en pixel art (`<clave>.png`, 32×32); mandan sobre los demás. Ver `docs/PROMPT_ITEMS.md`, `tools/lista-items.mjs` y `tools/cortar-hojas.mjs` |
 | `supervivencia2.js` | Sed (barra de agua, cantimplora, insolación), fogata, hierbas del monte y temblores |
-| `habilidades.js` | 7 habilidades que suben con el uso (bonos por nivel e hitos en el 5 y el 10). v13.0.5: `velocidadPicar` suma yunque + Minería/Tala + hoja + maña y topa en `TOPE_PICAR` (×1,5); tabla en docs/revisiones/BALANCE_PICAR.md |
+| `habilidades.js` | 7 habilidades que suben con el uso (bonos por nivel e hitos en el 5 y el 10). **v13.2.4 (balance de la progresión):** `danoTotal` suma todos los bonos de daño y los topa en ×1,4 (`TOPE_DANO`), `mult.recibido` no baja de ×0,70 (`PISO_RECIBIDO`), `necesitaHabilidad` (hasta +25 %); `armas.js` `xpNeed` (hasta +30 %); `save.js` migración 9→10 (`reescalarXp`); prueba `tools/revisar-progresion.mjs`, tabla en `docs/revisiones/BALANCE_PROGRESION.md`. v13.0.5: `velocidadPicar` suma yunque + Minería/Tala + hoja + maña y topa en `TOPE_PICAR` (×1,5); tabla en docs/revisiones/BALANCE_PICAR.md |
 | `libreta.js` / `logros.js` / `logros-lista.js` | Libreta: L logros (catálogo que arma `tools/lista-logros.mjs`) y H habilidades; íconos por tema |
 | `armas2.js` | Honda, cerbatana con dardos envenenados, jabalina, veneno en criaturas y los 3 mini-jefes (Jaguar viejo, Cocodrilo del Tárcoles, Terciopelo reina) |
 | `misiones.js` | Historias encadenadas con los vecinos (perro, vaca, abuela, novio), globitos de conversación y apagones |
@@ -249,7 +249,7 @@ Build (`vite.config.js`, `manualChunks`): `three`, `mundo` (estructuras), `criat
 | `modelos-otros.js` | Modelos del Bailarín, la Bruja Zárate, el Murciélago Rey, el congo gigante, el minero, el toro, las ánimas, el sapo, la lora y el zancudo |
 | `modelos-vehiculos.js` | Modelos del carro, el bote, la avioneta, la moto y la bici |
 | `modelos-cosas.js` | Modelos del bus, bueyes, globo, vagoneta, patito, rana de vidrio y aguamala |
-| `anatomia.js` | El cuerpo humano por secciones: torso, brazo y pierna, para el personaje y la gente. `articular` monta codo y rodilla en `grupo.junta`; `doblarRodilla` y `doblarCodo` los animan |
+| `anatomia.js` | El cuerpo humano por secciones: torso, brazo y pierna, para el personaje y la gente. `articular` monta codo y rodilla en `grupo.junta`; `doblarRodilla` y `doblarCodo` los animan **v13.2.5:** la mano de `brazoHumano` en reposo: palma ancha de adelante hacia atrás (mira al cuerpo), dedos en fila índice-adelante, pulgar adelante. |
 | `portones.js` | Animación de portones y cortinas: esconde el bloque en el chunk (`world.ocultarBloque(x, y, z, on, remallar)`) mientras una pieza suelta hace el recorrido. Abrir otra vez el mismo corta la animación vieja (v11.6.2). |
 | `armadura.js` | Las piezas de armadura modeladas sobre el cuerpo: `armarArmadura(slot, def, P, mat)`; lo de canilla y antebrazo cuelga de `grupo.junta`. |
 | `golpes.js` | Ataque enemigo en tres tiempos: `atacar(m, g, opciones)`, `tickGolpe`, `poseGolpe` por forma del cuerpo, brillo del parry y arco. `POSES` es la tabla única de poses (también la usa `avatar.js` con `POSE_ESTELA`). `avisoCaida` devuelve el aviso y `apagarAviso` lo quita al aterrizar: los saltos van al punto que marcó el anillo al empezar el amago (quien sale del anillo se salva). `limpiarFxGolpes` al cambiar de mundo. |
@@ -308,7 +308,7 @@ Build (`vite.config.js`, `manualChunks`): `three`, `mundo` (estructuras), `criat
 | `zancudos.js` | Zancudos al anochecer y el repelente |
 | `charcos.js` | Con lluvia los huecos de la carretera se llenan de agua; con sol se secan |
 | `bus.js` | Bus que llega a la parada de los pueblos y lleva a otro pueblo (viaje con animación de llegada y salida) |
-| `vehiculos.js` | Carro viejo manejable (gasolina, huecos que revientan llantas, reparación en el taller) |
+| `vehiculos.js` | Carro viejo manejable (gasolina, huecos que revientan llantas, reparación en el taller) **v13.2.4:** en el carro los ojos van a 0,6 sobre el asiento (1,15 sobre la base: dentro de la cabina); `modelos-vehiculos.js` `armarCarro` trae el interior (tablero, volante, marcos del parabrisas). |
 | `vivienda.js` | Mi lote (escritura sobre el terreno) y misión de vivienda con bono atrasado; la municipalidad vende tras el trámite |
 | `ruta.js` | Ruta del aventurero: metas de supervivencia en orden hasta pasar el juego (J) |
 | `combate.js` | Estamina, escudo con bloqueo y parry, aturdimiento, ataque fuerte, combos y esquive; escudo en la mano |
@@ -332,7 +332,7 @@ Build (`vite.config.js`, `manualChunks`): `three`, `mundo` (estructuras), `criat
 | `physics.js` | `Body`: AABB contra la grilla por eje (cajas de `BOXES` para losas, escaleras y cercas; `moveStep` sube medio bloque), sub-pasos, agua/lava (`flow` = corriente), telarañas, daño por caída, borde al agacharse |
 | `player.js` | Movimiento, vuelo, nado, hambre, aire, cactus, vacío |
 | `fauna.js` | Especies de Costa Rica (perezoso, monos, tucán, quetzal, jaguar, cocodrilo, tortugas, ranas, colibrí, morfo, terciopelo, pizote, iguana), `faunaSpawn`, `tickNests` |
-| `entities.js` | Danta y Sombra (modelos con piel y animación), `ItemDrop` (ítems en el suelo con imán), dinamita encendida, partículas (`blockBreak`, `chip`, `dust`), aparición día/noche |
+| `entities.js` | Danta y Sombra (modelos con piel y animación), `ItemDrop` (ítems en el suelo con imán), dinamita encendida, partículas (`blockBreak`, `chip`, `dust`), aparición día/noche **v13.2.4:** `Mob.hurt` suma un balanceo corto con tope (lean ±0,12, roll ±0,09) que siempre vuelve a cero (también sin patas). |
 | `inventory.js` | 36 espacios (agregar, quitar, desgaste) |
 | `recipes.js` | Recetas con forma / sin forma (`findRecipe`, `layout`, `ingredients`), `SMELT`, `FUEL`, `COOK_TIME` |
 | `stations.js` | Entidades de bloque vivas: horno (`tickFurnace`, enciende/apaga el bloque, fuego en bucle), cofre (tapa con resorte), puerta (`placeDoor`, `toggleDoor`), mesa (ítems encima + resultado flotando), llamas de antorchas; `facingFromLook`, `FACING_VEC` |

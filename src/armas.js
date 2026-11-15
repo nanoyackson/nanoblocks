@@ -7,7 +7,8 @@ export const BOW = 326, ARROW = 327;
 
 // ---------- experiencia ----------
 // lo que cuesta pasar del nivel n al n+1
-export const xpNeed = (n) => 10 + n * 6;
+// v13.2.4: del nivel 3 en adelante cuesta hasta 30 % más (llega al tope en el 10); los primeros niveles igual
+export const xpNeed = (n) => Math.round((10 + n * 6) * (1 + 0.3 * Math.max(0, Math.min(1, (n - 3) / 7))));
 export function levelOf(xp) {
   let lv = 0, left = xp;
   while (left >= xpNeed(lv)) { left -= xpNeed(lv); lv++; }
@@ -94,7 +95,7 @@ export class Arrow {
           const sp = Math.hypot(v.x, v.y, v.z);
           const dmg = Math.max(1, Math.round(this.dmg * Math.min(1.3, sp / 25)));
           let entro = false;
-          g.golpeando = m; try { entro = m.hurt(dmg * g.damageBonus() * ventaja.tiro(g) * bonoDano(g, 'arco'), p.x - v.x, p.z - v.z) !== false; } finally { g.golpeando = null; }
+          g.golpeando = m; try { entro = m.hurt(dmg * g.damageBonus(bonoDano(g, 'arco') - 1) * ventaja.tiro(g), p.x - v.x, p.z - v.z) !== false; } finally { g.golpeando = null; }
           if (entro && m.type !== 'muneco') ganarMaestria(g, 'arco', dmg);
           if (entro && this.tipo && !m.dying) {
             m.data.veneno = Math.max(m.data.veneno || 0, this.tipo === 'fuego' ? 5 : 10);

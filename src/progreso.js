@@ -5,10 +5,10 @@ import { BLOCK_BY_KEY as K, itemName } from './blocks.js';
 export const RANGOS = [
   { n: 0, t: 'Recién llegado', perk: 'Todo por delante' },
   { n: 2, t: 'Vecino', perk: 'Las tiendas le cobran 5 % menos' },
-  { n: 4, t: 'Baquiano', perk: 'La estamina se recupera 20 % más rápido' },
-  { n: 6, t: 'Sabanero', perk: 'Hambre y sed 8 % más lentas' },
-  { n: 9, t: 'Guardián', perk: '10 % menos de daño' },
-  { n: 13, t: 'Leyenda de Tiquicia', perk: 'La vida se recupera 30 % más rápido' },
+  { n: 4, t: 'Baquiano', perk: 'La estamina se recupera 12 % más rápido' },
+  { n: 6, t: 'Sabanero', perk: 'Hambre y sed 5 % más lentas' },
+  { n: 9, t: 'Guardián', perk: '8 % menos de daño' },
+  { n: 13, t: 'Leyenda de Tiquicia', perk: 'La vida se recupera 20 % más rápido' },
 ];
 const metasHechas = (g) => { const st = (g.meta && g.meta.ruta) || {}; let n = 0; for (let i = 0; i < 13; i++) if (st[i]) n++; return n; };
 export function rangoIdx(g) { const n = metasHechas(g); let r = 0; RANGOS.forEach((x, i) => { if (n >= x.n) r = i; }); return r; }
@@ -21,16 +21,18 @@ const plato = (g, k) => !!(g.player && g.player.effects && g.player.effects[k]);
 export const mana = (g, k) => !!(g && g.meta && ((g.meta.manas && g.meta.manas[k]) || (g.meta.manasJefe && g.meta.manasJefe[k])));
 export const ventaja = {
   tienda: (g) => (rangoIdx(g) >= 1 ? 0.95 : 1),
-  estamina: (g) => (rangoIdx(g) >= 2 ? 1.2 : 1) * (hoja(g, 'aguante') ? 1.15 : 1) * (plato(g, 'aguante') ? 1.4 : 1),
-  gasto: (g) => (rangoIdx(g) >= 3 ? 0.92 : 1) * (hoja(g, 'caminar') ? 0.95 : 1) * (plato(g, 'lleno') ? 0.6 : 1) * (mana(g, 'buche') ? 0.85 : 1),
-  recibido: (g) => (rangoIdx(g) >= 4 ? 0.9 : 1) * (hoja(g, 'ojo') ? 0.95 : 1) * (plato(g, 'coraza') ? 0.88 : 1) * (mana(g, 'cuero_duro') ? 0.92 : 1) * (g.inventory && g.inventory.count(1191) > 0 ? 0.95 : 1),
-  regen: (g) => (rangoIdx(g) >= 5 ? 0.7 : 1),
-  dano: (g) => (plato(g, 'fuerza') ? 1.15 : 1) * (mana(g, 'mano_pesada') ? 1.1 : 1) * (g && g.player && g.player.effects.bala ? 0.7 : 1),
-  comida: (g) => (hoja(g, 'comida') ? 1.1 : 1) * (g.meta && g.meta.cucharon && g.inventory && g.inventory.count(507) > 0 ? 1.2 : 1) * (mana(g, 'buena_mano') ? 1.15 : 1),
-  sed: (g) => (hoja(g, 'sed') ? 0.9 : 1) * (plato(g, 'fresco') ? 0.5 : 1) * (mana(g, 'camello') ? 0.75 : 1),
+  estamina: (g) => (rangoIdx(g) >= 2 ? 1.12 : 1) * (hoja(g, 'aguante') ? 1.1 : 1) * (plato(g, 'aguante') ? 1.4 : 1),
+  gasto: (g) => (rangoIdx(g) >= 3 ? 0.95 : 1) * (hoja(g, 'caminar') ? 0.97 : 1) * (plato(g, 'lleno') ? 0.6 : 1) * (mana(g, 'buche') ? 0.9 : 1),
+  // v13.2.4: las reducciones se SUMAN (antes se multiplicaban) y habilidades.js (mult.recibido) las topa: nunca menos de ×0,62
+  recibido: (g) => 1 - ((rangoIdx(g) >= 4 ? 0.08 : 0) + (hoja(g, 'ojo') ? 0.04 : 0) + (plato(g, 'coraza') ? 0.09 : 0) + (mana(g, 'cuero_duro') ? 0.06 : 0) + (g.inventory && g.inventory.count(1191) > 0 ? 0.03 : 0)),
+  regen: (g) => (rangoIdx(g) >= 5 ? 0.8 : 1),
+  danoSuma: (g) => (plato(g, 'fuerza') ? 0.08 : 0) + (mana(g, 'mano_pesada') ? 0.05 : 0), // v13.2.4: se SUMA con el resto del daño (habilidades.js, danoTotal)
+  dano: (g) => (g && g.player && g.player.effects.bala ? 0.7 : 1), // la bala en el cuerpo sí resta, aparte del tope
+  comida: (g) => (hoja(g, 'comida') ? 1.07 : 1) * (g.meta && g.meta.cucharon && g.inventory && g.inventory.count(507) > 0 ? 1.12 : 1) * (mana(g, 'buena_mano') ? 1.1 : 1),
+  sed: (g) => (hoja(g, 'sed') ? 0.93 : 1) * (plato(g, 'fresco') ? 0.5 : 1) * (mana(g, 'camello') ? 0.82 : 1),
   picar: (g) => (hoja(g, 'manos') ? 0.05 : 0) + (mana(g, 'buen_brazo') ? 0.05 : 0), // v13.0.5: se SUMA al resto (antes ×1,10 y ×1,15 multiplicados)
-  tiro: (g) => (mana(g, 'punteria') ? 1.25 : 1),
-  premio: (g, n) => Math.round(n * (mana(g, 'se_le_pega') ? 1.25 : 1)),
+  tiro: (g) => (mana(g, 'punteria') ? 1.15 : 1),
+  premio: (g, n) => Math.round(n * (mana(g, 'se_le_pega') ? 1.15 : 1)),
 };
 
 // el premio de cada meta de la ruta (mismo orden que RUTA): lo que sirve para la meta siguiente

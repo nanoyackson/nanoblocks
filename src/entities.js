@@ -279,8 +279,9 @@ class Mob {
     // el golpe se le ve en el cuerpo: se va para atrás o de lado según de dónde vino
     if (Number.isFinite(this.yaw)) {
       const fuerza = Math.min(1.3, 0.6 + (this.game.kbGolpe ?? 1) * 0.4) * (this.kind.boss ? 0.4 : 1), sy = Math.sin(this.yaw), cy = Math.cos(this.yaw), px = dx / len, pz = dz / len;
-      this.lean = (this.lean || 0) + (px * sy + pz * cy) * 0.34 * fuerza;
-      this.roll = (this.roll || 0) - (px * cy - pz * sy) * 0.3 * fuerza;
+      // v13.2.4: un balanceo CORTO (antes se sumaba en cada golpe sin tope: hasta 1,7 rad y se acostaban/retorcían sobre los pies): con tope y siempre vuelve
+      this.lean = Math.max(-0.12, Math.min(0.12, (this.lean || 0) + (px * sy + pz * cy) * 0.1 * fuerza));
+      this.roll = Math.max(-0.09, Math.min(0.09, (this.roll || 0) - (px * cy - pz * sy) * 0.09 * fuerza));
     }
     this.deathSide = (dx * Math.cos(this.yaw) - dz * Math.sin(this.yaw)) >= 0 ? -1 : 1;
     this.game.audio.play(this.kind.hurtSound, { pos: this.soundPos() });
@@ -508,7 +509,7 @@ class Mob {
       this.roll += (rollMeta - this.roll) * Math.min(1, dt * 8);
       this.lean += (leanMeta - this.lean) * Math.min(1, dt * 6);
       this.group.rotation.z = this.roll; this.group.rotation.x = this.lean;
-    }
+    } else { this.roll *= Math.max(0, 1 - dt * 8); this.lean *= Math.max(0, 1 - dt * 8); } // sin patas el balanceo no se aplica, pero tampoco se queda guardado
     this.prevYaw = this.yaw;
     const sw = Math.sin(this.walk) * this.walkAmt;
     if (u.legs) u.legs.forEach((l, i) => { l.rotation.x = (i === 0 || i === 2 ? sw : -sw) * 0.75; doblarRodilla(l, this.walk + (i === 0 || i === 2 ? 0 : Math.PI), this.walkAmt * 0.95, dt, b.onGround ? 0 : 1); });

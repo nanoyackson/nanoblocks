@@ -5,7 +5,7 @@
 import { BLOCK_BY_KEY as K, ITEMS, getDef, itemName } from './blocks.js';
 import { materialDe } from './comodidad.js';
 import { ESENCIA } from './nidos.js';
-import { POR_ESTRELLA_VEL } from './habilidades.js';
+import { POR_ESTRELLA_VEL, POR_ESTRELLA_DANO } from './habilidades.js';
 
 export const TOPE_MEJORA = 3;
 // la cuarta estrella la sabe dar Ñor Tino, cuando recupera su martillo (encargos.js)
@@ -44,7 +44,7 @@ export function usarYunque(g, t) {
   inv.changed();
   for (let k = 0; k < 3; k++) setTimeout(() => { if (g.audio) g.audio.play('yunque', { pos: { x: t.x + 0.5, y: t.y + 1, z: t.z + 0.5 }, vol: 0.9 }); }, k * 260);
   g.particles.burst(t.x + 0.5, t.y + 1, t.z + 0.5, [[1, 0.8, 0.3], [1, 0.5, 0.15], [1, 1, 0.8]], 26, 3);
-  g.ui.toast(`🔨 ${itemName(s.id)} ${estrellas(s.mejora)}: ${def.armor ? 'protege más' : !def.tool || def.tool === 'sword' ? `${Math.round((factorMejora(s) - 1) * 100)} % más de daño` : `${Math.round((factorVelocidad(s) - 1) * 100)} % más de velocidad y ${Math.round((factorMejora(s) - 1) * 100)} % más de daño`}, y quedó como nueva`, 3200);
+  g.ui.toast(`🔨 ${itemName(s.id)} ${estrellas(s.mejora)}: ${def.armor ? 'protege más' : !def.tool || def.tool === 'sword' ? `${Math.round((s.mejora || 0) * POR_ESTRELLA_DANO * 100)} % más de daño` : `${Math.round((factorVelocidad(s) - 1) * 100)} % más de velocidad y ${Math.round((factorMejora(s) - 1) * 100)} % más de daño`}, y quedó como nueva`, 3200);
   g.achieve('yunque', 'Al yunque');
   if (s.mejora === TOPE_MEJORA) g.achieve('mejora3', 'Tres estrellas');
   if (s.mejora === 4) { g.achieve('mejora4', 'Cuarta estrella'); g.ui.toast('🔨 Ñor Tino se asoma: «Eso. Así se le pega a un fierro»', 2800); }

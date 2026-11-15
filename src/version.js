@@ -5,7 +5,7 @@ export const GAME_NAME = 'NanoBlocks';
 // v13.1.0: la versión de generador de terreno MÁS NUEVA que este juego sabe hacer (la de los mundos nuevos). Si el anfitrión de una sala manda
 // una mayor, este cliente generaría un terreno distinto al suyo (cuevas flotando): se rechaza la entrada (red/sesion.js).
 export const GEN_MAX = 23; // v13.2.0: 23 = lava más abajo (GEN_PROF en worldgen2.js)
-export const GAME_VERSION = '13.2.3';
+export const GAME_VERSION = '13.2.6';
 // v12.4.6: la versión MÁS VIEJA del juego que puede abrir lo que esta versión guarda. Se sube cuando un mundo guardado trae algo que un
 // juego anterior no entiende y lo rompería: bloques nuevos (ids que el mallador no conoce), un SAVE_FORMAT nuevo o un campo que cambia
 // de forma. Se guarda en meta.minVersion y el menú no abre un mundo cuyo minVersion sea más nuevo que este juego (12.4.0: los bloques 656–662).
@@ -14,7 +14,7 @@ export const MIN_VERSION = '12.16.5'; // 12.16.5: ítems 1190, 1191 y bloque 698
 // (el 665 de C5, el 1100 de la pesca) pasaba en verde. Ahora es una FIRMA de todos los ids definidos: cuántos bloques, cuántos ítems y
 // un hash de la lista. tools/revisar-version.mjs falla si cambia: al agregar ids, subir MIN_VERSION y copiar la firma nueva que imprime
 export const MIN_IDS = { bloques: 347, items: 391, hash: '126c3544', version: '12.16.5' }; // firma de la 12.16.5 (campana, mantilla y foto del Rey); antes, la 12.15.4 (C8-B); antes, la 12.15.3 (C8-C), la 12.15.2 (C7), la 12.15.1 (C6), la 12.7.2 (C5-A2); v12.6.3: con la versión que la trajo, que tiene que ser MIN_VERSION
-export const SAVE_FORMAT = 9; // 9: las mañas de jefe y los premios del Rey (meta.manasJefe, meta.reyPremio, v12.16.5) · 8: el diario del Redondel del Rey (meta.reyArena, v12.16.1) · 7: las fichas de otras personas (meta.jugadores) y la época (v12.10.0) · 3: la plata con denominaciones (v11.10.3) · 4: la billetera (v11.10.5) · 5: el chanchito y los topes de paga (v11.10.7) · 6: el tipo de mundo (v11.13.0)
+export const SAVE_FORMAT = 10; // 10: la experiencia con la curva nueva del balance de progresión (v13.2.4, se conserva el nivel) · 9: las mañas de jefe y los premios del Rey (meta.manasJefe, meta.reyPremio, v12.16.5) · 8: el diario del Redondel del Rey (meta.reyArena, v12.16.1) · 7: las fichas de otras personas (meta.jugadores) y la época (v12.10.0) · 3: la plata con denominaciones (v11.10.3) · 4: la billetera (v11.10.5) · 5: el chanchito y los topes de paga (v11.10.7) · 6: el tipo de mundo (v11.13.0)
 
 // Recursos de terceros (todos de uso libre).
 export const CREDITS = [
@@ -26,6 +26,40 @@ export const CREDITS = [
 ];
 
 export const CHANGELOG = [
+  {
+    version: '13.2.6',
+    date: '2026-11-15',
+    title: 'Daño a punto medio',
+    items: [
+      'Balance del daño, punto medio (Isaac: el recorte de la v13.2.4 se pasó, de ×5,2 a ×1,4; pidió «un poco»): el tope del daño total sube a ×2 (src/habilidades.js, TOPE_DANO) y los bonos se escalaron para que, con TODO al máximo, se llegue justo a ×2 (+0,99): nivel del jugador +2,7 % por nivel (tope +23 %), Combate +1,5 % por nivel (+15 %), maestría de arma +0,75 % por nivel (+15 %), yunque +7 % por estrella (+28 % con ★★★★), Mano pesada +5 %, plato de fuerza +8 %, conjunto de diamante +5 %. Siguen sumándose, no multiplicándose. Una espada de madera con todo al máximo pega ≈ 8 (7,96; antes 20,9 en la v13.2.3 y 5,6 en la v13.2.4), la de jade 15,9.',
+      'Defensa: el piso sube a ×0,62 (antes ×0,70) y las reducciones se escalaron para llegar justo ahí: rango Guardián 8 %, Guerrero 8 %, ojo 4 %, coraza 9 %, Cuero duro 6 %, amuleto 3 %. La experiencia por nivel y todos los demás bonos quedan como en la v13.2.4. Todos los textos del juego dicen los números nuevos.',
+      'tools/revisar-progresion.mjs, con las reglas nuevas: el tope de ×2 se alcanza con todo al máximo; una espada de madera con todo al máximo (≈ 8) no supera a una de jade con todo al máximo; a igual nivel de bonos (sin bonos, a medias, al máximo) el material siempre manda; el daño máximo no pasa de 16; la defensa no baja de ×0,62. La tabla nueva está en docs/revisiones/BALANCE_PROGRESION.md. tools/revisar-picar.mjs sin cambio.',
+      'Limpieza: eslint ya ignora docs/revisiones/scripts_integracion/ (scripts sueltos de la investigadora que hacían fallar npm run lint con 28 errores); se suben docs/revisiones/PLAN_INTEGRACION_MUNDO.md y esa carpeta.',
+    ],
+  },
+  {
+    version: '13.2.5',
+    date: '2026-11-15',
+    title: 'Manos al derecho',
+    items: [
+      'Arreglo: las manos del personaje (y de la gente que comparte el modelo) estaban giradas (Isaac: palmas hacia afuera, pulgar del lado equivocado). Causa (src/anatomia.js, brazoHumano): la palma estaba hecha ancha de lado a lado y con los dedos en fila de izquierda a derecha, o sea mirando al frente, y el pulgar salía hacia adentro. Ahora, en reposo, la palma es ancha de adelante hacia atrás y mira al cuerpo: los dedos se alinean en esa dirección (índice adelante, meñique atrás), se curvan un poco hacia el torso y el pulgar queda adelante. Es un solo cambio en brazoHumano, así que vale para el personaje, el vestidor y los vecinos (modelos-gente, modelos-monte, modelos-otros). Visto de frente, de lado y de espalda en el vestidor (antes, de frente, las manos se veían anchas con la palma al frente; ahora de canto) y en primera persona (la mano que sostiene el objeto).',
+    ],
+  },
+  {
+    version: '13.2.4',
+    date: '2026-11-15',
+    title: 'Criaturas, carro, paneles y balance',
+    items: [
+      'Arreglo: las criaturas ya no se retuercen ni se acuestan al recibir un golpe (Isaac, v13.2.2: «se retuercen sobre un eje abajo y se acuestan súper raro y rápido»). Causa (src/entities.js, Mob.hurt): cada golpe SUMABA una inclinación (lean) y un balanceo (roll) a todo el cuerpo, sin tope y girando sobre los pies; con golpes seguidos llegaban a 1,7 rad (casi 100°) y las que no tienen patas ni siquiera los soltaban nunca. Ahora el golpe es un balanceo corto con tope (±0,12 y ±0,09 rad, medido: antes hasta 0,53 rad en pantalla, ahora 0,11 con cinco golpes seguidos), siempre vuelve a cero y lo demás sigue igual: destello rojo, empujón en la dirección del golpe y, si muere, la caída de lado una sola vez. Medido en 15 especies (vaca, perro, danta, jaguar, sombras, cangrejo ciego, grillo de cueva, escarabajo de calcita, tortuga, iguana, gallina…). En red, la criatura del invitado es un títere (no recibe hurt() local): ve lo que el anfitrión le manda.',
+      'Arreglo: el interior del carro en primera persona. Causa (src/vehiculos.js): los ojos iban a 1,75 sobre la base del carro y el techo llega a 1,47: la cámara quedaba ENCIMA de la cabina y el capó y el techo tapaban media pantalla. Ahora los ojos van a 1,15 (una persona sentada, dentro de la cabina; las paredes de la cabina son de una sola cara y desde adentro no estorban) y el carro trae su interior (src/modelos-vehiculos.js): tablero oscuro, volante al frente del asiento, marcos del parabrisas y borde del techo; se ve el capó abajo y el camino al frente despejado. La tercera persona no cambia. El bus ya traía su interior (tablero, barra, ventanas abiertas, asientos) y se ve despejado: no se tocó.',
+      'Arreglo: las pantallas del inventario, mesa de trabajo, horno, cofre y demás ya no parpadean al abrir ni quedan pegadas arriba. Parpadeo, causa (src/style.css): la animación de entrada de las estaciones (slide-in) estaba en .inv-wrap sin la clase .opening; al abrir mandaba la animación del vidrio y a los 900 ms, cuando se quita .opening, volvía a empezar la de la estación (desde la derecha y transparente): el «parpadeo raro un segundo después». Ahora solo corre al abrir, una vez. Centrado: el conjunto de paneles va centrado en vertical contra un alto fijo (Recetas y la fila de la pantalla tienen alto fijo y desplazan por dentro), así que al filtrar recetas nada se mueve (medido a 1366×768: personaje e inventario centrados, Recetas fija de 12 a 748 con 252 recetas y con 2).',
+      'Balance de la progresión (Isaac: «nerfear un poco los porcentajes de daño y demás mejoras al subir de nivel y mañas, que sea un poquito más lenta la progresión»). Los bonos de daño ahora se SUMAN (nivel + Combate + maestría + yunque + maña + plato + conjunto de diamante) y se topan en ×1,4 en total (antes se multiplicaban: con todo al máximo daban ×5,2 y una espada de madera pegaba 20,9 contra 6 de una de hierro; ahora 5,6). La defensa también suma y no baja de ×0,70 (antes llegaba a ×0,59).',
+      'Valores más bajos: bono de daño por nivel del jugador +3,5 % (antes +5 %, tope +30 % en vez de +50 %); Combate 2 % por nivel (antes 3 %); maestría de arma 1 % por nivel (antes 1,5 %), también el menor gasto de aguante; estrella del yunque +9 % de daño (antes +12 %); Mano pesada +7 % (10 %); conjunto de diamante +7 % (10 %); plato de fuerza +10 % (15 %); Puntería ×1,15 (1,25); Se le pega la plata ×1,15 (1,25). Minería, tala, pesca y agricultura: la chance de doble baja un tercio; Cocina 3,5 % por nivel (5 %); Exploración 2 % (3 %); pesca 3,5 % (5 %). Defensa: rango Guardián 7 % (10 %), Guerrero 7 % (10 %), coraza 8 % (12 %), Cuero duro 5 % (8 %), ojo 3 % (5 %), amuleto 3 % (5 %). Rangos: estamina 12 % (20 %), hambre y sed 5 % (8 %), vida 20 % más rápida (30 %); hojas del cuaderno y mañas de comida, sed y hambre también un poco menos. Todos los textos del juego dicen los números nuevos.',
+      'Subir cuesta más desde el nivel 3: el nivel del jugador cuesta hasta 30 % más (nivel 10 y más; +13 % acumulado al nivel 10, +22 % al 15, +28 % al 30; los niveles 1 a 3 igual) y cada habilidad hasta 25 % más (nivel 8 y más; niveles 1 y 2 igual). Como las mañas se ganan por nivel (2, 4, 7, 10, 13…), llegan un poco más tarde.',
+      'Partidas guardadas: conservan su nivel. SAVE_FORMAT 10 (migración 9 → 10 en src/save.js): la experiencia se vuelve a escribir con la curva nueva sin cambiar el nivel de nadie ni cuánto lleva del siguiente (xp 500, nivel 11 → xp 586, nivel 11; Minería 300 → 340). Solo cambian los valores de los bonos. Un mundo guardado con esta versión no lo abre una más vieja (lo rechaza con aviso, como siempre).',
+      'Nuevo tools/revisar-progresion.mjs (en npm run revisar): imprime la tabla de antes y después por nivel y comprueba que el daño máximo no pasa de ×1,4 ni de 12, que una espada de madera con todo al máximo no pega más que una de hierro sin bonos (ni la de piedra más que la de diamante), que la defensa no baja de ×0,70, que los niveles 1 a 3 cuestan igual, que lo alto cuesta entre 20 y 30 % más y que la migración no cambia el nivel de ninguna partida. La tabla está en docs/revisiones/BALANCE_PROGRESION.md.',
+    ],
+  },
   {
     version: '13.2.3',
     date: '2026-11-15',

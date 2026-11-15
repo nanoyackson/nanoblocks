@@ -47,7 +47,7 @@ import { makeItemMesh, makeHeldItemMesh, makeMacheteMesh, LIGHT_TINT } from './m
 import { saveWorld } from './save.js';
 import { HEIGHT, BIOMES } from './worldgen.js';
 import { GAME_VERSION } from './version.js';
-import { gainSkill, mult, velocidadPicar, lv as skillLv } from './habilidades.js';
+import { gainSkill, mult, velocidadPicar, lv as skillLv, danoTotal, POR_ESTRELLA_DANO } from './habilidades.js';
 import { tickMision, tickCharlas, tickApagon } from './misiones.js';
 import { tickPrecios, tickSoda } from './economia.js';
 import { tickFiestas, tickBaile } from './fiestas2.js';
@@ -824,7 +824,7 @@ export class Game {
     let dmg = 1;
     if (held && held.damage) dmg = held.damage;
     const G = prepararGolpe(this, mob, heavy, info.paso);
-    const total = this.mode === 'creative' ? 100 : dmg * this.damageBonus() * info.mult * G.mult * filoGolpe(this) * factorMejora(this.inventory.held) * bonoDano(this, claseDe(held)); // la maestría del arma (maestria.js)
+    const total = this.mode === 'creative' ? 100 : dmg * this.damageBonus((bonoDano(this, claseDe(held)) - 1) + ((this.inventory.held && this.inventory.held.mejora) || 0) * POR_ESTRELLA_DANO) * info.mult * G.mult * filoGolpe(this); // la maestría del arma (maestria.js)
     const otros = this.mode === 'survival' ? otrosAlcanzados(this, mob, heavy, G) : [];
     let entro = false;
     try {
@@ -1446,7 +1446,7 @@ export class Game {
 
   // ---------- experiencia ----------
   get xpInfo() { return levelOf(this.meta.xp || 0); }
-  damageBonus() { return (1 + Math.min(0.5, this.xpInfo.level * 0.05)) * mult.dano(this) * (this.conjunto === 'diamond' ? 1.1 : 1); } // el conjunto de diamante (conjuntos.js)
+  damageBonus(extra = 0) { return danoTotal(this, extra); } // v13.2.4: bonos sumados y topados en ×1,4 (habilidades.js); extra: maestría y yunque // el conjunto de diamante (conjuntos.js)
 
   addXP(n) {
     if (!n || this.mode !== 'survival') return;
@@ -1457,7 +1457,7 @@ export class Game {
     const after = this.xpInfo.level;
     if (after > before) {
       this.audio.play('nivel', { ui: true, vol: 0.6 });
-      this.ui.toast(`¡Nivel ${after}! +2 corazones${after <= 10 ? ` · +${after * 5}% de daño` : ''}${NIVELES.some((q) => q > before && q <= after) ? ' · 🌟 Maña nueva' : ''}`, 2400);
+      this.ui.toast(`¡Nivel ${after}! +2 corazones${after <= 8 ? ` · +${String(Math.round(after * 2.7 * 10) / 10).replace('.', ',')} % de daño` : ''}${NIVELES.some((q) => q > before && q <= after) ? ' · 🌟 Maña nueva' : ''}`, 2400);
       // antes llenaba vida y comida: con tanto nivel en una pelea, uno no se moría nunca. Ahora solo da un respiro
       this.player.health = Math.min(this.player.maxHealth, this.player.health + 4);
       const p = this.player.body.pos;

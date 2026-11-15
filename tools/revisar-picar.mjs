@@ -2,10 +2,10 @@
 // El pico de madera con TODO al máximo (Minería 10, yunque ★★★★, hoja «manos», maña «buen brazo») nunca pica más rápido que uno de piedra
 // sin bonos, y el de piedra al máximo nunca más rápido que uno de hierro sin bonos. Y ningún bono junto pasa del tope ×1.5.
 import { ITEMS } from '../src/blocks.js';
-import { velocidadPicar, TOPE_PICAR } from '../src/habilidades.js';
+import { velocidadPicar, TOPE_PICAR, necesitaHabilidad } from '../src/habilidades.js';
 
 const pico = (mat) => Object.values(ITEMS).find((d) => d && d.key === `${mat}_pickaxe`);
-const NEED10 = Math.round(18 * 10 ** 1.7);
+const NEED10 = necesitaHabilidad(10);
 const nada = { mode: 'survival', meta: { skills: {}, cuaderno: {}, manas: {} } };
 const todo = { mode: 'survival', meta: { skills: { mineria: NEED10 }, cuaderno: { manos: true }, manas: { buen_brazo: true } } };
 const err = []; const ok = (c, m) => { if (!c) err.push(m); };
@@ -22,7 +22,7 @@ for (const mat of ['wood', 'stone', 'iron', 'diamond', 'jade']) {
   ok(v(mat, nada, 0) === pico(mat).speed, `${mat}: sin bonos la velocidad no es la base`);
 }
 // los bonos se suman, no se multiplican: Minería 3 + ★1 + manos + buen brazo = 1 + 0.06 + 0.06 + 0.05 + 0.05
-const normal = { mode: 'survival', meta: { skills: { mineria: Math.round(18 * 3 ** 1.7) }, cuaderno: { manos: true }, manas: { buen_brazo: true } } };
+const normal = { mode: 'survival', meta: { skills: { mineria: necesitaHabilidad(3) }, cuaderno: { manos: true }, manas: { buen_brazo: true } } };
 const f = v('wood', normal, 1) / pico('wood').speed;
 ok(Math.abs(f - 1.22) < 1e-6, `bonos sumados: se esperaba ×1.22 y salió ×${f.toFixed(3)}`);
 if (err.length) { for (const e of err) console.log(`✘ ${e}`); process.exit(1); }

@@ -110,6 +110,29 @@ const MIGRATIONS = {
   4: (meta) => ({ ...meta, chanchito: Array.isArray(meta.chanchito) ? meta.chanchito : new Array(27).fill(null), premioJefe: meta.premioJefe || {}, premioDia: meta.premioDia || {}, format: 5 }),
 };
 
+// 9 -> 10 (v13.2.4, balance de la progresión): subir de nivel y de habilidad cuesta más experiencia desde el nivel 3. Se conserva el NIVEL de cada quien (y cuánto lleva
+// del siguiente, en proporción): se vuelve a escribir la experiencia total con la curva nueva. Las curvas viejas van aquí, copiadas, para que no cambien nunca.
+const xpViejo = (n) => 10 + n * 6;
+const xpNuevo = (n) => Math.round((10 + n * 6) * (1 + 0.3 * Math.max(0, Math.min(1, (n - 3) / 7))));
+const habViejo = (n) => Math.round(18 * n ** 1.7);
+const habNuevo = (n) => Math.round(18 * n ** 1.7 * (1 + 0.25 * Math.max(0, Math.min(1, (n - 2) / 6))));
+export function reescalarXp(xp) {
+  let lv = 0, left = Math.max(0, Number(xp) || 0), nuevo = 0;
+  while (left >= xpViejo(lv)) { left -= xpViejo(lv); nuevo += xpNuevo(lv); lv++; }
+  return Math.floor(nuevo + left * xpNuevo(lv) / xpViejo(lv));
+}
+export function reescalarHabilidad(xp) {
+  xp = Math.max(0, Number(xp) || 0);
+  let lv = 0; while (lv < 10 && xp >= habViejo(lv + 1)) lv++;
+  if (lv >= 10) return Math.floor(habNuevo(10) + (xp - habViejo(10)));
+  return Math.floor(habNuevo(lv) + (xp - habViejo(lv)) / (habViejo(lv + 1) - habViejo(lv)) * (habNuevo(lv + 1) - habNuevo(lv)));
+}
+MIGRATIONS[9] = (meta) => {
+  const skills = {};
+  for (const [k, v] of Object.entries(meta.skills || {})) skills[k] = reescalarHabilidad(v);
+  return { ...meta, xp: meta.xp ? reescalarXp(meta.xp) : meta.xp, skills: meta.skills ? skills : meta.skills, format: 10 };
+};
+
 export function migrate(meta) {
   let m = meta;
   if (!m.format) m.format = 1;

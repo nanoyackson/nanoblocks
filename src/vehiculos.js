@@ -134,7 +134,7 @@ export function carRide(g, m, dt, input) {
   p.body.pos.x = b.pos.x - fx * 0.2; p.body.pos.z = b.pos.z - fz * 0.2; p.body.pos.y = b.pos.y + 0.55;
   p.body.vel.x = p.body.vel.y = p.body.vel.z = 0;
   p.body.onGround = true; p.body.fallStart = null;
-  p.eyeHeight = 1.2;
+  p.eyeHeight = 0.6; // v13.2.4: los ojos de una persona sentada, DENTRO de la cabina (antes 1.2: por encima del techo, que tapaba media pantalla)
 }
 
 // el mecánico o la llantera: cambia las llantas reventadas del carro que esté cerca (10 colones cada una)
