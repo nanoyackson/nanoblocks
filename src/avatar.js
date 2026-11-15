@@ -3,13 +3,13 @@
 // y va sentado cuando monta caballo, carro o bus.
 import { curvaLuz } from './brillo.js';
 import { curvaGolpe, movidaDe } from './armasmano.js';
-import { POSES, POSE_ESTELA } from './golpes.js';
+import { POSE_ESTELA, POSES_JUGADOR } from './golpes.js';
 import { doblarRodilla, doblarCodo } from './anatomia.js';
 import { saquito } from './sacos.js';
 import * as THREE from 'three';
 import { BLOCKS, isBlockId } from './blocks.js';
 import { Vestidor } from './vestidor.js';
-import { tintModel } from './models.js';
+import { tintModel, makeHeldItemMesh } from './models.js';
 import { poseMuerte } from './muerte.js';
 import { alasAvatar, posePlaneo } from './alas.js';
 import { itemCanvas, tileCanvas } from './textures.js';
@@ -28,6 +28,9 @@ function basicify(root) {
 
 const PX = 1 / 16;
 
+// muneca: cuánto gira la hoja hacia adelante al llegar a D (la mano la lleva de apuntar arriba-atrás a apuntar adelante)
+const SIN_ARMA = { heavy: false };
+
 // v11.11.2: la mochila de cuero en la espalda (si la lleva en el inventario): cuelga del torso, así sigue cada pose
 function mochilaCuero() {
   const g = new THREE.Group(), U = 1 / 16;
@@ -44,37 +47,62 @@ function mochilaCuero() {
   return g;
 }
 
-// lo que lleva en la mano: el dibujo del ítem como lámina, o un cubito con la textura del bloque
+// lo que lleva en la mano (v13.3.1): el dibujo del ítem EXTRUIDO (un cubito por píxel, models.js) o un cubito con la textura del bloque.
+// La geometría se arma una vez por ítem y se comparte entre todos los avatares (el material es de cada uno, para que cada quien se tiña con su luz).
+// Herramientas y armas: el mango queda DENTRO del puño y la hoja sale hacia adelante y arriba; en reposo se ve de lado, como se sostiene de verdad.
+const HELD_GEO = new Map();
+const PUNO = { x: -0.75 * PX, y: -11.3 * PX, z: 0.15 * PX }; // dónde cierra la mano derecha, en el espacio del brazo (brazoHumano: palma en y -10.7, dedos hasta -12.95)
+export const AGARRE_3P = { inclina: -0.12, grueso: 1.7 }; // inclina: giro extra de la hoja (negativo la sube); grueso: cuánto se engruesa el dibujo
+function heldBase(id, tam) {
+  const k = id + ':' + tam;
+  let e = HELD_GEO.get(k);
+  if (!e) { const m = makeHeldItemMesh(id, tam * PX); e = { geo: m.geometry, agarre: m.userData.agarre || null }; m.material.dispose(); HELD_GEO.set(k, e); }
+  const mesh = new THREE.Mesh(e.geo, new THREE.MeshBasicMaterial({ vertexColors: true }));
+  mesh.userData.agarre = e.agarre;
+  return mesh;
+}
+// suelta lo que se llevaba: los materiales y texturas propias; la geometría de los ítems es compartida y no se toca
+export function soltarHeld(obj) {
+  if (!obj) return;
+  if (obj.parent) obj.parent.remove(obj);
+  obj.traverse((o) => { if (!o.isMesh) return; if (!o.userData.compartida) o.geometry.dispose(); const ms = Array.isArray(o.material) ? o.material : [o.material]; ms.forEach((m) => { if (m.map) m.map.dispose(); m.dispose(); }); });
+}
 export function heldMesh(id) { // exportada para tools/revisar-modelos.js
   const nearest = (cv) => { const t = new THREE.CanvasTexture(cv); t.magFilter = THREE.NearestFilter; t.minFilter = THREE.NearestFilter; t.generateMipmaps = false; t.colorSpace = THREE.SRGBColorSpace; return t; };
+  const w = new THREE.Group();
   if (isBlockId(id)) {
     const b = BLOCKS[id];
     const name = typeof b.tex === 'string' ? b.tex : b.tex && (b.tex.side || b.tex.top);
     const cv = name && tileCanvas(name);
     if (!cv) return null;
-    const m = new THREE.Mesh(new THREE.BoxGeometry(6 * PX, 6 * PX, 6 * PX), new THREE.MeshBasicMaterial({ map: nearest(cv), alphaTest: 0.5 }));
-    m.position.set(0, -12 * PX, 3 * PX);
-    return m;
+    // el bloque chico va en el puño, apoyado sobre los dedos y asomando por delante (no flota)
+    const m = new THREE.Mesh(new THREE.BoxGeometry(5 * PX, 5 * PX, 5 * PX), new THREE.MeshBasicMaterial({ map: nearest(cv), alphaTest: 0.5 }));
+    m.rotation.set(0, 0.5, 0);
+    w.add(m); w.position.set(PUNO.x + 0.2 * PX, PUNO.y + 0.3 * PX, PUNO.z + 2.5 * PX);
+    return w;
   }
   const cv = itemCanvas(id);
   if (!cv) return null;
-  // v12.6.6: el tamaño y la pose según el tipo de objeto (agarre.js); antes todo medía 11 px y salía como herramienta
+  // el tamaño y la pose según el tipo de objeto (agarre.js)
   const tipo = tipoAgarre(id), s = TAM_3P[tipo] || 11;
-  const m = new THREE.Mesh(new THREE.PlaneGeometry(s * PX, s * PX), new THREE.MeshBasicMaterial({ map: nearest(cv), alphaTest: 0.5, side: THREE.DoubleSide }));
+  const m = heldBase(id, s);
+  m.userData.compartida = true;
+  w.add(m);
   if (tipo === 'herramienta') {
-    // la herramienta sale de la mano hacia adelante, como agarrada del mango
-    // el dibujo va del mango (abajo a la izquierda) a la punta (arriba a la derecha): mango en la mano, punta hacia arriba
-    m.position.set(2.5 * PX, -8 * PX, 2.6 * PX);
-    m.rotation.set(-0.35, 0, 0);
-  } else {
+    const ag = m.userData.agarre;
+    m.scale.z = AGARRE_3P.grueso;
+    if (ag) m.position.set(-ag.p[0], -ag.p[1], 0);
+    // la lámina queda en el plano de adelante-arriba (el filo mira adelante) y el mango se cierra dentro del puño
+    w.rotation.set(AGARRE_3P.inclina, -Math.PI / 2, 0);
+    w.userData.rot0 = AGARRE_3P.inclina; // el giro de reposo: la muñeca lo suma durante el golpe
+    w.position.set(PUNO.x, PUNO.y, PUNO.z);
+  } else if (tipo === 'escudo') { w.position.set(2.4 * PX, -9 * PX, 0); w.rotation.set(0, Math.PI / 2, 0); } // al costado del antebrazo
+  else {
     // lo demás sale de la mano por el borde de abajo: chico y de frente; el papel, inclinado como para leerlo; el recipiente, de pie
-    if (tipo === 'escudo') { m.position.set(2.4 * PX, -9 * PX, 0); m.rotation.set(0, Math.PI / 2, 0); } // v12.8.2: al costado del antebrazo
-    else {
-      m.position.set(0.3 * PX, (-12.2 + s * 0.42) * PX, (tipo === 'plano' ? 3.4 : 2.4) * PX); // v12.8.2 (revisión B): antes 2.6 y 2.1, se metían en el brazo
-      m.rotation.set(tipo === 'plano' ? -0.7 : tipo === 'recipiente' ? 0 : -0.15, 0, 0);
-    }
+    w.position.set(0.3 * PX, (-12.2 + s * 0.42) * PX, (tipo === 'plano' ? 3.4 : 2.4) * PX);
+    w.rotation.set(tipo === 'plano' ? -0.7 : tipo === 'recipiente' ? 0 : -0.15, 0, 0);
   }
-  return m;
+  return w;
 }
 
 
@@ -126,7 +154,7 @@ export class Avatar {
     const held = g.inventory.held ? g.inventory.held.id : 0;
     if (held !== this.heldId) {
       this.heldId = held;
-      if (this.heldObj) { this.heldObj.parent.remove(this.heldObj); this.heldObj.geometry.dispose(); this.heldObj.material.map && this.heldObj.material.map.dispose(); this.heldObj.material.dispose(); this.heldObj = null; }
+      if (this.heldObj) { soltarHeld(this.heldObj); this.heldObj = null; }
       const m = held ? heldMesh(held) : null;
       if (m) { const j = P.armR.junta; m.userData.held = true; if (j) { m.position.sub(j.position); j.add(m); } else P.armR.add(m); this.heldObj = m; } // cuelga del antebrazo: se dobla con el codo
     }
@@ -181,7 +209,6 @@ export class Avatar {
       this.barriendo = true;
     } else if (this.barriendo) { if (fig) fig.rotation.x = 0; this.barriendo = false; }
     // brazos: balanceo, golpe con el derecho, agarrados arriba en la tirolesa y el parapente, abiertos en la tabla
-    const swing = g.swing || 0;
     if (colgado) {
       // en la tirolesa, agarrados arriba; en el parapente, las manos en los frenos (y tiran del lado al que dobla)
       const freno = g.parapente ? Math.max(-0.4, Math.min(0.4, (g.parapente.roll || 0) * 1.2)) : 0;
@@ -196,16 +223,17 @@ export class Avatar {
       const respira = Math.sin(t * 1.6) * 0.04 * (1 - amp);
       P.armL.rotation.x = k(P.armL.rotation.x, -sw * 0.9 - cae * 2.2 - (g.blocking ? 1.2 : 0), 16);
       P.armL.rotation.z = k(P.armL.rotation.z, -0.05 - respira - this.aire * 0.25, 12);
-      P.armR.rotation.x = sw * 0.9 - Math.sin(swing * Math.PI) * 1.6 - (g.blocking ? 1.1 : 0) - cae * 2.2;
+      P.armR.rotation.x = sw * 0.9 - (g.blocking ? 1.1 : 0) - cae * 2.2;
       P.armR.rotation.z = k(P.armR.rotation.z, 0.05 + respira + this.aire * 0.25, 12);
     }
     // los codos: libres si no agarra nada; el izquierdo lleva el escudo y el derecho lo que tenga en la mano
     doblarCodo(P.armL, dt, !g.inventory.armor[4] && !colgado && !surf);
     doblarCodo(P.armR, dt, !colgado && !surf);
     // el golpe: el brazo se arma y suelta, el cuerpo gira y las piernas dan el paso
-    const aG = curvaGolpe(g);
+    const conArma = !!g.golpeAnim;
+    const aG = conArma ? curvaGolpe(g) : (g.swing > 0 ? curvaGolpe({ golpeAnim: SIN_ARMA, swing: g.swing }) : 0);
     if (aG && !colgado && !surf && !riding) {
-      const A = g.golpeAnim, M = movidaDe(A), dir = M ? M.estela : 1, Q = POSES[POSE_ESTELA[dir]] || POSES.lateral, izq = M && M.izq, brazo = izq ? P.armL : P.armR, k2 = Math.abs(aG), q = aG >= 0 ? Q.U : Q.D, lado = izq ? -1 : 1, H = A.heavy ? 1.15 : 1;
+      const A = g.golpeAnim || SIN_ARMA, M = conArma ? movidaDe(A) : null, dir = M ? M.estela : 1, Q = conArma ? (POSES_JUGADOR[POSE_ESTELA[dir]] || POSES_JUGADOR.lateral) : POSES_JUGADOR.trabajo, izq = M && M.izq, brazo = izq ? P.armL : P.armR, k2 = Math.abs(aG), q = aG >= 0 ? Q.U : Q.D, lado = izq ? -1 : 1, H = A.heavy ? 1.15 : 1;
       brazo.rotation.x += (q.x * H - brazo.rotation.x) * k2;
       brazo.rotation.z += (q.z * lado - brazo.rotation.z) * k2;
       if (brazo.junta) brazo.junta.rotation.x += (q.c - brazo.junta.rotation.x) * k2;
@@ -216,6 +244,12 @@ export class Avatar {
       P.legR.rotation.x = P.legR.rotation.x + (paso * 0.8 - P.legR.rotation.x) * k2;
       if (P.legL.junta) P.legL.junta.rotation.x = Math.max(P.legL.junta.rotation.x, paso * 0.9);
     } else if (!colgado) P.body.rotation.y = k(P.body.rotation.y, 0, 10);
+    // la muñeca: la hoja acompaña el golpe (en reposo vuelve a su giro)
+    if (this.heldObj && this.heldObj.userData.rot0 !== undefined) {
+      let mu = 0;
+      if (aG < 0 && !colgado && !surf && !riding) mu = -aG * ((g.golpeAnim ? (POSES_JUGADOR[POSE_ESTELA[(movidaDe(g.golpeAnim) || { estela: 1 }).estela]] || POSES_JUGADOR.lateral) : POSES_JUGADOR.trabajo).muneca || 0);
+      this.heldObj.rotation.x = this.heldObj.userData.rot0 + mu;
+    }
     // recibir un golpe: el tronco acusa; cubrirse: el codo se cierra; el parry bota el brazo del escudo hacia afuera
     if ((g.handGolpe || 0) > 0) P.body.rotation.x -= g.handGolpe * 0.28;
     if (g.blocking && P.armL.junta) P.armL.junta.rotation.x = k(P.armL.junta.rotation.x, -1.35, 16);

@@ -37,7 +37,7 @@ function crearEnv() {
     version: GAME_VERSION,
     perfil: () => ({ nombre: nombreGuardado(), cuerpo: cuerpoPropio() }),
     miPos() {
-      const p = g().player, b = p.body.pos, f = (p.sneaking ? 1 : 0) | (p.sprinting ? 2 : 0) | (p.flying ? 4 : 0) | (p.body.onGround ? 8 : 0) | (p.body.inWater ? 16 : 0);
+      const p = g().player, b = p.body.pos, f = (p.sneaking ? 1 : 0) | (p.sprinting ? 2 : 0) | (p.flying ? 4 : 0) | (p.body.onGround ? 8 : 0) | (p.body.inWater ? 16 : 0) | (g().swing > 0 ? 32 : 0); // v13.3.1: 32 = está golpeando (picando, talando, pegando)
       const h = g().inventory && g().inventory.held;
       return { x: enRango(b.x, -3e7, 3e7), y: enRango(b.y, -20, 600), z: enRango(b.z, -3e7, 3e7), yaw: Number.isFinite(p.yaw) ? p.yaw : 0, pitch: Number.isFinite(p.pitch) ? p.pitch : 0, flags: f, arma: h && Number.isInteger(h.id) && h.id > 0 && h.id < 65536 ? h.id : 0, dim: 0 };
     },

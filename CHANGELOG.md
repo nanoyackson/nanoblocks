@@ -1,5 +1,13 @@
 # Registro de versiones
 
+## 13.3.1 — 2026-11-15 · Herramientas y armas con volumen y golpe natural en tercera persona
+
+- Herramientas y armas con volumen en tercera persona y en las demas personas de la sala (pedido de Isaac: la espada era un item plano y el movimiento se veia raro): el dibujo del item se extruye pixel a pixel (el mismo makeHeldItemMesh de la primera persona) y la geometria se arma una sola vez por item y se comparte entre todos los avatares; cada avatar tiene su propio material para teñirse con su luz. Antes era una lamina plana que flotaba junto a la mano.
+- Agarre: el mango queda DENTRO del puño derecho y la hoja sale hacia adelante y arriba (en reposo se ve de lado, como se sostiene una herramienta); las herramientas miden 14 px en vez de 11; el bloque chico va en el puño, apoyado sobre los dedos, y la comida y los recipientes siguen saliendo por el borde de abajo. Los NPC no cargan items planos (sus cosas son geometria propia), asi que no cambian.
+- Golpe natural: un arco de arriba hacia abajo y hacia adelante, del hombro al frente del cuerpo. Las poses del jugador (POSES_JUGADOR en golpes.js) ya no abren el brazo hacia adentro (el lateral y el reves cruzaban la cara hasta el hombro contrario); la muñeca gira la hoja hacia adelante durante el golpe y vuelve suave a reposo. Picar, talar, palear y poner usan el mismo arco, mas corto y repetido. Las poses de las criaturas (POSES) no cambian.
+- Los demas jugadores se ven golpear: el bit 32 de flags en la posicion dice «esta golpeando» (validar.js ya deja pasar 0-255, un cliente viejo lo ignora; el protocolo no cambia). Remotos anima el golpe con reloj propio, encadena golpes mientras el bit siga puesto, rota las movidas segun el arma (espada, hacha, garrote, mazo, lanza, cuchillo) y usa el arco corto de trabajo con pico, herramientas o la mano vacia. Probado en red real con anfitrion e invitado: cada uno ve al otro golpear y nadie es expulsado.
+- Primera persona: sin cambios. Prueba nueva en npm run revisar: tools/revisar-golpe3p.mjs (poses del jugador, bit de red, Remotos). Capturas de antes y despues en docs/revisiones/capturas_3p/.
+
 ## 13.3.0 — 2026-11-15 · Obras integradas al terreno (generador 24)
 
 - Generador 24, obras integradas al terreno (base de la serie 13.3): los mundos nuevos nacen con generador 24 (GEN_MAX = 24, GEN_INTEGRACION en worldgen2.js) y piden la 13.3.0 (meta.minVersion); un cliente viejo ante un anfitrion de generador 24 se rechaza con el aviso de actualizar. Los mundos 21, 22 y 23 quedan IDENTICOS: tools/huella-mundos.mjs genera trozos reales de los tres (4 semillas x 6 lugares x 3x3 trozos) y compara su hash con tools/huella-gen.json, tomado con el codigo de la v13.2.6.

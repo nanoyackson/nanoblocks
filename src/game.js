@@ -364,6 +364,7 @@ export class Game {
   // ---------- ciclo de vida ----------
   start(meta, mods, be) {
     this.AvatarClase = Avatar; // v12.11.0: el trozo «red» lo recibe de aquí (no importa el juego)
+    this.claseDeItem = (id) => claseDe(getDef(id)); // v13.3.1: con qué movida golpea quien lleva ese ítem (remotos.js)
     this.meta = meta;
     this.mode = meta.mode || 'survival';
     this.time = meta.time ?? 0.05;

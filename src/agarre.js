@@ -47,7 +47,7 @@ export const AGARRES = {
   escudo: { tam: 0.42, p: [0.4, -0.36, -0.58], r: [0.05, -1.2, 0.1] }, // v12.8.2: pegado al antebrazo, casi de canto
 };
 // tercera persona: el lado de la lámina en píxeles del muñeco (antes 11 para todo)
-export const TAM_3P = { herramienta: 11, pequeno: 5.5, plano: 8, recipiente: 6.5, grande: 9, escudo: 9 };
+export const TAM_3P = { herramienta: 14, pequeno: 5.5, plano: 8, recipiente: 6.5, grande: 9, escudo: 9 };
 
 // dónde agarra la mano (en el espacio del dibujo) y para dónde queda «arriba»: con el puño, el objeto sale por el lado del pulgar.
 // pequeno y recipiente: por el borde de abajo, al centro (el recipiente, derecho); plano: por el borde de abajo, un poco a la izquierda

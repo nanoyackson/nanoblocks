@@ -4,7 +4,8 @@
 import * as THREE from 'three';
 
 const SUAVE = 12; // qué tan rápido alcanza la posición que llegó (1/s)
-const FLAGS = { agacha: 1, corre: 2, vuela: 4, suelo: 8, agua: 16 };
+const FLAGS = { agacha: 1, corre: 2, vuela: 4, suelo: 8, agua: 16, golpe: 32 }; // golpe (v13.3.1): está golpeando; se anima solo mientras el bit siga puesto
+const RITMO_GOLPE = 3.4; // la curva del golpe baja a 3,4 por segundo (≈ 0,3 s de golpe): igual que el jugador local
 const sinCuerpo = () => ({ camisa: 0, piel: 0, pelo: 0 });
 
 // el nombre sobre la cabeza: un letrero que siempre mira a la cámara
@@ -100,10 +101,25 @@ export class Remotos {
       const f = e.flags;
       p.sneaking = !!(f & FLAGS.agacha); p.sprinting = !!(f & FLAGS.corre); p.flying = !!(f & FLAGS.vuela);
       p.body.onGround = !!(f & FLAGS.suelo); p.body.inWater = !!(f & FLAGS.agua);
-      if (e.arma !== r.arma) { r.arma = e.arma; r.g.inventory.held = e.arma ? { id: e.arma, count: 1 } : null; }
+      if (e.arma !== r.arma) { r.arma = e.arma; r.paso = -1; r.g.inventory.held = e.arma ? { id: e.arma, count: 1 } : null; }
+      this.golpear(r, !!(f & FLAGS.golpe), dt);
       r.g.clock = this.game.clock;
       r.avatar.update(dt, r.g, true);
       r.sprite.position.set(b.x, b.y + 2.25, b.z);
+    }
+  }
+
+  // el golpe de otra persona: mientras diga que golpea arranca un golpe tras otro (cada uno con la movida que toca a su arma, rotando como el local),
+  // y cuando deja de decirlo el último termina solo. Lo que llega son 10 posiciones por segundo: el golpe se dibuja con reloj propio, no se mide.
+  golpear(r, golpea, dt) {
+    const g = r.g;
+    if (g.swing > 0) { g.swing = Math.max(0, g.swing - dt * RITMO_GOLPE); if (g.swing <= 0) g.golpeAnim = null; }
+    if (golpea && !(g.swing > 0)) {
+      g.swing = 1;
+      const id = g.inventory.held ? g.inventory.held.id : 0;
+      const clase = id && this.game.claseDeItem ? this.game.claseDeItem(id) : 'puno';
+      // sin arma de combate (picar, talar, palear, poner, puños, machete): el arco corto de trabajo (avatar.js, sin golpeAnim)
+      g.golpeAnim = !['espada', 'hacha', 'garrote', 'mazo', 'lanza', 'cuchillo'].includes(clase) ? null : { clase, paso: r.paso = ((r.paso ?? -1) + 1) % 3, heavy: false };
     }
   }
 

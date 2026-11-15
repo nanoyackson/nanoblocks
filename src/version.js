@@ -5,7 +5,7 @@ export const GAME_NAME = 'NanoBlocks';
 // v13.1.0: la versión de generador de terreno MÁS NUEVA que este juego sabe hacer (la de los mundos nuevos). Si el anfitrión de una sala manda
 // una mayor, este cliente generaría un terreno distinto al suyo (cuevas flotando): se rechaza la entrada (red/sesion.js).
 export const GEN_MAX = 24; // v13.3.0: 24 = obras integradas al terreno (GEN_INTEGRACION en worldgen2.js) · v13.2.0: 23 = lava más abajo (GEN_PROF en worldgen2.js)
-export const GAME_VERSION = '13.3.0';
+export const GAME_VERSION = '13.3.1';
 // v12.4.6: la versión MÁS VIEJA del juego que puede abrir lo que esta versión guarda. Se sube cuando un mundo guardado trae algo que un
 // juego anterior no entiende y lo rompería: bloques nuevos (ids que el mallador no conoce), un SAVE_FORMAT nuevo o un campo que cambia
 // de forma. Se guarda en meta.minVersion y el menú no abre un mundo cuyo minVersion sea más nuevo que este juego (12.4.0: los bloques 656–662).
@@ -26,6 +26,18 @@ export const CREDITS = [
 ];
 
 export const CHANGELOG = [
+  {
+    version: '13.3.1',
+    date: '2026-11-15',
+    title: 'Herramientas y armas con volumen y golpe natural en tercera persona',
+    items: [
+      'Herramientas y armas con volumen en tercera persona y en las demas personas de la sala (pedido de Isaac: la espada era un item plano y el movimiento se veia raro): el dibujo del item se extruye pixel a pixel (el mismo makeHeldItemMesh de la primera persona) y la geometria se arma una sola vez por item y se comparte entre todos los avatares; cada avatar tiene su propio material para teñirse con su luz. Antes era una lamina plana que flotaba junto a la mano.',
+      'Agarre: el mango queda DENTRO del puño derecho y la hoja sale hacia adelante y arriba (en reposo se ve de lado, como se sostiene una herramienta); las herramientas miden 14 px en vez de 11; el bloque chico va en el puño, apoyado sobre los dedos, y la comida y los recipientes siguen saliendo por el borde de abajo. Los NPC no cargan items planos (sus cosas son geometria propia), asi que no cambian.',
+      'Golpe natural: un arco de arriba hacia abajo y hacia adelante, del hombro al frente del cuerpo. Las poses del jugador (POSES_JUGADOR en golpes.js) ya no abren el brazo hacia adentro (el lateral y el reves cruzaban la cara hasta el hombro contrario); la muñeca gira la hoja hacia adelante durante el golpe y vuelve suave a reposo. Picar, talar, palear y poner usan el mismo arco, mas corto y repetido. Las poses de las criaturas (POSES) no cambian.',
+      'Los demas jugadores se ven golpear: el bit 32 de flags en la posicion dice «esta golpeando» (validar.js ya deja pasar 0-255, un cliente viejo lo ignora; el protocolo no cambia). Remotos anima el golpe con reloj propio, encadena golpes mientras el bit siga puesto, rota las movidas segun el arma (espada, hacha, garrote, mazo, lanza, cuchillo) y usa el arco corto de trabajo con pico, herramientas o la mano vacia. Probado en red real con anfitrion e invitado: cada uno ve al otro golpear y nadie es expulsado.',
+      'Primera persona: sin cambios. Prueba nueva en npm run revisar: tools/revisar-golpe3p.mjs (poses del jugador, bit de red, Remotos). Capturas de antes y despues en docs/revisiones/capturas_3p/.',
+    ],
+  },
   {
     version: '13.3.0',
     date: '2026-11-15',

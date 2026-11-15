@@ -20,6 +20,15 @@ export const POSES = {
   mazazo: { U: { x: -3.05, z: 0.2, c: -0.6 }, D: { x: -0.55, z: -0.1, c: -0.1 }, giro: 0.1, ambos: true },
   reves: { U: { x: -1.4, z: -0.75, c: -1.4 }, D: { x: -1.5, z: 1, c: -0.1 }, giro: -0.55 }, // el revés del jugador (las criaturas no lo escogen)
 };
+// v13.3.1: el golpe del jugador en tercera persona (y el de las demás personas de la sala). U = brazo armado, D = donde termina; x sube el brazo (negativo = adelante y
+// arriba), z lo abre hacia afuera (positivo = afuera, nunca cruza el cuerpo), c dobla el codo. Siempre de arriba hacia abajo y hacia adelante, del hombro al frente del cuerpo.
+export const POSES_JUGADOR = {
+  lateral: { U: { x: -2.45, z: 0.5, c: -1.0 }, D: { x: -1.0, z: 0.05, c: -0.15 }, giro: 0.22, muneca: 2.0 },
+  reves: { U: { x: -1.85, z: 0.05, c: -1.15 }, D: { x: -1.15, z: 0.7, c: -0.1 }, giro: -0.22, muneca: 1.8 },
+  estocada: { U: { x: -0.85, z: 0.12, c: -2.0 }, D: { x: -1.55, z: 0.02, c: -0.02 }, giro: 0.15, muneca: 2.3 },
+  tajo: { U: { x: -2.8, z: 0.22, c: -1.1 }, D: { x: -0.5, z: 0.0, c: -0.1 }, giro: 0.1, muneca: 1.7 },
+  trabajo: { U: { x: -2.15, z: 0.12, c: -1.0 }, D: { x: -0.65, z: 0.0, c: -0.12 }, giro: 0.06, muneca: 1.7 }, // picar, talar, palear, poner: el mismo arco, más corto
+};
 // la estela de cada movida del jugador (1 derecha, -1 revés, 0 de punta, 2 de arriba) → su pose
 export const POSE_ESTELA = { 1: 'lateral', [-1]: 'reves', 0: 'estocada', 2: 'tajo' };
 const brazosDe = (u) => u.npcArms || u.brazos || u.arms || null;
