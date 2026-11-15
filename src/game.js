@@ -240,6 +240,7 @@ import { es as esTecla } from './teclas.js';
 import { toggleFoto, tickFoto, camaraFoto, zoomFoto, pedirFoto, guardarSiToca, fotoTecla } from './foto.js';
 import { usarMapa, mapaDelCoco, cavarTesoro, usarCareta, perlaDe, MAPA, CARETA } from './tesoros.js';
 import { quizaSangra, usarCura, CURAS, tickHeridas, durmio, siestita } from './supervivencia3.js';
+import { cuadroProfundidad, brilloProf, nieblaProf } from './profundidad.js';
 import { tickFuego, usarFuego, tickColada, conCasco } from './fuego.js';
 import { tickComite, alCambiarBloqueComite } from './comite.js';
 import { tickPatronal, usarPatronal } from './patronal.js';
@@ -3275,8 +3276,8 @@ export class Game {
       this.tripOn = true;
     } else if (this.tripOn) { cv.style.filter = ''; cv.style.transform = ''; this.tripOn = false; this.tripT = 0; this.brilloFilter = null; }
     // el «ojo» de las pociones todavía aclara la imagen entera
-    BRILLO.value = luzDeAjuste(this.settings.luz);
-    if (this.env && this.env.cave > 0.6 && conCasco(this)) BRILLO.value = Math.max(BRILLO.value, 0.55); // v12.15.2 (C7): la linterna del casco de espeleólogo // v11.11.0: el brillo va en la luz del mundo (brillo.js), ya no en un filtro
+    cuadroProfundidad(this, dt); // v13.2.0: menos luz conforme se baja (uniforme del shader) y el aviso de lava
+    BRILLO.value = brilloProf(luzDeAjuste(this.settings.luz), !!(this.env && this.env.cave > 0.6 && conCasco(this)), this.profK || 0); // v13.2.0: el deslizador no lava lo hondo y el casco sube con la hondura // v12.15.2 (C7): la linterna del casco de espeleólogo // v11.11.0: el brillo va en la luz del mundo (brillo.js), ya no en un filtro
     if (!this.tripOn) { const bri = this.ojoBrillo || 0, want = (bri > 0.01 ? `brightness(${(1 + bri * 0.6).toFixed(2)}) contrast(${(1 - bri * 0.08).toFixed(2)})` : '') + (this.cansaBlur ? ` blur(${this.cansaBlur.toFixed(2)}px)` : '') + (this.fotoFiltro ? ` ${this.fotoFiltro}` : '') + filtroMuerte(this); if (this.brilloFilter !== want) { this.brilloFilter = want; cv.style.filter = want; } }
     // la cámara se inclina con la avioneta y el parapente en las curvas, y se mece sobre la tabla de surf
     const av = this.riding && this.riding.type === 'avioneta' ? this.riding.data : null;
@@ -3372,6 +3373,13 @@ export class Game {
       // humo rojizo de la caverna
       this.scene.fog.color.setRGB(0.3, 0.08, 0.03);
       this.scene.fog.near = 6; this.scene.fog.far = 78;
+      this.renderer.setClearColor(this.scene.fog.color);
+    }
+    // v13.2.0: bajo tierra la niebla se acorta y se oscurece con la profundidad (suave: sigue a this.profK)
+    if (!underwater && !infra && this.profK > 0) {
+      const nb = nieblaProf(this.scene.fog.near, this.scene.fog.far, this.profK);
+      this.scene.fog.near = nb.near; this.scene.fog.far = nb.far;
+      this.scene.fog.color.multiplyScalar(1 - 0.92 * this.profK);
       this.renderer.setClearColor(this.scene.fog.color);
     }
     this.updateBeacons(dt);

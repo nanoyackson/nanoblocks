@@ -84,5 +84,5 @@ Orden: C1 → C2 → C3 → C4 (C4 puede ir antes de C3 si falta tiempo) → C5.
 2. Seguir con **C3** (da lugares y libreta) y **C4** (vida y sonido): son lo que el jugador nota.
 3. **C2** si hay presupuesto; es el que más afecta a la economía (diamante/oro): hay que re-balancear con Isaac.
 4. **Dejar afuera** si falta tiempo: C5 (minas), el río con corriente real (agua dinámica es cara y arriesgada en la red) y el sistema de «tipo por bioma» más fino; basta un tipo por región.
-5. Decisión de producto que sigue abierta (de Isaac): cuánta dificultad extra sube con la profundidad (¿más lava y menos luz abajo?, ¿criaturas solo de noche?).
-6. Antes de publicar: **mismo `genVersion` 22 en una sola versión** (C1–C3 juntos o con la misma bandera) para no tener dos saltos de generación; probar un mundo 21 (idéntico) y uno nuevo.
+5. Decisión de producto (de Isaac): cuánta dificultad extra sube con la profundidad. «¿Más lava y menos luz abajo?»: **Sí, más difícil** (hecho en la 13.2.0: luz que baja con la profundidad y generador 23 con más lava). Sigue abierta: ¿criaturas solo de noche?
+6. Antes de publicar: **mismo `genVersion` 22 en una sola versión** (C1–C3 juntos o con la misma bandera) para no tener dos saltos de generación; probar un mundo 21 (idéntico) y uno nuevo. (13.2.0: la lava de lo hondo sube el generador de los mundos nuevos a 23; si C1–C4 y esto salen juntos, los mundos nacen ya en 23 y los 22 de prueba dejan de existir.)

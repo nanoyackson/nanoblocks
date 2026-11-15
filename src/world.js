@@ -1,5 +1,5 @@
 // El mundo: chunks en memoria, carga/descarga alrededor del jugador, cambios del jugador y mallas.
-import { BRILLO, CURVA_GLSL } from './brillo.js';
+import { BRILLO, CURVA_GLSL, OSCURO } from './brillo.js';
 import * as THREE from 'three';
 import { BLOCKS, SOLID, AIR, FLUID, FLUID_LEVEL, fluidId, BLOCK_BY_KEY as K, BOXES } from './blocks.js';
 import { Generator, CHUNK, HEIGHT, idx } from './worldgen.js';
@@ -42,10 +42,10 @@ function makeMaterial(opts) {
     shader.uniforms.uDaylight = mat.userData.daylight;
     shader.uniforms.uTime = SHADER_TIME;
     shader.uniforms.uSkyColor = SKY_LIGHT;
-    shader.uniforms.uBrillo = BRILLO; // v11.11.0: el deslizador de brillo (brillo.js)
+    shader.uniforms.uBrillo = BRILLO; shader.uniforms.uOscuro = OSCURO; // v13.2.0: lo hondo es más oscuro (profundidad.js) // v11.11.0: el deslizador de brillo (brillo.js)
     // Ojo: en MeshBasicMaterial <color_vertex> va ANTES de <begin_vertex>, así que la ola se calcula ahí.
     shader.vertexShader = shader.vertexShader
-      .replace('#include <common>', '#include <common>\nattribute vec2 aLight;\nattribute float aAnim;\nuniform float uBrillo;\nuniform float uDaylight;\nuniform float uTime;\nuniform vec3 uSkyColor;\nvarying vec2 vAgua;\nvarying float vEmis;\nfloat aBaseA() { return floor(aAnim + 0.001); }')
+      .replace('#include <common>', '#include <common>\nattribute vec2 aLight;\nattribute float aAnim;\nuniform float uBrillo;\nuniform float uOscuro;\nuniform float uDaylight;\nuniform float uTime;\nuniform vec3 uSkyColor;\nvarying vec2 vAgua;\nvarying float vEmis;\nfloat aBaseA() { return floor(aAnim + 0.001); }')
       .replace('#include <color_vertex>', `#include <color_vertex>
         vec4 wpA = modelMatrix * vec4(position, 1.0);
         float aB = aBaseA(), frA = aAnim - aB;
@@ -57,12 +57,12 @@ function makeMaterial(opts) {
         float waveA = 0.0;
         if (aB > 2.5 && aB < 4.5) waveA = sin(uTime * 1.3 + wpA.x * 0.8 + wpA.z * 0.25) * cos(uTime * 1.05 + wpA.z * 0.7);
         // luz del cielo con su color + luz de antorchas anaranjada que titila; se suman (sin pasarse)
-        float skyK = aLight.x * uDaylight;
+        float skyK = aLight.x * uDaylight * (1.0 - uOscuro * 0.9);
         vec3 skyL = skyK * uSkyColor;
         float flick = 0.93 + 0.07 * sin(uTime * 9.0 + wpA.x * 1.7 + wpA.z * 2.3) * sin(uTime * 5.3 + wpA.y);
         vec3 blkL = aLight.y * vec3(1.05, 0.68, 0.38) * flick;
         vec3 L = skyL + blkL * (1.0 - min(1.0, skyK) * 0.6);
-        L = clamp(L, vec3(0.03, 0.035, 0.055), vec3(1.15));${CURVA_GLSL}
+        L = clamp(L, vec3(0.03, 0.035, 0.055) * (1.0 - 0.3 * uOscuro), vec3(1.15));${CURVA_GLSL}
         vColor.rgb *= L;
         // un poco más de color
         float lumA = dot(vColor.rgb, vec3(0.299, 0.587, 0.114));

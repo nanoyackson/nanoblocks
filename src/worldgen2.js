@@ -14,6 +14,11 @@ const VOLCANO_CELL = 640;
 // v13.1.0 (C1 de cuevas): el cavado nuevo (generador 22). Todo lo de abajo solo corre con gen.version >= GEN_CUEVAS; los mundos 21 o
 // menos se generan igual que siempre. Todo sale de la semilla (Simplex con seed y hash3), nunca de Math.random: cada máquina genera igual.
 export const GEN_CUEVAS = 22;
+// v13.2.0 (generador 23): lo hondo es más caliente. Lagos y charcos de lava por zonas (mismo molde que el agua por cuencas), cada vez
+// más frecuentes y más altos conforme se baja. Los mundos 22 o menos no pasan por aquí: salen idénticos. Solo hash3 y Simplex (sin Math.random).
+export const GEN_PROF = 23;
+export const LAVA_TOPE = 30, LAVA_FONDO = 10;
+const LAVA_ZONA = 28, LAVA_PROB = 0.75;
 const BOCA_CELDA = 16, BOCA_PROB = 0.9, QUESO_BASE = 0.55, QUESO_PEND = 0.62, ESP_BASE = 0.05, ESP_PEND = 0.03;
 
 export class GenV2 {
@@ -220,6 +225,18 @@ export class GenV2 {
     return 18 + 3 * Math.min(5, Math.floor((n - 0.14) * 11));
   }
 
+  // Nivel de la lava de una columna (0 = sin lava arriba del piso de siempre, que es y<=10). Zonas de ~28 bloques con el borde ondulado;
+  // cada zona tiene lava con probabilidad LAVA_PROB y un nivel entre 11 y LAVA_TOPE (más zonas bajas que altas: crece hacia el fondo).
+  // Donde hay agua subterránea no hay lava (se enfriarían una a la otra).
+  nivelLava(wx, wz) {
+    if (this.nivelAgua(wx, wz)) return 0;
+    const o = Math.floor(this.nDeep.noise2(wx * 0.045 + 11, wz * 0.045 - 7) * 9);
+    const rx = Math.floor((wx + o) / LAVA_ZONA), rz = Math.floor((wz - o) / LAVA_ZONA), s = this.gen.seed;
+    if (hash3(s, rx, 901, rz) >= LAVA_PROB) return 0;
+    const t = hash3(s, rx, 902, rz);
+    return LAVA_FONDO + 1 + Math.floor(t * t * (LAVA_TOPE - LAVA_FONDO - 1));
+  }
+
   cueva22(x, y, z, h, cc, bocas) {
     for (let i = 0; i < bocas.length; i++) {
       const m = bocas[i], t = m.h - y;
@@ -261,6 +278,7 @@ export class GenV2 {
     const structures = [];
     const v22 = g.version >= GEN_CUEVAS;
     const bocas = v22 ? this.bocasDe(cx, cz) : null;
+    const v23 = g.version >= GEN_PROF;
 
     for (let lz = 0; lz < CHUNK; lz++) for (let lx = 0; lx < CHUNK; lx++) {
       const wx = x0 + lx, wz = z0 + lz;
@@ -312,6 +330,12 @@ export class GenV2 {
         selloLo = aq22;
         if (aq22) for (let k = 0; k < 4; k++) selloLo = Math.min(selloLo, this.nivelAgua(wx + (k === 0) - (k === 1), wz + (k === 2) - (k === 3)));
       }
+      // v23: el nivel de la lava de esta columna y el más bajo de sus cuatro vecinas (la pared que la contiene)
+      let lv23 = 0, lavaLo = 0;
+      if (v23) {
+        lv23 = this.nivelLava(wx, wz);
+        if (lv23) { lavaLo = lv23; for (let k = 0; k < 4; k++) lavaLo = Math.min(lavaLo, this.nivelLava(wx + (k === 0) - (k === 1), wz + (k === 2) - (k === 3)) || LAVA_FONDO); }
+      }
       let nearSea = false;
       if (!underwater) for (let dz = -2; dz <= 2 && !nearSea; dz++) for (let dx = -2; dx <= 2; dx++) { if (colAt(lx + dx, lz + dz).h < SEA) { nearSea = true; break; } }
       const carveTop = underwater || biome === 'beach' ? h - 4 : h - (biome === 'volcano' ? 3 : 0);
@@ -325,9 +349,9 @@ export class GenV2 {
         else if (y < deepTop) id = K.deep_rock;
         else if (y < deepTop + 3 && hash3(seed, wx, y, wz) < (deepTop + 3 - y) / 4) id = K.deep_rock;
         else id = biome === 'volcano' && y > h - 12 ? K.basalt : K.stone;
-        const sealed = v22 ? ((aq22 > 0 && y > selloLo && y <= aq22 && y > 10 && selloLo < aq22) || (nearSea && y > SEA - 9)) : ((aqBorder && y <= 37 && y > 10) || (nearSea && y > SEA - 9));
+        const sealed = v22 ? ((aq22 > 0 && y > selloLo && y <= aq22 && y > 10 && selloLo < aq22) || (nearSea && y > SEA - 9) || (lv23 > 0 && y > lavaLo && y <= lv23)) : ((aqBorder && y <= 37 && y > 10) || (nearSea && y > SEA - 9));
         if (id !== K.bedrock && y > 4 && y <= carveTop && !sealed && (v22 ? this.cueva22(wx, y, wz, h, cc22, bocas) : this.isCave(wx, y, wz, h))) {
-          if (y <= 10) id = K.lava; // lagos de lava en lo más hondo
+          if (y <= 10 || (lv23 && y <= lv23)) id = K.lava; // lagos de lava en lo más hondo (v23: y charcos más arriba)
           else if (v22 ? y <= aq22 : (aqOn && y <= aqLevel)) id = K.water; // lagos subterráneos
           else id = 0;
         }

@@ -13,3 +13,5 @@ export function curvaLuz(l) {
 export const CURVA_GLSL = `
         if (uBrillo > 0.0) L = max(pow(max(L, vec3(0.0)), vec3(1.0 - 0.5 * uBrillo)), vec3(0.30, 0.31, 0.34) * uBrillo);
         else if (uBrillo < 0.0) L = pow(max(L, vec3(0.0)), vec3(1.0 - 0.6 * uBrillo));`;
+// v13.2.0: qué tan hondo y bajo techo va el jugador (0 … 1; lo pone profundidad.js). El shader de los bloques le quita luz del cielo y piso
+export const OSCURO = { value: 0 };
