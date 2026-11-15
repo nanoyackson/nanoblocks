@@ -29,7 +29,7 @@ export const PAGINAS = [
     texto: 'Un casado bien hecho le da fuerza para el día entero. Un casado hecho de mala gana le da gastritis. Se nota.' },
   { k: 'caminar', t: 'Caminar sin cansarse', pista: 'Conozca 3 regiones del país', ok: (g) => Object.keys(g.meta.regions || {}).length >= 3, perk: 'Hambre y sed 5 % más lentas',
     texto: 'Paso corto y mirando el suelo. El que mira el paisaje se va de jupa en el primer hueco. Y hay huecos.' },
-  { k: 'manos', t: 'Manos de trabajo', pista: 'Llegue a 7 días seguidos sin morir', ok: (g) => g.meta.racha && g.meta.racha.mejor >= 7, perk: 'Pica y corta 10 % más rápido',
+  { k: 'manos', t: 'Manos de trabajo', pista: 'Llegue a 7 días seguidos sin morir', ok: (g) => g.meta.racha && g.meta.racha.mejor >= 7, perk: 'Pica y corta 5 % más rápido',
     texto: 'Que le salgan callos, que eso no es feo. Feo es pedir prestado. Una semana entera sin desgracias ya es bastante para enseñarle esto.' },
   { k: 'corazon', t: 'Lo que le debo', pista: 'Junte dos pedazos del Corazón', ok: (g, H) => H && H.pedazos && Object.keys(H.pedazos).length >= 2, perk: 'Un corazón más',
     texto: 'Yo nunca pasé de dos pedazos. Si está leyendo esto, ya me alcanzó. Sígale, que de aquí para allá ya no le puedo decir nada que yo sepa.' },

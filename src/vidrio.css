@@ -29,6 +29,10 @@ button:active { transform: translateY(1px); }
 input:not([type=range]):not([type=checkbox]) { background: var(--campo); border-color: var(--border-strong); cursor: text; }
 input:not([type=range]):not([type=checkbox])::placeholder { color: var(--text-soft); opacity: 1; }
 input:not([type=range]):not([type=checkbox]):focus, select:focus { border-color: var(--accent); outline: none; }
+/* Listas desplegables: el navegador pinta la lista nativa aparte (fondo blanco); sin esto las opciones heredan el texto claro y no se leen */
+select { color-scheme: dark; }
+select option, select optgroup { background: var(--surface-solida); color: var(--text); }
+select option:checked { background: #26435a; color: var(--text); font-weight: 700; }
 button.ghost { background: transparent; }
 button:disabled, [aria-disabled=true] { background: transparent; color: var(--text-soft); border-color: var(--border); box-shadow: none; }
 #btn-respawn, #btn-resume, #new-form button[type=submit], .btn-primario { background: var(--accent); color: var(--on-accent); border-color: transparent; font-weight: 600; }

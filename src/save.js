@@ -275,7 +275,7 @@ export function newWorldId() {
 
 // Ajustes del jugador (por navegador).
 const SETTINGS_KEY = 'nanoblocks.settings';
-export const DEFAULT_SETTINGS = { avisoRespaldo: true, calidadAuto: true, renderDistance: 6, fov: 75, sensitivity: 1, volume: 0.6, music: 0.5, hostiles: true, viewBobbing: true, subtitulos: false, pausaPaneles: true, ordenInv: 'categoria', luz: 50, fullscreen: false, renderScale: 1, farDistance: 768, calidad: 'medio', video: { tono: true, niebla: true, cielo: true, bruma: false }, perf: false, settingsVersion: 3 };
+export const DEFAULT_SETTINGS = { correrToggle: true, avisoRespaldo: true, calidadAuto: true, renderDistance: 6, fov: 75, sensitivity: 1, volume: 0.6, music: 0.5, hostiles: true, viewBobbing: true, subtitulos: false, pausaPaneles: true, ordenInv: 'categoria', luz: 50, fullscreen: false, renderScale: 1, farDistance: 768, calidad: 'medio', video: { tono: true, niebla: true, cielo: true, bruma: false }, perf: false, settingsVersion: 3 };
 export function loadSettings() {
   try {
     const raw = localStorage.getItem(SETTINGS_KEY);

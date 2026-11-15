@@ -3,7 +3,7 @@
 import { roadsNear } from './carreteras.js';
 import { SEA } from './worldgen.js';
 import { villageAt, CELL as VILLAGE_CELL } from './pueblogen.js';
-import { structuresNear } from './estructuras.js';
+import { scanStep, cuantosTipos } from './estructuras.js';
 import { marcaHistoria } from './historia.js';
 import { todosBolsos } from './supervivencia.js';
 
@@ -37,25 +37,48 @@ function colorAt(gen, x, z) {
   return col.map((v) => Math.min(255, v * shade));
 }
 
-function tile(gen, scale, tx, tz) {
-  const key = `${gen.seed}:${gen.version}:${gen.tipo || 'normal'}:${scale}:${tx}:${tz}`;
-  if (cache.has(key)) return cache.get(key);
+// v13.0.2: al alejar (escala 8 y 16) se muestrea una columna cada 2 píxeles y la baldosa se estira; el relieve sigue mirando 2 bloques al noroeste
+const CACHE_MAX = 1500;
+const claveGen = (gen) => `${gen.seed}:${gen.version}:${gen.tipo || 'normal'}`;
+const paso = (scale) => (scale >= 8 ? 2 : 1);
+function tile(gen, scale, tx, tz, key) {
+  const hit = cache.get(key);
+  if (hit) { cache.delete(key); cache.set(key, hit); return hit; } // LRU: lo usado de último se queda
+  const st = paso(scale), S = TILE / st;
   const cv = document.createElement('canvas');
-  cv.width = cv.height = TILE;
+  cv.width = cv.height = S;
   const ctx = cv.getContext('2d');
-  const img = ctx.createImageData(TILE, TILE);
-  for (let j = 0; j < TILE; j++) for (let i = 0; i < TILE; i++) {
-    const c = colorAt(gen, (tx * TILE + i) * scale, (tz * TILE + j) * scale);
-    const o = (j * TILE + i) * 4;
+  const img = ctx.createImageData(S, S);
+  for (let j = 0; j < S; j++) for (let i = 0; i < S; i++) {
+    const c = colorAt(gen, (tx * TILE + i * st) * scale, (tz * TILE + j * st) * scale);
+    const o = (j * S + i) * 4;
     img.data[o] = c[0]; img.data[o + 1] = c[1]; img.data[o + 2] = c[2]; img.data[o + 3] = 255;
   }
   ctx.putImageData(img, 0, 0);
   cache.set(key, cv);
-  if (cache.size > 400) cache.delete(cache.keys().next().value);
+  if (cache.size > CACHE_MAX) cache.delete(cache.keys().next().value);
   return cv;
 }
 
-// Dibuja el mapa en el canvas; `budget` = baldosas nuevas por llamada (lo demás sale del caché).
+// v13.0.2: carreteras y lugares por bloques de 512 × 512 bloques del mundo, guardados (antes se recalculaban enteros en cada redibujo).
+// Las carreteras salen baratas (unos ms por bloque); los lugares son caros (cada tipo prueba terreno), así que se revisan de a UN tipo por vuelta, sin tocarlos mientras se arrastra.
+const BLK = 512, EXTRAS = new Map();
+function bloqueExtras(gen, bx, bz, calcular) {
+  const key = `${claveGen(gen)}:${bx}:${bz}`;
+  const hit = EXTRAS.get(key);
+  if (hit) { EXTRAS.delete(key); EXTRAS.set(key, hit); return hit; }
+  if (!calcular) return null;
+  const x0 = bx * BLK, z0 = bz * BLK, mx = x0 + BLK / 2, mz = z0 + BLK / 2;
+  const B = {
+    roads: gen.version >= 6 ? roadsNear(gen, mx, mz, BLK / 2) : [],
+    structs: [], paso: gen.version >= 5 ? 0 : 1e9, x0, z0, mx, mz,
+  };
+  EXTRAS.set(key, B);
+  if (EXTRAS.size > 2500) EXTRAS.delete(EXTRAS.keys().next().value);
+  return B;
+}
+
+// Dibuja el mapa en el canvas; `budget` = milisegundos que se pueden gastar generando baldosas y bloques nuevos por llamada (lo demás sale del caché; siempre se hace al menos una cosa nueva).
 // Devuelve true si quedó completo.
 // sinEtiquetas: para el minimapa (solo los puntos, sin los nombres)
 let SIN_ETIQUETAS = false;
@@ -70,7 +93,7 @@ export const CAPAS_MAPA = [
 const NATURALEZA = new Set(['mirador_poas', 'mirador_arenal', 'cumbre', 'refugio', 'tarcoles', 'guanacaste', 'catarata', 'puente_colgante', 'irazu', 'rincon_vieja', 'barra_honda', 'amistad', 'marino_ballena', 'corcovado', 'manuel_antonio', 'tortuguero', 'cahuita', 'tenorio', 'monteverde', 'palo_verde', 'isla_coco', 'conchal', 'turrialba', 'cerro_muerte', 'braulio', 'juan_castro', 'carara', 'canopy', 'caverna_rey', 'catarata_escondida', 'amistad_parque', 'rincon_parque']);
 let CAPA = null, OCULTAS = new Set(), CUENTA = {};
 export const cuentaMapa = () => CUENTA;
-export function drawMap(canvas, game, scale, budget = 6, opts = {}) {
+export function drawMap(canvas, game, scale, budget = 8, opts = {}) {
   SIN_ETIQUETAS = !!opts.sinEtiquetas;
   OCULTAS = opts.ocultas || new Set(); CUENTA = {}; CAPA = null;
   const g = canvas.getContext('2d');
@@ -81,18 +104,50 @@ export function drawMap(canvas, game, scale, budget = 6, opts = {}) {
   g.fillStyle = '#1a1612'; g.fillRect(0, 0, W, H);
   const tx0 = Math.floor((cx - W / 2) / TILE), tx1 = Math.floor((cx + W / 2) / TILE);
   const tz0 = Math.floor((cz - H / 2) / TILE), tz1 = Math.floor((cz + H / 2) / TILE);
-  let done = true, made = 0;
+  let done = true;
+  const t0 = performance.now(), sobra = () => performance.now() - t0 < budget;
+  let nuevas = 0;
   g.imageSmoothingEnabled = false;
-  for (let tz = tz0; tz <= tz1; tz++) for (let tx = tx0; tx <= tx1; tx++) {
-    const key = `${gen.seed}:${gen.version}:${gen.tipo || 'normal'}:${scale}:${tx}:${tz}`;
-    if (!cache.has(key) && made >= budget) { done = false; continue; }
-    if (!cache.has(key)) made++;
-    g.drawImage(tile(gen, scale, tx, tz), Math.round(tx * TILE - cx + W / 2), Math.round(tz * TILE - cz + H / 2));
+  const kg = claveGen(gen), lista = [], mtx = (tx0 + tx1) / 2, mtz = (tz0 + tz1) / 2;
+  for (let tz = tz0; tz <= tz1; tz++) for (let tx = tx0; tx <= tx1; tx++) lista.push({ tx, tz, d: Math.hypot(tx - mtx, tz - mtz), key: `${kg}:${scale}:${tx}:${tz}` });
+  lista.sort((a, b) => a.d - b.d);
+  for (const q of lista) {
+    const nueva = !cache.has(q.key);
+    if (nueva && nuevas > 0 && !sobra()) { done = false; continue; }
+    if (nueva) nuevas++;
+    g.drawImage(tile(gen, scale, q.tx, q.tz, q.key), Math.round(q.tx * TILE - cx + W / 2), Math.round(q.tz * TILE - cz + H / 2), TILE, TILE);
+  }
+  // los bloques de carreteras y lugares que cubre la vista
+  const R = (Math.max(W, H) / 2) * scale, conExtras = game.dim === 'tierra' && (gen.version >= 5);
+  const extras = [], vistos = new Set();
+  if (conExtras) {
+    const bx0 = Math.floor((p.x - R) / BLK), bx1 = Math.floor((p.x + R) / BLK), bz0 = Math.floor((p.z - R) / BLK), bz1 = Math.floor((p.z + R) / BLK);
+    const bl = [];
+    for (let bz = bz0; bz <= bz1; bz++) for (let bx = bx0; bx <= bx1; bx++) bl.push({ bx, bz, d: Math.hypot((bx + 0.5) * BLK - p.x, (bz + 0.5) * BLK - p.z) });
+    bl.sort((a, b) => a.d - b.d);
+    for (const q of bl) {
+      let B = bloqueExtras(gen, q.bx, q.bz, false);
+      if (!B) { if (nuevas > 0 && !sobra()) { done = false; continue; } nuevas++; B = bloqueExtras(gen, q.bx, q.bz, true); }
+      extras.push(B);
+    }
+    // los lugares: de a un tipo por unidad, con unos 5 ms por vuelta y nada mientras se arrastra
+    const ts = performance.now(), N = cuantosTipos(gen);
+    let primero = !opts.arrastrando;
+    for (const B of extras) {
+      while (B.paso < N) {
+        if (!primero && !(performance.now() - ts < 5 && !opts.arrastrando)) break;
+        primero = false;
+        for (const q of scanStep(gen, B.paso, B.mx, B.mz, BLK / 2)) if (q.x >= B.x0 && q.x < B.x0 + BLK && q.z >= B.z0 && q.z < B.z0 + BLK) B.structs.push(q);
+        B.paso++;
+      }
+      if (B.paso < N) { done = false; break; }
+    }
   }
   const toScreen = (x, z) => [(x / scale - cx) + W / 2, (z / scale - cz) + H / 2];
   // carreteras (v6)
   if (gen.version >= 6 && game.dim === 'tierra') {
-    for (const seg of roadsNear(gen, p.x, p.z, (Math.max(W, H) / 2) * scale)) {
+    for (const B of extras) for (const seg of B.roads) {
+      if (vistos.has(seg)) continue; vistos.add(seg);
       g.strokeStyle = seg.kind === 'nacional' ? '#e8d070' : seg.kind === 'cantonal' ? '#c8c0b0' : '#a08860';
       g.lineWidth = seg.kind === 'nacional' ? 3 : 2;
       g.beginPath();
@@ -118,7 +173,7 @@ export function drawMap(canvas, game, scale, budget = 6, opts = {}) {
   // monumentos ticos
   if (gen.version >= 5 && game.dim === 'tierra') {
     const icons = { faro: '🗼 Faro', churchill: '🍧 Churchill', caldera: '⚓ Caldera', fortin: '🏰 Fortín', carreta: '🐂', casita_bahareque: '🏡', estatua: '🗿', fuente: '⛲', capital: '🏙 San José', mirador_poas: '🌋 Poás', mirador_arenal: '🌋 Arenal', cumbre: '⛰ Chirripó', refugio: '🏠 Crestones', basilica: '⛪ Basílica', ruinas: '🏛 Ruinas', orosi: '⛪ Orosi', tarcoles: '🐊 Tárcoles', guanacaste: '🌳 Guanacaste', estadio_nacional: '🏟 Estadio Nacional', estadio_obra: '🚧 Estadio', estacion: '🚂 Estación', monumento_nacional: '🗽 Monumento', templo_musica: '🎼 Templo', playa_lujo: '🏝 Playa de lujo', refineria: '🛢 Refinería', sanatorio: '🏚 Sanatorio', metalico: '🏫 Metálico', correos: '📮 Correos', museo_ninos: '🏰 Museo', grecia: '⛪ Grecia', coronado: '⛪ Coronado', ujarras: '🏛 Ujarrás', santa_rosa: '🏠 Santa Rosa', esferas: '⚪ Esferas', aduana: '🏭 Aduana', beneficio: '☕ Beneficio', trapiche: '🍬 Trapiche', hacienda: '🐄 Hacienda', bananera: '🍌 Bananera', catarata: '💧 Catarata', puente_colgante: '🌉 Puente colgante', irazu: '🌋 Irazú', rincon_vieja: '♨ Rincón de la Vieja', barra_honda: '🕳 Barra Honda', amistad: '🌉 La Amistad', marino_ballena: '🐋 Marino Ballena', corcovado: '🦜 Corcovado', manuel_antonio: '🐒 Manuel Antonio', tortuguero: '🐢 Tortuguero', cahuita: '🐠 Cahuita', tenorio: '💙 Río Celeste', monteverde: '☁ Monteverde', palo_verde: '🦩 Palo Verde', isla_coco: '🏝 Isla del Coco', feria: '🥬 Feria', cementerio: '✝ Cementerio', muelle_limon: '⚓ Limón', zapote: '🎡 Zapote', aeropuerto: '✈ Aeropuerto', zurqui: '🚇 Zurquí', cerro_muerte: '🏔 Cerro de la Muerte', conchal: '🐚 Conchal', turrialba: '🌋 Turrialba', san_lucas: '⛓ San Lucas', braulio: '🌿 Braulio Carrillo', juan_castro: '💧 Juan Castro', carara: '🦜 Carara', canopy: '🪢 Canopy', sitio_arqueologico: '🗿 Sitio arqueológico', caverna_rey: '🦇 Caverna del Rey', templo_hundido: '🏛 Templo hundido', catarata_escondida: '💧 Catarata escondida', amistad_parque: '🌳 La Amistad', rincon_parque: '♨ Las Pailas', feria_pueblo: '🥬', cementerio_pueblo: '✝', cacaotal: '🍫 Cacaotal', lecheria: '🥛 Lechería' };
-    for (const s of structuresNear(gen, p.x, p.z, (Math.max(W, H) / 2) * scale)) {
+    for (const B of extras) for (const s of B.structs) {
       const t = icons[s.type] || '', nat = NATURALEZA.has(s.type);
       punto(s.x, s.z, nat ? '#6ee59a' : '#7ad0ff', t, t.split(' ')[0], nat ? 'naturaleza' : 'lugares');
     }

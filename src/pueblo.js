@@ -419,7 +419,7 @@ function sombrilla(m) {
 }
 const DICHOS_LLUVIA = ['¡Qué aguacero!', '¡Diay, se vino el agua!', '¡Corra, que se moja!', 'Ya decía yo que el yigüirro estaba cantando…', '¡Se me mojó la ropa del tendedero!', 'Esto no escampa hoy.'];
 export const VECINO = {
-  name: 'Vecino', w: 0.6, h: 1.8, health: 20, speed: 1.4, hurtSound: 'hmm', idleSound: null, idleEvery: [999, 999],
+  name: 'Vecino', w: 0.6, sepW: 0.85, h: 1.8, health: 20, speed: 1.4, hurtSound: 'hmm', idleSound: null, idleEvery: [999, 999],
   particle: [[0.8, 0.6, 0.5]], drops: [],
   build() {
     const g = new THREE.Group();

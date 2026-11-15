@@ -1,5 +1,6 @@
 // Criaturas (Danta y Sombra), ítems tirados en el suelo, dinamita encendida y partículas.
 import { curvaLuz } from './brillo.js';
+import { separar } from './separar.js';
 import { atacar, tickGolpe, poseGolpe } from './golpes.js';
 import * as THREE from 'three';
 import { Body } from './physics.js';
@@ -1005,6 +1006,7 @@ export class Entities {
     if (dt <= 0) return;
     const g = this.game;
     for (const m of this.mobs) m.update(dt);
+    separar(g, this.mobs, dt); // v13.0.3: nadie se mete dentro de nadie
     for (const d of this.dynamite) d.update(dt);
     for (const it of this.items) it.update(dt);
     for (const f of this.falling) f.update(dt);

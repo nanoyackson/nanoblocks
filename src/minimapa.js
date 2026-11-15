@@ -14,7 +14,7 @@ export function tickMinimapa(g, dt) {
   g.miniT = (g.miniT || 0) - dt;
   if (g.miniT > 0) return;
   g.miniT = 0.5;
-  drawMap(cv, g, 2, 2, { sinEtiquetas: true });
+  drawMap(cv, g, 2, 6, { sinEtiquetas: true });
 }
 export function toggleMinimapa(g) {
   g.settings.minimapa = g.settings.minimapa === false;

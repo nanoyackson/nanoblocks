@@ -1,9 +1,10 @@
 // Habilidades que suben con el uso (minería, tala, pesca, cocina, combate, agricultura y exploración), del 0 al 10.
 import { ventaja } from './progreso.js';
 // Cada nivel da un bono chiquito; en el nivel 5 y en el 10 se desbloquea algo especial.
+const fmt = (x) => String(x).replace('.', ','); // 4.5 → «4,5»
 export const SKILLS = {
-  mineria: { name: 'Minería', icon: '⛏️', bono: (n) => `pica ${n * 4} % más rápido · ${n * 3} % de mineral doble`, hito5: 'De la piedra a veces sale carbón', hito10: 'Pico de oro: el pico se gasta la mitad' },
-  tala: { name: 'Tala', icon: '🪓', bono: (n) => `corta ${n * 5} % más rápido · ${n * 4} % de tronco doble`, hito5: 'Al talar a veces caen manzanas y palos', hito10: 'Leñador: el hacha se gasta la mitad' },
+  mineria: { name: 'Minería', icon: '⛏️', bono: (n) => `pica ${fmt(n * 2)} % más rápido · ${fmt(n * 1.5)} % de mineral doble`, hito5: 'De la piedra a veces sale carbón', hito10: 'Pico de oro: el pico se gasta la mitad' },
+  tala: { name: 'Tala', icon: '🪓', bono: (n) => `corta ${fmt(n * 2.5)} % más rápido · ${fmt(n * 2)} % de tronco doble`, hito5: 'Al talar a veces caen manzanas y palos', hito10: 'Leñador: el hacha se gasta la mitad' },
   pesca: { name: 'Pesca', icon: '🎣', bono: (n) => `pican ${n * 5} % antes · ${n * 3} % de pescado doble`, hito5: 'Más tiempo para recoger cuando pica', hito10: 'Pescador viejo: a veces sale oro o un diamante' },
   cocina: { name: 'Cocina', icon: '🍳', bono: (n) => `la comida llena ${n * 5} % más`, hito5: 'Lo crudo ya no le cae mal', hito10: 'Mano de abuela: comer cura 2 corazones' },
   combate: { name: 'Combate', icon: '⚔️', bono: (n) => `${n * 3} % más daño`, hito5: 'Recupera medio corazón al vencer a un enemigo', hito10: 'Guerrero: 10 % menos daño recibido' },
@@ -42,9 +43,14 @@ export function gainSkill(g, k, amt = 1) {
 }
 
 // ---- bonos que usa el juego ----
+export const TOPE_PICAR = 1.5; // tope de todo lo que acelera picar, sobre la velocidad base de la herramienta (pico de madera al máximo < pico de piedra sin bonos)
+export const POR_ESTRELLA_VEL = 0.06; // el yunque: +6 % de velocidad por estrella (el daño sigue en +12 %)
+// la velocidad real de la herramienta al picar: base × (1 + yunque + habilidad + hoja + maña), con tope. `mejora` = estrellas del yunque.
+export const velocidadPicar = (g, held, mejora = 0) => held.speed * Math.min(TOPE_PICAR, 1 + mejora * POR_ESTRELLA_VEL + mult.picar(g, held.tool) - 1);
 export const mult = {
-  picar: (g, tool) => (1 + (tool === 'pickaxe' ? lv(g, 'mineria') * 0.04 : tool === 'axe' ? lv(g, 'tala') * 0.05 : 0)) * ventaja.picar(g),
-  doble: (g, k) => Math.random() < lv(g, k) * ({ mineria: 0.03, tala: 0.04, pesca: 0.03, agricultura: 0.06 }[k] || 0),
+  // v13.0.5: los bonos de velocidad de picar se SUMAN (antes se multiplicaban entre sí y con el yunque) y game.breakTime los topa en ×1.5
+  picar: (g, tool) => 1 + (tool === 'pickaxe' ? lv(g, 'mineria') * 0.02 : tool === 'axe' ? lv(g, 'tala') * 0.025 : 0) + ventaja.picar(g),
+  doble: (g, k) => Math.random() < lv(g, k) * ({ mineria: 0.015, tala: 0.02, pesca: 0.03, agricultura: 0.06 }[k] || 0),
   dano: (g) => (1 + lv(g, 'combate') * 0.03) * ventaja.dano(g),
   recibido: (g) => (lv(g, 'combate') >= 10 ? 0.9 : 1) * ventaja.recibido(g),
   comida: (g) => (1 + lv(g, 'cocina') * 0.05) * ventaja.comida(g),

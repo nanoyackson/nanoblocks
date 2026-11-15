@@ -773,3 +773,16 @@ input[type=range] { height: 28px; }
 .world button { min-height: 32px; }
 label.check { flex-wrap: wrap; }
 label.check small { flex-basis: 100%; margin-left: 30px; font-size: 14px; color: var(--text); }
+/* v13.0.4: Personaje e Inventario no se mueven al filtrar recetas. Antes el recuadro entero se centraba en vertical y la altura de
+   Recetas (alta con «Todo», baja con «Comida» o con una búsqueda) lo subía y bajaba todo. Ahora el recuadro tiene alto fijo (el de la
+   pantalla), los dos primeros paneles quedan arriba y Recetas se estira a todo el alto y se desplaza por dentro. */
+@media (min-width: 1200px) {
+  #screen-inventory:not(.station) .inv-wrap { height: calc((100vh - 24px) / var(--zoom-ui, 1)); }
+  #screen-inventory:not(.station) .craft { align-self: stretch; min-height: 0; }
+  #screen-inventory:not(.station) #craft-list { min-height: 0; }
+}
+#screen-inventory.station .inv-wrap { height: calc((100vh - 40px) / var(--zoom-ui, 1)); }
+#screen-inventory.station .craft { min-height: 0; }
+#screen-inventory.station #craft-list { min-height: 0; }
+@media (max-width: 1000px), (max-height: 560px) { #screen-inventory.station #craft-list { height: 30vh; max-height: none; flex: none; } }
+@media (max-width: 839px) { #screen-inventory:not(.station) .craft { height: 40vh; max-height: none; flex: none; } }

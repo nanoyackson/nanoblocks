@@ -1,5 +1,36 @@
 # Registro de versiones
 
+## 13.0.5 — 2026-11-14 · Picar más parejo
+
+- Balance de picar. Isaac: «a nivel 3 de minería, picar con pico de madera es como si fuera de diamante encantado». Causa medida: el yunque (+12 % por estrella), la Minería, la hoja «manos» y la maña «buen brazo» se MULTIPLICABAN entre sí (todo al máximo daba ×2,6), así que un pico de madera criado alcanzaba al de piedra y el de piedra al de hierro.
+- Ahora los bonos de velocidad se SUMAN y el total se topa en ×1,5 sobre la base de la herramienta. Minería +2 % por nivel (máx. +20 %) y mineral doble +1,5 % por nivel; Tala +2,5 % y tronco doble +2 %; yunque +6 % de velocidad por estrella (el daño sigue en +12 %); hoja «manos» y maña «buen brazo» +5 % cada una. Los textos de las habilidades, del yunque, del cuaderno y de las mañas dicen los números nuevos. El XP y las estrellas guardados no se tocan.
+- Regla de oro: el pico de madera con todo al máximo nunca pica más rápido que uno de piedra sin bonos, ni el de piedra al máximo más rápido que uno de hierro sin bonos. Nueva verificación en npm run revisar (tools/revisar-picar.mjs).
+- Tiempo de picar piedra, antes → después (segundos): madera todo en 0, 1,13 → 1,13; madera con Minería 3, 1,00 → 1,06; madera con Minería 3 + ★1 + manos + buen brazo, 0,71 → 0,92; diamante ★★★, 0,21 → 0,24; diamante al máximo, 0,11 → 0,19; piedra al máximo, 0,21 → 0,38 (hierro sin bonos: 0,38); madera al máximo, 0,43 → 0,75 (piedra sin bonos: 0,56). Tabla completa con el mineral de hierro y todos los factores encontrados en docs/revisiones/BALANCE_PICAR.md.
+
+## 13.0.4 — 2026-11-14 · Inventario sin saltos
+
+- En la pantalla del inventario, Personaje e Inventario ya no suben ni bajan según cuántas recetas muestre el filtro o la búsqueda: el recuadro tiene alto fijo (el de la pantalla), los dos paneles quedan arriba y Recetas se estira a todo el alto y se desplaza por dentro. Con pocas recetas sobra espacio abajo, pero el panel no se encoge.
+- Lo mismo en la mesa de trabajo, el horno y las demás estaciones con Recetas al lado, y en pantallas angostas (la lista de recetas tiene alto fijo en la columna).
+- Medido con getBoundingClientRect en 1400×900, 1400×720, 1024×768 y 390×800, con «Todo», cada filtro y búsquedas de 0, 4 y 250 resultados: la posición de Personaje, Inventario y Recetas no cambia ni un píxel (antes, con una búsqueda vacía, Personaje e Inventario bajaban de 16 a 242 px).
+
+## 13.0.3 — 2026-11-14 · Nadie se mete dentro de nadie
+
+- La gente y las criaturas ya no se meten unas dentro de otras: hay una separación suave (empuje proporcional al traslape en el plano horizontal, con el ancho del modelo, brazos y sombrero incluidos) que pasa por la misma colisión con bloques, así que nadie queda dentro de una pared. Los jefes no se mueven; los demás se apartan de ellos.
+- El jugador tampoco se mete dentro de una persona o animal: sale entero de su parte, y la criatura se aparta apenas (con tope) y nunca hacia un precipicio. Los enemigos y los jefes no empujan ni son empujados por quien juega.
+- Rendimiento: cuadrícula de 2 bloques, solo cerca de quien juega. Medido en Hojancha con 42 vecinos: 0,017 ms por cuadro; los pares a menos de 0,5 bloques de distancia pasaron de 2,4 en promedio a 0,01. En red lo calcula solo el anfitrión y las posiciones viajan en los mensajes de criaturas de siempre (5 por segundo): no hay mensajes nuevos.
+- «Correr con un toque de Ctrl» viene ACTIVADO por defecto (quien lo apagó a propósito lo conserva apagado). Un toque corre y otro deja de correr; soltar W no corta la carrera mientras el ajuste está encendido. En móvil o con control no cambia nada.
+- Nueva prueba en npm run revisar (tools/revisar-separar.mjs): once en el mismo punto pegados a una pared se separan en pocos segundos y ninguno queda dentro de un bloque; el jefe no se mueve; el jugador no atraviesa a una persona corriendo ni la tira del borde.
+
+## 13.0.2 — 2026-11-14 · Mapa fluido al alejar y arrastrar
+
+- El mapa de pantalla completa ya no se traba al alejarlo (escala 16) y arrastrarlo. Medido en un mundo de prueba, antes → después: cada cuadro al arrastrar sobre zona nueva, mediana 85 ms → 12,6 ms (el peor, 631 ms → 21 ms); arrastrar lejos, de 4 s por cuadro a 18 ms como máximo.
+- Cómo: las baldosas se generan con presupuesto en milisegundos (centro primero) y, a escala 8 y 16, con una columna cada 2 píxeles (4 veces menos trabajo, mismo aspecto); el caché de baldosas es LRU y de 1 500; las carreteras y los lugares se guardan por bloques de 512 bloques en vez de recalcularse en cada redibujo; los lugares se revisan de a un tipo por vuelta y no se tocan mientras se arrastra; y varios movimientos del ratón por cuadro piden un solo redibujo.
+- Lo que no cambia: abrir el mapa lejos por primera vez en una zona nueva sigue tardando unos 5 s en completarse (sobre todo los lugares, que son caros de calcular), pero ahora se va llenando sin bloquear el arrastre. Una vez lleno, redibujar cuesta de 4 a 6 ms.
+
+## 13.0.1 — 2026-11-14 · Listas desplegables legibles
+
+- Las opciones de las listas desplegables (Tipo de mundo, Dificultad, Ajustes, orden del inventario) se leen: fondo oscuro y texto claro, y la opción marcada se distingue.
+
 ## 13.0.0 — 2026-11-14 · NanoBlocks, publicado
 
 - Primera versión pública: el juego completo (mundo, pueblo, criaturas, jefes, el Rey y su final, jugar con amistades) en github.com/nanoyackson/nanoblocks, y para jugar en https://nanoyackson.github.io/nanoblocks/.

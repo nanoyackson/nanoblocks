@@ -932,6 +932,8 @@ export function scanStep(gen, i, x, z, radius) {
   return structuresNear(gen, x, z, radius, new Set([T.key]));
 }
 
+export const cuantosTipos = (gen) => typesFor(gen).length; // v13.0.2: el mapa los revisa de a uno por vuelta (scanStep)
+
 // v6: que no se monte encima de otra estructura (se revisan solo los tipos anteriores en la lista)
 function overlaps(gen, T, x, z) {
   const types = typesFor(gen);

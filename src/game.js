@@ -47,7 +47,7 @@ import { makeItemMesh, makeHeldItemMesh, makeMacheteMesh, LIGHT_TINT } from './m
 import { saveWorld } from './save.js';
 import { HEIGHT, BIOMES } from './worldgen.js';
 import { GAME_VERSION } from './version.js';
-import { gainSkill, mult, lv as skillLv } from './habilidades.js';
+import { gainSkill, mult, velocidadPicar, lv as skillLv } from './habilidades.js';
 import { tickMision, tickCharlas, tickApagon } from './misiones.js';
 import { tickPrecios, tickSoda } from './economia.js';
 import { tickFiestas, tickBaile } from './fiestas2.js';
@@ -738,10 +738,10 @@ export class Game {
     let t = b.hardness * 1.5;
     if (held && held.machete && b.tool === 'axe') t /= 2.5;
     const rightTool = held && held.tool && held.tool === b.tool;
-    if (rightTool) t /= held.speed * factorMejora(this.inventory.held);
     if (b.tier > 0 && !(held && held.tool === 'pickaxe' && held.tier >= b.tier)) t *= 3.3;
     if (held && held.tool === 'sword' && b.leafy) t /= 2;
-    if (rightTool) t /= mult.picar(this, held.tool);
+    // v13.0.5: yunque + habilidad + hoja + maña se SUMAN y topan en ×1.5 sobre la velocidad base de la herramienta
+    if (rightTool) t /= velocidadPicar(this, held, (this.inventory.held && this.inventory.held.mejora) || 0);
     if (this.player.body.inWater && !this.player.body.onGround) t *= 5;
     else if (this.player.body.inWater) t *= 2;
     return t;

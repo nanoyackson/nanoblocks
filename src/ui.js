@@ -1207,7 +1207,7 @@ export class UI {
         D.x = e.clientX; D.y = e.clientY; D.movio += Math.abs(dx) + Math.abs(dy);
         const o = (this.mapPan ||= { x: 0, z: 0 });
         o.x -= dx * k * s; o.z -= dy * k * s;
-        if (D.movio > 4) { cv.style.cursor = 'grabbing'; this.drawMapLoop(); }
+        if (D.movio > 4) { cv.style.cursor = 'grabbing'; this.drawMapSoon(); }
       });
       window.addEventListener('mouseup', () => { if (this.mapDrag) { this.mapArrastro = this.mapDrag.movio > 4; this.mapDrag = null; cv.style.cursor = ''; setTimeout(() => { this.mapArrastro = false; }, 0); } }); // si se suelta fuera del mapa no llega el click: que no se trague el siguiente
       cv.addEventListener('dblclick', () => { this.mapPan = { x: 0, z: 0 }; this.drawMapLoop(); });
@@ -1266,13 +1266,21 @@ export class UI {
     this.drawMapLoop();
   }
 
-  // pinta de a poco (unas baldosas por vuelta) para no trabar el juego
+  // v13.0.2: varios mousemove por cuadro piden un solo redibujo (antes cada uno repintaba todo el mapa)
+  drawMapSoon() {
+    if (this.mapSucio) return;
+    this.mapSucio = true;
+    const ir = () => { this.mapSucio = false; this.drawMapLoop(); };
+    if (document.hidden) setTimeout(ir, 16); else requestAnimationFrame(ir);
+  }
+
+  // pinta de a poco (unos 8 ms de baldosas y bloques nuevos por vuelta) para no trabar el juego
   drawMapLoop() {
     clearTimeout(this.mapT);
     if (this.state !== 'map') return;
     $('#map-scale').textContent = `· 1 píxel = ${this.mapScale} ${this.mapScale === 1 ? 'bloque' : 'bloques'}`;
     const pp = this.game.player.body.pos, o = this.mapPan || { x: 0, z: 0 };
-    const done = drawMap($('#map-canvas'), this.game, this.mapScale, 4, { centro: { x: pp.x + o.x, y: pp.y, z: pp.z + o.z }, ocultas: (this.mapOcultas ||= new Set()) });
+    const done = drawMap($('#map-canvas'), this.game, this.mapScale, 8, { arrastrando: !!(this.mapDrag && this.mapDrag.movio > 4), centro: { x: pp.x + o.x, y: pp.y, z: pp.z + o.z }, ocultas: (this.mapOcultas ||= new Set()) });
     this.leyendaMapa();
     if (!done) this.mapT = setTimeout(() => this.drawMapLoop(), 16);
   }

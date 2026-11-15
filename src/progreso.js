@@ -28,7 +28,7 @@ export const ventaja = {
   dano: (g) => (plato(g, 'fuerza') ? 1.15 : 1) * (mana(g, 'mano_pesada') ? 1.1 : 1) * (g && g.player && g.player.effects.bala ? 0.7 : 1),
   comida: (g) => (hoja(g, 'comida') ? 1.1 : 1) * (g.meta && g.meta.cucharon && g.inventory && g.inventory.count(507) > 0 ? 1.2 : 1) * (mana(g, 'buena_mano') ? 1.15 : 1),
   sed: (g) => (hoja(g, 'sed') ? 0.9 : 1) * (plato(g, 'fresco') ? 0.5 : 1) * (mana(g, 'camello') ? 0.75 : 1),
-  picar: (g) => (hoja(g, 'manos') ? 1.1 : 1) * (mana(g, 'buen_brazo') ? 1.15 : 1),
+  picar: (g) => (hoja(g, 'manos') ? 0.05 : 0) + (mana(g, 'buen_brazo') ? 0.05 : 0), // v13.0.5: se SUMA al resto (antes ×1,10 y ×1,15 multiplicados)
   tiro: (g) => (mana(g, 'punteria') ? 1.25 : 1),
   premio: (g, n) => Math.round(n * (mana(g, 'se_le_pega') ? 1.25 : 1)),
 };

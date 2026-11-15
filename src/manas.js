@@ -23,7 +23,7 @@ export const MANAS = [
   { k: 'hacha_monte', i: '🪓', f: 'oficio', t: 'Hacha de monte', d: 'Con hacha, cortar un tronco tumba el árbol entero' },
   { k: 'buen_ojo', i: '💎', f: 'oficio', t: 'Buen ojo', d: 'Cada mineral tiene 15 % de salir doble' },
   { k: 'mano_verde', i: '🌱', f: 'oficio', t: 'Mano verde', d: 'Cada cosecha tiene 30 % de salir doble' },
-  { k: 'buen_brazo', i: '⛏', f: 'oficio', t: 'Buen brazo', d: 'Pica y corta 15 % más rápido' },
+  { k: 'buen_brazo', i: '⛏', f: 'oficio', t: 'Buen brazo', d: 'Pica y corta 5 % más rápido' },
   { k: 'cuidadoso', i: '🔧', f: 'oficio', t: 'Cuidadoso', d: 'Las herramientas se gastan 25 % menos' },
   { k: 'se_le_pega', i: '💰', f: 'oficio', t: 'Se le pega la plata', d: 'Asedios, plazas, nidos y la Ceniza pagan 25 % más colones' },
   { k: 'buena_mano', i: '🍲', f: 'oficio', t: 'Buena mano', d: 'La comida llena 15 % más y los platos duran la mitad más' },
