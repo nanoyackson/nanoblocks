@@ -3498,7 +3498,7 @@ export class Game {
       // cueva: cuántas de 9 columnas tienen techo encima
       let covered = 0, water = 0, leaves = 0;
       for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) {
-        for (let y = ey + 1; y < Math.min(HEIGHT, ey + 40); y++) {
+        for (let y = ey + 1; y < Math.min(HEIGHT, ey + (ey < 50 ? 64 : 40)); y++) { // v13.3.3: desde el piso de un salón alto (techo a más de 40) también es cueva
           if (BLOCKS[w.getBlock(ex + dx * 4, y, ez + dz * 4)].opaque) { covered++; break; }
         }
       }

@@ -341,7 +341,7 @@ export class UI {
         created: Date.now(),
         spawn, tipoMundo: tipo,
         jugadores: {}, epoca: 1, // v12.10.0: las fichas de otras personas (F3) y la época
-        genVersion: 25, // v13.3.2: la Red Honda y los Salones (generador 25); v13.3.0: las obras integradas al terreno (generador 24); v13.2.0: lava y oscuridad más abajo (generador 23); v13.1.0: las cuevas nuevas (generador 22); v12.4.7: la casita de bahareque; v12.4.12: el tablón de encargos; v12.6.0: el coral blanqueado
+        genVersion: 26, // v13.3.3: simas, bocas gigantes y hitos (generador 26); v13.3.2: la Red Honda y los Salones (generador 25); v13.3.0: las obras integradas al terreno (generador 24); v13.2.0: lava y oscuridad más abajo (generador 23); v13.1.0: las cuevas nuevas (generador 22); v12.4.7: la casita de bahareque; v12.4.12: el tablón de encargos; v12.6.0: el coral blanqueado
         time: 0.05, day: 1,
       };
       this.startGame(meta, new Map());

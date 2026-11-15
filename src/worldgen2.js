@@ -22,9 +22,15 @@ export const GEN_PROF = 23;
 export const GEN_INTEGRACION = 24;
 // v13.3.2 (CM1 del plan de integración): la Red Honda y los Salones (generador 25). Todo lo de cmMask solo corre con gen.version >= GEN_RED; los mundos <= 24 quedan idénticos.
 export const GEN_RED = 25;
+// v13.3.3 (CM2): simas y bocas gigantes, la mitad de entradas de campo, hitos con farol y nombre de salón (generador 26)
+export const GEN_SIMAS = 26;
 // hash3 reparte igual a celdas distintas (salones gemelos en pares de regiones): la Red Honda mezcla en dos pasos, así cada región sale independiente
 const cmH = (s, x, z, q) => hash3((hash3(s, x, q, 7) * 4294967296) | 0, z, q ^ 0x2f, 13);
-const CM_SALON = 0.6; // la proporción de nodos que son salón (el resto, solo cruce de venas)
+const CM_SALON = 0.6;
+// v26: los nombres de los salones y cruces (tico, para las placas de los hitos y la libreta)
+export const NOMBRES_SALON = ['de los Murciélagos', 'de las Goteras', 'del Zorro Pelón', 'de la Pava', 'del Tepezcuintle', 'de los Cangrejos Ciegos', 'de la Niebla', 'del Eco', 'de las Columnas', 'del Agua Quieta',
+  'de la Calcita', 'del Guapinol', 'de la Abuela', 'del Jaguar Dormido', 'de los Pilones', 'de la Luciérnaga', 'del Cacao', 'del Chorreo', 'de la Telaraña', 'del Chancho de Monte', 'de las Campanas',
+  'del Silencio', 'de la Marimba', 'del Tacotal', 'de la Lapa', 'del Tucán', 'de los Duendes', 'del Chamán', 'de la Cuchara', 'del Quizarrá', 'de la Piedra Hueca', 'del Güipipía']; // la proporción de nodos que son salón (el resto, solo cruce de venas)
 export const LAVA_TOPE = 30, LAVA_FONDO = 10;
 const LAVA_ZONA = 28, LAVA_PROB = 0.75;
 const BOCA_CELDA = 16, BOCA_PROB = 0.9, QUESO_BASE = 0.55, QUESO_PEND = 0.62, ESP_BASE = 0.05, ESP_PEND = 0.03;
@@ -189,7 +195,7 @@ export class GenV2 {
     if (b !== undefined) return b;
     b = null;
     const seed = this.gen.seed;
-    if (hash3(seed, gx, 9101, gz) < BOCA_PROB) {
+    if (hash3(seed, gx, 9101, gz) < (this.gen.version >= GEN_SIMAS ? BOCA_PROB * 0.5 : BOCA_PROB)) {
       const ex = Math.floor(gx * BOCA_CELDA + 6 + hash3(seed, gx, 9102, gz) * (BOCA_CELDA - 12)), ez = Math.floor(gz * BOCA_CELDA + 6 + hash3(seed, gx, 9103, gz) * (BOCA_CELDA - 12));
       const col = this.gen.column(ex, ez);
       if (col.h >= SEA + 3 && !['ocean', 'volcano', 'manglar'].includes(col.biome) && !(col.rio < 0.07)) {
@@ -200,6 +206,8 @@ export class GenV2 {
     }
     // v13.3.0 (I1): ninguna boca a menos de R+22 de una estructura ni de R+26 de un pueblo (antes se abrían debajo de las casas)
     if (b && this.gen.version >= GEN_INTEGRACION && this.cercaDeObra && this.cercaDeObra(b.x, b.z)) b = null;
+    // v13.3.3 (CM2): tampoco a menos de 9 de un camino
+    if (b && this.gen.version >= GEN_SIMAS && this.cercaDeCamino && this.cercaDeCamino(b.x, b.z, 9)) b = null;
     this.bocaCache.set(k, b);
     return b;
   }
@@ -258,7 +266,57 @@ export class GenV2 {
     const salon = H(9301) < CM_SALON;
     n = { gx, gz, x: gx * RC + 14 + H(9302) * (RC - 28), z: gz * RC + 14 + H(9303) * (RC - 28), y: 26 + H(9304) * 20, salon,
       rx: salon ? 20 + H(9305) * 28 : 5, rz: salon ? 20 + H(9306) * 28 : 5, ry: salon ? 9 + H(9307) * 14 : 4, pil: salon && H(9309) < 0.5 };
+    if (this.gen.version >= GEN_SIMAS) { n.nombre = NOMBRES_SALON[Math.floor(H(9320) * NOMBRES_SALON.length)]; n.sima = salon && H(9310) < 0.5 ? this.cmSima(n, H(9311) < 0.25, H(9312)) : null; }
     this.cmC.set(k, n); return n;
+  }
+  // los hitos de los nodos que caen en este trozo: se paran en el piso (a pie del centro) con un cairn de 3 de alto, un farol y la placa
+  hitos(cx, cz, blocks, structures) {
+    const x0 = cx * 16, z0 = cz * 16, RC = 96;
+    for (let gz = Math.floor(z0 / RC) - 1; gz <= Math.floor((z0 + 16) / RC) + 1; gz++) for (let gx = Math.floor(x0 / RC) - 1; gx <= Math.floor((x0 + 16) / RC) + 1; gx++) {
+      const n = this.cmNodo(gx, gz), wx = Math.floor(n.x), wz = Math.floor(n.z);
+      if (wx < x0 || wx >= x0 + 16 || wz < z0 || wz >= z0 + 16) continue;
+      const lx0 = wx - x0, lz0 = wz - z0;
+      let lx = lx0, lz = lz0, y = -1;
+      // el piso del centro puede ser un lago o lava: se busca el piso seco más cercano (hasta 9 de distancia) sin salir del trozo
+      for (let r = 0; r <= 9 && y < 0; r++) for (let dz = -r; dz <= r && y < 0; dz++) for (let dx = -r; dx <= r; dx++) {
+        if (Math.max(Math.abs(dx), Math.abs(dz)) !== r) continue;
+        const ax = lx0 + dx, az = lz0 + dz; if (ax < 1 || ax > 14 || az < 1 || az > 14) continue;
+        let yy = Math.min(110, Math.floor(n.y));
+        while (yy > 12 && blocks[ax + az * 16 + yy * 256] === 0) yy--;
+        const sol = blocks[ax + az * 16 + yy * 256];
+        if (yy <= 12 || yy >= 106 || sol === K.water || sol === K.lava || blocks[ax + az * 16 + (yy + 5) * 256] !== 0) continue;
+        lx = ax; lz = az; y = yy; break;
+      }
+      if (y < 0) continue;
+      const nombre = (n.salon ? 'Salón ' : 'Cruce ') + n.nombre;
+      blocks[lx + lz * 16 + (y + 1) * 256] = K.cobble; blocks[lx + lz * 16 + (y + 2) * 256] = K.mossy; blocks[lx + lz * 16 + (y + 3) * 256] = K.cobble; blocks[lx + lz * 16 + (y + 4) * 256] = K.farol;
+      // la placa va en un lado con piso seco (se prueban los cuatro, empezando por uno propio de cada nodo)
+      const f0 = Math.floor(cmH(this.gen.seed, gx, gz, 9330) * 4);
+      for (let q = 0; q < 4; q++) {
+        const f = (f0 + q) % 4, px = lx + [0, 1, 0, -1][f], pz = lz + [1, 0, -1, 0][f];
+        if (px < 0 || px >= 16 || pz < 0 || pz >= 16) continue;
+        const base = blocks[px + pz * 16 + y * 256];
+        if (blocks[px + pz * 16 + (y + 1) * 256] !== 0 || base === 0 || base === K.water || base === K.lava) continue;
+        blocks[px + pz * 16 + (y + 1) * 256] = K.placa;
+        structures.push({ x: px, y: y + 1, z: pz, id: K.placa, be: { type: 'placa', facing: f, title: nombre, text: n.salon ? 'Un salón de la Red Honda. Cuide su luz y no se aleje sin volver a ver un farol.' : 'Un cruce de venas de la Red Honda. Los faroles marcan el camino.' } });
+        break;
+      }
+    }
+  }
+
+  // la sima de un salón (v26): un pozo hasta la superficie, o una BOCA GIGANTE de 20-30 de ancho. Nunca sobre el mar, un río, un volcán, una obra ni un camino.
+  cmSima(n, gigante, u) {
+    const g = this.gen, R = gigante ? 10 + u * 5 : 3.6;
+    const sx = Math.floor(n.x + n.rx * 0.4), sz = Math.floor(n.z), col = g.column(sx, sz);
+    if (col.h < SEA + 3 || ['ocean', 'volcano', 'manglar'].includes(col.biome) || col.rio < 0.07) return null;
+    const dist = R + 4, pts = gigante ? [[0, 0], [dist, 0], [-dist, 0], [0, dist], [0, -dist]] : [[0, 0]];
+    for (const [dx, dz] of pts) {
+      const c = dx || dz ? g.column(sx + dx, sz + dz) : col;
+      if (c.h < SEA + 3 || ['ocean', 'volcano', 'manglar'].includes(c.biome) || c.rio < 0.07 || Math.abs(c.h - col.h) > 9) return null;
+      if (this.cercaDeObra && this.cercaDeObra(sx + dx, sz + dz)) return null;
+      if (this.cercaDeCamino && this.cercaDeCamino(sx + dx, sz + dz, 8)) return null;
+    }
+    return { x: sx, z: sz, R, gigante, h: col.h, y0: Math.floor(n.y) };
   }
   cmArista(a, b) {
     if (!this.cmE || this.cmE.size > 6000) this.cmE = new Map();
@@ -275,9 +333,9 @@ export class GenV2 {
   // la máscara del trozo (1 = hay que vaciar): se arma una vez por trozo recorriendo solo el volumen de cada salón o vena que lo toca
   cmMask(cx, cz) {
     const x0 = cx * 16, z0 = cz * 16, M = new Uint8Array(32768), RC = 96;
-    const carve = (fn, bx0, bx1, by0, by1, bz0, bz1) => {
+    const carve = (fn, bx0, bx1, by0, by1, bz0, bz1, val = 1) => {
       for (let z = Math.max(z0, Math.floor(bz0)); z <= Math.min(z0 + 15, Math.ceil(bz1)); z++) for (let x = Math.max(x0, Math.floor(bx0)); x <= Math.min(x0 + 15, Math.ceil(bx1)); x++)
-        for (let y = Math.max(11, Math.floor(by0)); y <= Math.min(110, Math.ceil(by1)); y++) if (fn(x, y, z)) M[(x - x0) + (z - z0) * 16 + y * 256] = 1;
+        for (let y = Math.max(11, Math.floor(by0)); y <= Math.min(126, Math.ceil(by1)); y++) if (fn(x, y, z)) { const i = (x - x0) + (z - z0) * 16 + y * 256; if (M[i] < val) M[i] = val; }
     };
     const gx0 = Math.floor((x0 - 60) / RC), gx1 = Math.floor((x0 + 76) / RC), gz0 = Math.floor((z0 - 60) / RC), gz1 = Math.floor((z0 + 76) / RC);
     for (let gz = gz0 - 1; gz <= gz1 + 1; gz++) for (let gx = gx0 - 1; gx <= gx1 + 1; gx++) {
@@ -289,6 +347,14 @@ export class GenV2 {
           if (n.pil) { const px = ((x - n.x) % 14 + 14) % 14, pz = ((z - n.z) % 14 + 14) % 14; if (Math.hypot(px - 7, pz - 7) < 2.2 && d < 0.8) return false; }
           return true;
         }, n.x - rx - 2, n.x + rx + 2, n.y - ry - 2, n.y + ry + 2, n.z - rz - 2, n.z + rz + 2);
+      }
+      const S = n.sima;
+      if (S && Math.abs(S.x - x0 - 8) < S.R + 10 && Math.abs(S.z - z0 - 8) < S.R + 10) {
+        carve((x, y, z) => {
+          const t = Math.max(0, Math.min(1, (y - S.y0) / Math.max(1, S.h - S.y0)));
+          const rr = S.gigante ? S.R * (0.62 + 0.38 * t * t) + this.gen.nCaveC.noise3(x * 0.15, y * 0.08, z * 0.15) * 1.6 : S.R - Math.min(1.2, (S.h - y) / 60);
+          return Math.hypot(x - S.x, z - S.z) < rr;
+        }, S.x - S.R - 3, S.x + S.R + 3, S.y0, S.h + 1, S.z - S.R - 3, S.z + S.R + 3, 2);
       }
       for (const [dx, dz] of [[1, 0], [0, 1], [1, 1]]) {
         if (dx && dz && cmH(this.gen.seed, gx, gz, 9420) > 0.3) continue;
@@ -309,7 +375,7 @@ export class GenV2 {
   }
 
   cueva22(x, y, z, h, cc, bocas, cm) {
-    if (cm) { const m = cm.M[(x - cm.x0) + (z - cm.z0) * 16 + y * 256]; if (m && y <= h - (h < SEA ? 14 : 8)) return true; } // Red Honda: el techo queda a >= 8 bajo el suelo (>= 14 bajo el mar)
+    if (cm) { const m = cm.M[(x - cm.x0) + (z - cm.z0) * 16 + y * 256]; if (m === 2 || (m && y <= h - (h < SEA ? 14 : 8))) return true; } // Red Honda: el techo queda a >= 8 bajo el suelo (>= 14 bajo el mar)
     for (let i = 0; i < bocas.length; i++) {
       const m = bocas[i], t = m.h - y;
       if (t < -2 || t > m.D + 5) continue;
@@ -440,6 +506,9 @@ export class GenV2 {
         if (h < col.acidTop) blocks[idx(lx, h, lz)] = hash3(seed, wx, 31, wz) < 0.4 ? K.azufre_bloque : K.gravel;
       }
     }
+
+    // ---- v26: los hitos de la Red Honda (un cairn con farol y la placa con el nombre del salón o del cruce) ----
+    if (g.version >= GEN_SIMAS) this.hitos(cx, cz, blocks, structures);
 
     // ---- minerales por altura (cada uno tiene su franja preferida) ----
     const veinOres = [

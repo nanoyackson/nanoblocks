@@ -4,8 +4,8 @@
 export const GAME_NAME = 'NanoBlocks';
 // v13.1.0: la versión de generador de terreno MÁS NUEVA que este juego sabe hacer (la de los mundos nuevos). Si el anfitrión de una sala manda
 // una mayor, este cliente generaría un terreno distinto al suyo (cuevas flotando): se rechaza la entrada (red/sesion.js).
-export const GEN_MAX = 25; // v13.3.2: 25 = la Red Honda y los Salones (GEN_RED en worldgen2.js) · v13.3.0: 24 = obras integradas al terreno (GEN_INTEGRACION en worldgen2.js) · v13.2.0: 23 = lava más abajo (GEN_PROF en worldgen2.js)
-export const GAME_VERSION = '13.3.2';
+export const GEN_MAX = 26; // v13.3.3: 26 = simas, bocas gigantes, hitos (GEN_SIMAS en worldgen2.js) · v13.3.2: 25 = la Red Honda y los Salones (GEN_RED en worldgen2.js) · v13.3.0: 24 = obras integradas al terreno (GEN_INTEGRACION en worldgen2.js) · v13.2.0: 23 = lava más abajo (GEN_PROF en worldgen2.js)
+export const GAME_VERSION = '13.3.3';
 // v12.4.6: la versión MÁS VIEJA del juego que puede abrir lo que esta versión guarda. Se sube cuando un mundo guardado trae algo que un
 // juego anterior no entiende y lo rompería: bloques nuevos (ids que el mallador no conoce), un SAVE_FORMAT nuevo o un campo que cambia
 // de forma. Se guarda en meta.minVersion y el menú no abre un mundo cuyo minVersion sea más nuevo que este juego (12.4.0: los bloques 656–662).
@@ -26,6 +26,17 @@ export const CREDITS = [
 ];
 
 export const CHANGELOG = [
+  {
+    version: '13.3.3',
+    date: '2026-11-15',
+    title: 'Simas, bocas gigantes y hitos de la Red Honda',
+    items: [
+      'Generador 26, simas y bocas gigantes (CM2 del plan de integracion del mundo): los mundos nuevos nacen con generador 26 (GEN_SIMAS en worldgen2.js, GEN_MAX = 26) y piden la 13.3.3 (meta.minVersion); un cliente viejo ante un anfitrion de generador 26 se rechaza con «Actualice el juego». Los mundos 21 a 25 quedan IDENTICOS (tools/huella-mundos.mjs vigila ahora tambien el 25).',
+      'Entradas de cueva en el campo: la MITAD de las de antes (probabilidad por celda x0,5; 48 % medido) y ninguna a menos de 9 bloques de un camino ni dentro del radio de una obra. Ademas, el 50 % de los salones de la Red Honda tienen una SIMA que sube hasta la superficie (pozo de 3,6 de radio) y el 25 % de esas es una BOCA GIGANTE de 20 a 30 de ancho, en embudo con borde rugoso. Nunca sobre el mar, un rio, un volcan, una obra ni un camino (40 simas, 3 gigantes en 507 nodos medidos, 0 en sitio prohibido, todas abiertas hasta la superficie).',
+      'Hitos y nombres: cada nodo con piso seco lleva un cairn de 3 bloques con un farol y una placa «Salon de los Murcielagos / del Agua Quieta / …» (32 nombres ticos; «Cruce …» para las venas). Al entrar a un salon aparece su nombre en pantalla (una vez por visita) y la libreta anota la pista. El minimapa, bajo tierra, muestra la Red Honda: salones como manchas, venas como lineas y los nodos. Tope de fauna: a lo sumo 8 murcielagos o vampiros a 40 bloques, para que un salon grande no se llene.',
+      'Prueba nueva en npm run revisar: tools/revisar-simas.mjs (mitad de bocas, ninguna cerca de camino u obra, simas en tierra firme y abiertas, bocas gigantes de 20-30, hitos armados sobre suelo seco, mediana por trozo 6,0 ms ≤ 12). Capturas del minimapa de cueva, el nombre del salon y la sima en tab-1: 3 ms por cuadro de juego. Probado en red real (anfitrion e invitado, mundo 26, localhost): el hash de 25 trozos alrededor de una sima es identico en los dos, ambos ven el hito, el farol y la placa, el invitado recibe los murcielagos y vampiros con el tope de 8, y nadie es expulsado. Se corrigio de paso que desde el piso de un salon de mas de 40 de alto el ambiente no contaba como cueva (game.js mira 64 hacia arriba si se esta hondo) y que la placa del hito podia quedar sobre agua (ahora prueba los cuatro lados). Capturas en docs/revisiones/capturas_cm2/.',
+    ],
+  },
   {
     version: '13.3.2',
     date: '2026-11-15',

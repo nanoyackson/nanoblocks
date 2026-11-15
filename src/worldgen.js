@@ -1,5 +1,5 @@
 // Generación del terreno: alturas, biomas, cuevas, minerales, árboles y plantas.
-import { buildRoadsInChunk } from './carreteras.js';
+import { buildRoadsInChunk, roadsNear } from './carreteras.js';
 import { Simplex, mulberry32, hash3 } from './noise.js';
 import { BLOCK_BY_KEY as K } from './blocks.js';
 import { GenV2 } from './worldgen2.js';
@@ -44,6 +44,7 @@ export class Generator {
     this.nCaveB = new Simplex(s ^ 0x89ab);
     this.nCaveC = new Simplex(s ^ 0x9abc);
     this.v2 = version >= 2 ? new GenV2(this) : null;
+    if (this.v2) this.v2.cercaDeCamino = (x, z, r) => roadsNear(this, x, z, r).length > 0; // v13.3.3 (CM2): las bocas no se abren sobre un camino
     if (this.v2) this.v2.cercaDeObra = (x, z) => cercaDeObra(this, x, z); // v13.3.0 (I1): bocaIn pregunta si hay una obra cerca
   }
 

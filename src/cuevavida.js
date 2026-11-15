@@ -223,6 +223,18 @@ export function colorBrillo(tipo, bioma, region) {
   return hsl(0.5 + hashS(String(region)) * 0.5, 0.85, 0.65); // cristal: un tono por región, de verde azulado a magenta
 }
 
+// v13.3.3: el salón de la Red Honda donde está el jugador (null si no hay o el generador es viejo)
+function salonAqui(gen, p) {
+  if (!gen || gen.version < 26 || !gen.v2 || !gen.v2.cmNodo) return null;
+  const gx = Math.floor(p.x / 96), gz = Math.floor(p.z / 96);
+  for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) {
+    const n = gen.v2.cmNodo(gx + dx, gz + dz);
+    if (!n.salon) continue;
+    const a = (p.x - n.x) / n.rx, b = (p.y - n.y) / n.ry, c = (p.z - n.z) / n.rz;
+    if (a * a + b * b + c * c < 0.7) return n;
+  }
+  return null;
+}
 // ---------- cada cuadro ----------
 const ESTADO = new WeakMap();
 const nuevo = () => ({ t: 0, fuentes: [], emisores: [], sala: 0.5 });
@@ -254,6 +266,9 @@ export function cuadroCueva(g, dt) {
     // los tres emisores: lo más cercano; conservan su reloj si siguen siendo los mismos
     const viejos = new Map(S.emisores.map((q) => [`${q.x},${q.y},${q.z}`, q]));
     S.emisores = elegirEmisores(S.fuentes, e).map((f) => viejos.get(`${f.x},${f.y},${f.z}`) || f);
+    // v13.3.3: al entrar a un salón de la Red Honda aparece su nombre (una vez por salón y visita)
+    const sn = salonAqui(w.gen, e);
+    if (sn !== S.salon) { S.salon = sn; if (sn) { g.ui.toast('🏛 Salón ' + sn.nombre, 2600); anotarCueva(g, 'nombre'); } }
     if (S.sala > 0.7 && g.env.cave > 0.8) anotarCueva(g, 'sala');
     if (S.emisores.some((q) => q.tipo === 'gota')) anotarCueva(g, 'goteo');
     if (S.emisores.some((q) => q.tipo === 'agua')) anotarCueva(g, 'agua');
@@ -270,6 +285,7 @@ const LIBRETA = {
   goteo: ['💧', 'Oí goteo: el agua baja por las estalactitas, gota a gota, desde hace miles de años.'],
   agua: ['🌊', 'Hay agua corriendo bajo tierra. Se oye antes de verse.'],
   hongos: ['🍄', 'Los hongos de cueva dan una luz suave; su color cambia según el lugar donde crecen.'],
+  nombre: ['🗺', 'Los salones grandes de la cueva tienen nombre: busque el farol y la placa del cairn en el centro.'],
   cristal: ['💎', 'El cristal de las cuevas brilla con un color distinto en cada región.'],
 };
 function anotarCueva(g, k) {

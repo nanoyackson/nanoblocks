@@ -1053,6 +1053,8 @@ export class Entities {
     if (!g.env || g.env.cave < 0.6) return;
     if (cuevaFaunaSpawn(this, g)) return; // v13.1.2: cangrejo ciego, grillo de cueva y escarabajo de calcita (cuevavida.js)
     if (this.mobs.filter((m) => m.type === 'murcielago').length >= 5) return;
+    // v13.3.3: tope de fauna por salón (un salón de 96 de ancho no se llena de bichos): a lo sumo 10 criaturas de cueva a 40 bloques
+    if (this.mobs.filter((m) => (m.type === 'murcielago' || m.type === 'vampiro') && Math.hypot(m.body.pos.x - pl.x, m.body.pos.z - pl.z) < 40).length >= 8) return;
     for (let tries = 0; tries < 10; tries++) {
       const x = Math.floor(pl.x + (Math.random() - 0.5) * 24), y = Math.floor(pl.y + (Math.random() - 0.5) * 10), z = Math.floor(pl.z + (Math.random() - 0.5) * 24);
       if (w.getBlock(x, y, z) !== AIR || w.getBlock(x, y + 1, z) !== AIR) continue;

@@ -11,7 +11,7 @@ const SEMILLAS = [424242, 777, 3, 2026];
 // lugares en trozos: el origen, lejos, y los que cruzan pueblos y estructuras (se eligieron por tener de todo en estas semillas)
 const LUGARES = [[0, 0], [-30, 40], [60, -45], [140, 110], [-120, -90], [20, 200]];
 const N = 3; // 3×3 trozos por lugar
-const VERSIONES = [21, 22, 23, 24];
+const VERSIONES = [21, 22, 23, 24, 25];
 const archivo = new URL('./huella-gen.json', import.meta.url);
 
 export function huella() {
@@ -41,6 +41,6 @@ if (import.meta.url === new URL(process.argv[1], 'file://').href || process.argv
     let mal = 0;
     for (const v of VERSIONES) { const ok = guardada[v] === ahora[v]; if (!ok) mal++; console.log(`  ${ok ? '✔' : '✘'} generador ${v}: huella ${ok ? 'idéntica' : 'CAMBIÓ'}`); }
     process.exitCode = mal ? 1 : 0;
-    console.log(mal ? '\n✘ un mundo viejo saldría distinto' : '\nMundos 21, 22, 23 y 24: idénticos.');
+    console.log(mal ? '\n✘ un mundo viejo saldría distinto' : '\nMundos 21 a 25: idénticos.');
   }
 }
