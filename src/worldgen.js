@@ -12,6 +12,8 @@ import { buildStructuresInChunk, cercaDeObra } from './estructuras.js';
 export const CHUNK = 16;
 export const HEIGHT = 128;
 export const SEA = 62;
+const RIO_BANDA = 0.1; // v27: ancho del valle del río, en unidades del ruido
+const MACIZO_UMBRAL = 0.14, MACIZO_RAMPA = 0.7, MACIZO_ALTO = 52; // v27: dónde nace un macizo (0 a 1 sobre el ruido) y cuánto levanta
 
 export const BIOMES = {
   plains: 'Llanura', forest: 'Bosque', desert: 'Desierto', snowy: 'Tundra nevada',
@@ -43,6 +45,7 @@ export class Generator {
     this.nCaveA = new Simplex(s ^ 0x789a);
     this.nCaveB = new Simplex(s ^ 0x89ab);
     this.nCaveC = new Simplex(s ^ 0x9abc);
+    this.nMacizo = new Simplex(s ^ 0xa1b2); // v27 (B1): los macizos de roca (la montaña de verdad)
     this.v2 = version >= 2 ? new GenV2(this) : null;
     if (this.v2) this.v2.cercaDeCamino = (x, z, r) => roadsNear(this, x, z, r).length > 0; // v13.3.3 (CM2): las bocas no se abren sobre un camino
     if (this.v2) this.v2.cercaDeObra = (x, z) => cercaDeObra(this, x, z); // v13.3.0 (I1): bocaIn pregunta si hay una obra cerca
@@ -54,11 +57,25 @@ export class Generator {
     if (this.dim === 'cielo') return columnCielo(this, x, z);
     const c = this.nCont.fbm2(x * 0.0016 * this.kc, z * 0.0016 * this.kc, 4); // en compacto, mares y tierras también más cerca
     const hill = this.nHill.fbm2(x * 0.008, z * 0.008, 4);
-    const m = Math.max(0, this.nMount.fbm2(x * 0.004, z * 0.004, 3) - 0.12) * 1.7;
-    let h = 64 + c * 24 + hill * 6 * (0.6 + Math.max(0, c)) + m * m * 60;
+    const v27 = this.version >= 27;
+    // v27: los cerros se levantan con un ruido más ancho, dos octavas y una curva más suave: laderas que no son paredes
+    const m = v27 ? Math.max(0, this.nMount.fbm2(x * 0.0028, z * 0.0028, 2) - 0.14) * 1.7 : Math.max(0, this.nMount.fbm2(x * 0.004, z * 0.004, 3) - 0.12) * 1.7;
+    let h = 64 + c * 24 + hill * 6 * (0.6 + Math.max(0, c)) + (v27 ? 34 * Math.pow(m, 1.5) : m * m * 60);
+    // v27 (B1): macizos de roca. Una cresta ancha de relieve que solo se levanta en tierra firme; donde pasa de 96 el bioma es «montaña» de verdad
+    let mac = 0;
+    if (v27) {
+      const nz = this.nMacizo.fbm2(x * 0.0021 + 900, z * 0.0021 - 400, 2), t = Math.min(1, Math.max(0, (nz - MACIZO_UMBRAL) / MACIZO_RAMPA));
+      mac = t * t * (3 - 2 * t) * Math.min(1, Math.max(0, (c + 0.08) / 0.16));
+      h += mac * MACIZO_ALTO;
+    }
     // ríos: valles finos donde el ruido cruza por cero
-    const r = Math.abs(this.nRiver.fbm2(x * 0.0025, z * 0.0025, 3));
-    if (r < 0.045 && h > SEA - 2) {
+    const r = Math.abs(this.nRiver.fbm2(x * 0.0025, z * 0.0025, v27 ? 2 : 3)); // v27: dos octavas, cauces menos quebrados
+    const banda = v27 ? RIO_BANDA * (1 + Math.max(0, h - SEA - 6) / 14) : 0; // v27: el valle se ensancha con la altura (un cañón se abre en valle)
+    if (v27 && r < banda && h > SEA - 2) {
+      // v27 (B2/I9): las orillas se abren en valle, con perfil suave (antes eran paredes de más de un bloque por bloque)
+      const k = r / banda, sk = k * k * (3 - 2 * k);
+      h = (SEA - 3) + (h - (SEA - 3)) * sk;
+    } else if (!v27 && r < 0.045 && h > SEA - 2) {
       const k = r / 0.045; // 0 en el centro del río
       h = (SEA - 3) + (h - (SEA - 3)) * (k * k);
     }
@@ -67,14 +84,21 @@ export class Generator {
     const wet = this.nWet.fbm2(x * 0.0013 * this.kb, z * 0.0013 * this.kb + 500, 3);
     let biome;
     if (h < SEA - 3) biome = 'ocean';
-    else if (h <= SEA + 1 && temp > -0.3) biome = 'beach';
-    else if (h > 92) biome = 'mountains';
+    else if (h <= SEA + 1 && temp > -0.3 && (this.version < 27 || this.cercaDelMar(x, z))) biome = 'beach';
+    else if (h > 92 && !(v27 && mac < 0.3 && h > 99)) biome = 'mountains'; // v27: sin macizo, lo alto no es montaña (lo recoge el páramo del cerro)
     else if (temp < -0.3) biome = 'snowy';
     else if (temp > 0.28 && wet < 0.1) biome = 'desert';
     else if (wet > 0.08) biome = 'forest';
     else biome = 'plains';
     const col = { h, biome, temp, wet, rio: r };
+    if (v27) col.macizo = mac;
     return this.v2 ? this.v2.shapeColumn(x, z, col) : col;
+  }
+
+  // v27 (B1): la playa solo existe junto al mar. Mira el ruido continental a cierta distancia en cuatro direcciones: si alguno cae donde ya es mar, hay costa.
+  cercaDelMar(x, z) {
+    const R = 22 * this.kc, k = 0.0016 * this.kc;
+    return this.nCont.fbm2((x + R) * k, z * k, 2) < -0.19 || this.nCont.fbm2((x - R) * k, z * k, 2) < -0.19 || this.nCont.fbm2(x * k, (z + R) * k, 2) < -0.19 || this.nCont.fbm2(x * k, (z - R) * k, 2) < -0.19;
   }
 
   isCave(x, y, z) {

@@ -25,6 +25,7 @@ import { buildFeria, buildCementerio, buildMuelleLimon, placeFeriaPueblo, placeC
 import { buildCahuita, buildTenorio, buildMonteverde, buildPaloVerde, placeIslaCoco, buildIslaCoco } from './parques2.js';
 import { buildMarinoBallena, buildCorcovado, buildManuelAntonio, buildTortuguero } from './parques.js';
 import { buildSanatorio, buildMetalico, buildCorreos, buildMuseoNinos, buildGrecia, buildCoronado, buildUjarras, buildSantaRosa, buildEsferas, buildAduana } from './historicos.js';
+import { buildOasis, buildPozo, buildCarretaSeca } from './desierto.js';
 import { buildEstadioNacional, buildEstadioObra, buildEstacion, buildMonumentoNacional, buildTemploMusica } from './estadios.js';
 // v12.4.9: los bloques de forma que tienen versión girada (solo el postigo: los demás quedan como siempre para no cambiar mundos viejos)
 const GIRA = { [K.postigo]: K.postigo_z, [K.postigo_z]: K.postigo, [K.postigo_abierto]: K.postigo_z_abierto, [K.postigo_z_abierto]: K.postigo_abierto };
@@ -923,6 +924,10 @@ const TYPES = [
   { key: 'cueva_barra_honda', minV: 22, cell: 1100, chance: 0.7, R: 26, clearR: 6, salt: 7474, tries: 80, fits: land(5, 3, ['bosque_seco', 'plains', 'forest', 'nuboso']), build: buildCuevaBarraHonda },
   { key: 'cueva_venado', minV: 22, cell: 1200, chance: 0.7, R: 30, clearR: 6, salt: 7575, tries: 80, fits: land(5, 3, ['forest', 'jungle', 'nuboso', 'plains']), build: buildCuevaVenado },
   { key: 'geoda_mayor', minV: 22, cell: 1400, chance: 0.65, R: 22, clearR: 6, salt: 7676, tries: 80, fits: land(5, 3, ['forest', 'jungle', 'plains', 'bosque_seco', 'nuboso']), build: buildGeodaMayor },
+  // v13.4.0 (generador 27, B3): construcciones del desierto (antes: ninguna)
+  { key: 'oasis_ruina', minV: 27, cell: 2000, chance: 0.9, R: 11, clearR: 12, salt: 8181, tries: 90, fits: land(9, 3, ['desert']), build: buildOasis },
+  { key: 'pozo_arriero', minV: 27, cell: 1700, chance: 0.8, R: 7, clearR: 8, salt: 8282, tries: 90, fits: land(6, 2, ['desert']), build: buildPozo },
+  { key: 'carreta_seca', minV: 27, cell: 2200, chance: 0.7, R: 8, clearR: 8, salt: 8383, tries: 90, fits: land(6, 2, ['desert']), build: buildCarretaSeca },
   { key: 'fuente', cell: 640, chance: 0.45, R: 9, salt: 707, fits: land(8, 2, ['plains', 'bosque_seco', 'forest']), build: buildFuente },
   // v12.4.7; v12.4.9: al final, para que ceda ante todos los demás (no le quita lugar a nadie)
   { key: 'casita_bahareque', minV: 18, cell: 520, chance: 0.6, R: 7, salt: 7171, tries: 50, fits: land(6, 2, ['plains', 'forest']), build: buildCasitaBahareque }, // v12.4.7
@@ -1107,7 +1112,8 @@ export const STRUCT_NAMES = { faro: 'Faro', churchill: 'Puesto de Churchill', ca
   cerro_muerte: 'Cerro de la Muerte', conchal: 'Playa Conchal', turrialba: 'Volcán Turrialba', san_lucas: 'Isla San Lucas',
   feria_pueblo: 'Feria del agricultor', cementerio_pueblo: 'Cementerio del pueblo', canopy: 'Canopy Pura Adrenalina', sitio_arqueologico: 'Sitio arqueológico', caverna_rey: 'La Caverna del Rey', templo_hundido: 'El templo hundido', catarata_escondida: 'La catarata escondida', amistad_parque: 'Parque Internacional La Amistad', rincon_parque: 'Rincón de la Vieja (Las Pailas)',
   braulio: 'Parque Nacional Braulio Carrillo', juan_castro: 'Parque Nacional Juan Castro Blanco', carara: 'Parque Nacional Carara',
-  cacaotal: 'Cacaotal bribri', lecheria: 'Lechería La Vaquita', termales: 'Aguas termales', cueva_barra_honda: 'Cueva de Barra Honda', cueva_venado: 'Cueva de Venado', geoda_mayor: 'Geoda mayor' };
+  cacaotal: 'Cacaotal bribri', lecheria: 'Lechería La Vaquita', termales: 'Aguas termales', cueva_barra_honda: 'Cueva de Barra Honda', cueva_venado: 'Cueva de Venado', geoda_mayor: 'Geoda mayor',
+  oasis_ruina: 'Oasis con ruina', pozo_arriero: 'Pozo del Arriero', carreta_seca: 'Carreta de la sequía' };
 // rareza y logro al descubrir cada lugar
 export const STRUCT_RARE = { faro: 'rara', churchill: 'común', caldera: 'poco común', fortin: 'legendaria', carreta: 'común', estatua: 'común', fuente: 'poco común', capital: 'legendaria',
   mirador_poas: 'rara', mirador_arenal: 'rara', cumbre: 'legendaria', refugio: 'rara', basilica: 'legendaria', ruinas: 'legendaria', orosi: 'rara', tarcoles: 'rara', guanacaste: 'legendaria',
@@ -1121,7 +1127,7 @@ export const STRUCT_RARE = { faro: 'rara', churchill: 'común', caldera: 'poco c
   zapote: 'rara', aeropuerto: 'legendaria', zurqui: 'rara',
   cerro_muerte: 'rara', conchal: 'rara', turrialba: 'legendaria', san_lucas: 'rara',
   braulio: 'rara', juan_castro: 'rara', carara: 'rara', feria_pueblo: 'común', cementerio_pueblo: 'común', canopy: 'poco común', sitio_arqueologico: 'rara', caverna_rey: 'épica', templo_hundido: 'legendaria', catarata_escondida: 'rara', amistad_parque: 'legendaria', rincon_parque: 'rara',
-  cacaotal: 'poco común', lecheria: 'poco común', termales: 'poco común', cueva_barra_honda: 'rara', cueva_venado: 'rara', geoda_mayor: 'legendaria' };
+  cacaotal: 'poco común', lecheria: 'poco común', termales: 'poco común', cueva_barra_honda: 'rara', cueva_venado: 'rara', geoda_mayor: 'legendaria', oasis_ruina: 'rara', pozo_arriero: 'poco común', carreta_seca: 'común' };
 export const STRUCT_ACH = { fortin: ['fortin', 'De Heredia para el mundo'], guanacaste: ['guanacaste_eterno', 'Guanacaste eterno'], ruinas: ['ruinas', 'La iglesia que nunca se terminó'],
   basilica: ['basilica', 'Romero de corazón'], faro: ['faro', 'Luz del Pacífico'], cumbre: ['chirripo', 'En el techo de Costa Rica'], mirador_poas: ['poas', 'Cráter del Poás'], mirador_arenal: ['arenal', 'Frente al Arenal'],
   estadio_nacional: ['sabana', 'La Sabana se llenó'], estadio_obra: ['sigue_construccion', 'Sigue en construcción'], estacion: ['tren', 'Pasajero del tren'], templo_musica: ['retreta', 'Domingo de retreta'], playa_lujo: ['gentrificacion', 'Bienvenidos al paraíso (en dólares)'], refineria: ['refinamiento', 'Visité la refinería que no refina'],

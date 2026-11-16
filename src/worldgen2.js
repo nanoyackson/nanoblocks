@@ -24,6 +24,9 @@ export const GEN_INTEGRACION = 24;
 export const GEN_RED = 25;
 // v13.3.3 (CM2): simas y bocas gigantes, la mitad de entradas de campo, hitos con farol y nombre de salón (generador 26)
 export const GEN_SIMAS = 26;
+// v13.4.0 (generador 27, paquete de superficie): reparto de biomas (playa solo junto al mar, manchas grandes, montaña real), bordes suaves y construcciones del desierto.
+// Todo lo nuevo solo corre con gen.version >= GEN_SUPERFICIE; los mundos <= 26 salen idénticos (tools/huella-mundos.mjs).
+export const GEN_SUPERFICIE = 27;
 // hash3 reparte igual a celdas distintas (salones gemelos en pares de regiones): la Red Honda mezcla en dos pasos, así cada región sale independiente
 const cmH = (s, x, z, q) => hash3((hash3(s, x, q, 7) * 4294967296) | 0, z, q ^ 0x2f, 13);
 const CM_SALON = 0.6;
@@ -57,7 +60,7 @@ export class GenV2 {
     if (this.volcanoCache.has(k)) return this.volcanoCache.get(k);
     const seed = this.gen.seed;
     let v = null;
-    if (hash3(seed, cx, 4040, cz) < 0.35) {
+    if (hash3(seed, cx, 4040, cz) < (this.gen.version >= GEN_SUPERFICIE ? 0.5 : 0.35)) { // v27: más volcanes (el menor de los biomas con identidad llegaba al 1 %)
       v = {
         x: cx * VOLCANO_CELL + 140 + hash3(seed, cx, 1, cz) * (VOLCANO_CELL - 280),
         z: cz * VOLCANO_CELL + 140 + hash3(seed, cx, 2, cz) * (VOLCANO_CELL - 280),
@@ -111,25 +114,26 @@ export class GenV2 {
       col.volcanoKind = v.kind;
     }
     if (col.biome === 'forest' || col.biome === 'plains') {
-      if (col.temp > 0.22 && col.wet > 0.22 && col.h > SEA + 1) col.biome = 'jungle';
+      const tj = this.gen.version >= GEN_SUPERFICIE ? 0.17 : 0.22; // v27: la selva un poco más grande (mancha de verdad)
+      if (col.temp > tj && col.wet > tj && col.h > SEA + 1) col.biome = 'jungle';
     }
     if (this.gen.version >= 5 && col.biome !== 'volcano' && col.biome !== 'ocean') {
       const cc = this.cerroNear(x, z);
       if (cc) {
         const d = Math.hypot(x - cc.x, z - cc.z) / cc.r;
-        const lift = cc.hgt * Math.exp(-d * d * 3.2) * (1 + this.nDrip.noise2(x * 0.02, z * 0.02) * 0.08);
+        const lift = cc.hgt * Math.exp(-d * d * (this.gen.version >= GEN_SUPERFICIE ? 3.2 : 3.2)) * (1 + this.nDrip.noise2(x * 0.02, z * 0.02) * 0.08);
         const hc = Math.max(col.h, SEA + 2) + lift;
         col.h = Math.min(HEIGHT - 4, Math.floor(kr < 1 ? col.h + (hc - col.h) * kr : hc));
         col.cerroK = Math.max(0, 1 - d);
-        if (col.h > 96) { col.biome = 'paramo'; col.temp = -0.12; col.wet = -0.25; }
-        else if (col.h > 84 && col.biome === 'mountains') col.biome = 'forest';
+        if (col.h > (this.gen.version >= GEN_SUPERFICIE ? 92 : 96) && !(this.gen.version >= GEN_SUPERFICIE && col.biome === 'mountains' && col.macizo > 0.3)) { col.biome = 'paramo'; col.temp = -0.12; col.wet = -0.25; }
+        else if (col.h > 84 && col.biome === 'mountains' && !(this.gen.version >= GEN_SUPERFICIE && col.macizo > 0.3)) col.biome = 'forest';
       }
     }
     // v16: la playa o el mar que un cerro o un volcán dejó tierra adentro y en alto ya no son playa (eran paredes de arenisca)
     if (this.gen.version >= 16 && col.h > SEA + 3 && (col.biome === 'beach' || col.biome === 'ocean')) col.biome = 'plains';
     // v4: bosque nuboso en las alturas húmedas, manglar en costas cálidas y húmedas, bosque seco en llanuras cálidas
     if (this.gen.version >= 4 && col.biome !== 'volcano') {
-      if (col.h > 82 && col.h < 108 && col.wet > 0.02 && col.temp > -0.3 && ['forest', 'jungle', 'mountains', 'plains'].includes(col.biome)) col.biome = 'nuboso';
+      if (col.h > (this.gen.version >= GEN_SUPERFICIE ? 77 : 82) && col.h < 108 && col.wet > 0.02 && col.temp > -0.3 && ['forest', 'jungle', 'mountains', 'plains'].includes(col.biome) && !(this.gen.version >= GEN_SUPERFICIE && col.biome === 'mountains' && col.macizo > 0.3)) col.biome = 'nuboso';
       else if (col.h >= SEA - 3 && col.h <= SEA + 1 && col.wet > 0.12 && col.temp > 0.05 && ['beach', 'plains', 'forest', 'jungle', 'ocean'].includes(col.biome)) col.biome = 'manglar';
       else if (col.biome === 'plains' && col.temp > 0.12 && col.wet < -0.02) col.biome = 'bosque_seco';
     }
@@ -137,7 +141,7 @@ export class GenV2 {
     if (this.gen.version >= 10 && col.biome !== 'volcano' && col.biome !== 'ocean') {
       const paramo = () => { col.biome = 'paramo'; col.temp = -0.12; col.wet = -0.25; col.cerroK = col.cerroK ?? 1; };
       if (col.biome === 'snowy') { if (col.h > 84) paramo(); else { col.biome = col.h > 74 ? 'nuboso' : 'forest'; col.temp = Math.max(col.temp, 0.02); } }
-      else if (col.biome === 'mountains' && col.h > 100) paramo();
+      else if (col.biome === 'mountains' && col.h > 100 && !(this.gen.version >= GEN_SUPERFICIE && col.macizo > 0.3)) paramo();
     }
     return col;
   }
@@ -159,7 +163,7 @@ export class GenV2 {
     if (this.cerroCache.has(k)) return this.cerroCache.get(k);
     const seed = this.gen.seed;
     let c = null;
-    if (hash3(seed, gx, 7070, gz) < 0.55) {
+    if (hash3(seed, gx, 7070, gz) < (this.gen.version >= GEN_SUPERFICIE ? 0.9 : 0.55)) {
       c = { x: Math.floor(gx * 1300 + 300 + hash3(seed, gx, 1, gz) * 700), z: Math.floor(gz * 1300 + 300 + hash3(seed, gx, 2, gz) * 700), r: 150 + hash3(seed, gx, 3, gz) * 30, hgt: 60 };
       // no encima de un volcán
       const v = this.volcanoIn(Math.floor(c.x / VOLCANO_CELL), Math.floor(c.z / VOLCANO_CELL));
@@ -438,7 +442,13 @@ export class GenV2 {
         }
         case 'snowy': top = underwater ? K.dirt : K.snow_grass; filler = K.dirt; break;
         case 'manglar': top = underwater ? K.clay : K.dirt; filler = K.clay; break;
-        case 'mountains': top = h > 104 ? K.snow : K.stone; filler = K.stone; break;
+        case 'mountains':
+          if (this.gen.version >= GEN_SUPERFICIE) {
+            // v27: la montaña de verdad (en Costa Rica no nieva): praderas de altura en las faldas, roca y grava arriba
+            const st = this.nDrip.noise2(wx * 0.06, wz * 0.06);
+            top = h < 98 && st > -0.25 ? K.grass : st > 0.42 ? K.gravel : K.stone; filler = top === K.grass ? K.dirt : K.stone;
+          } else { top = h > 104 ? K.snow : K.stone; filler = K.stone; }
+          break;
         case 'volcano': {
           // faldas con pasto y grava, a media altura basalto con vetas de piedra, arriba obsidiana
           const r = hash3(seed, wx, 9, wz);

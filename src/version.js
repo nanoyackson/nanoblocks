@@ -4,8 +4,8 @@
 export const GAME_NAME = 'NanoBlocks';
 // v13.1.0: la versión de generador de terreno MÁS NUEVA que este juego sabe hacer (la de los mundos nuevos). Si el anfitrión de una sala manda
 // una mayor, este cliente generaría un terreno distinto al suyo (cuevas flotando): se rechaza la entrada (red/sesion.js).
-export const GEN_MAX = 26; // v13.3.3: 26 = simas, bocas gigantes, hitos (GEN_SIMAS en worldgen2.js) · v13.3.2: 25 = la Red Honda y los Salones (GEN_RED en worldgen2.js) · v13.3.0: 24 = obras integradas al terreno (GEN_INTEGRACION en worldgen2.js) · v13.2.0: 23 = lava más abajo (GEN_PROF en worldgen2.js)
-export const GAME_VERSION = '13.3.5';
+export const GEN_MAX = 27; // v13.4.0: 27 = reparto de biomas, bordes suaves, montaña real y construcciones del desierto (GEN_SUPERFICIE en worldgen2.js) · v13.3.3: 26 = simas, bocas gigantes, hitos (GEN_SIMAS en worldgen2.js) · v13.3.2: 25 = la Red Honda y los Salones (GEN_RED en worldgen2.js) · v13.3.0: 24 = obras integradas al terreno (GEN_INTEGRACION en worldgen2.js) · v13.2.0: 23 = lava más abajo (GEN_PROF en worldgen2.js)
+export const GAME_VERSION = '13.4.0';
 // v12.4.6: la versión MÁS VIEJA del juego que puede abrir lo que esta versión guarda. Se sube cuando un mundo guardado trae algo que un
 // juego anterior no entiende y lo rompería: bloques nuevos (ids que el mallador no conoce), un SAVE_FORMAT nuevo o un campo que cambia
 // de forma. Se guarda en meta.minVersion y el menú no abre un mundo cuyo minVersion sea más nuevo que este juego (12.4.0: los bloques 656–662).
@@ -26,6 +26,18 @@ export const CREDITS = [
 ];
 
 export const CHANGELOG = [
+  {
+    version: '13.4.0',
+    date: '2026-11-15',
+    title: 'Generador 27: reparto de biomas, bordes suaves, montaña real y construcciones del desierto',
+    items: [
+      'Generador 27 (paquete de superficie, `GEN_SUPERFICIE` en worldgen2.js; `GEN_MAX` 27; los mundos creados antes salen idénticos, huella 21-26 en `tools/huella-mundos.mjs`; un mundo 27 pide la 13.4.0). B1, reparto de biomas: la playa solo existe junto al mar (antes cualquier planicie baja era playa): 17 % → 8,4 % del mundo; la selva y el bosque nuboso crecen (manchas de verdad: 47 % → 57 % del área de los biomas con identidad en manchas de 40 trozos o más); más volcanes y cerros (páramo 2,0 %, volcán 1,8 %); montaña real: macizos de roca que llegan a h > 100, 2,7 % del mundo (antes 0,8 %), con praderas de altura en las faldas, roca y grava arriba y sin nieve.',
+      'B2, bordes suaves (con el valle del I9): los cerros se levantan con un ruido más ancho y una curva más suave y los ríos abren un valle que se ensancha con la altura (antes eran paredes de más de un bloque por bloque): las fronteras con un salto de más de 8 de altura bajan de 21 % a 7,7 %.',
+      'B3, construcciones del desierto (antes 0 estructuras en todo el bioma): Oasis con ruina (charco con palmeras y casa de adobe caída con cofre), Pozo del Arriero (brocal, sombra de lona, cofre) y Carreta de la sequía (carreta volcada con cofre), con su placa, botín y nombre en el mapa; 6 por 1 000 trozos de desierto. Archivo nuevo `src/desierto.js`.',
+      'Pruebas: `tools/revisar-superficie.mjs` (en `npm run revisar`: las tres construcciones aparecen, caen en el desierto, traen cofre y placa y se dibujan en ≤ 12 ms; hay montaña de verdad sin nieve; la playa queda junto al mar), `tools/medir-biomas.mjs` (medidor rápido de reparto, manchas, bordes, hallazgo y estructuras para afinar el generador) y `tools/revisar-contenido.mjs` ahora mide el 27 y ya no marca como deuda playa, manchas, hallazgo, bordes, estructuras por bioma ni el menor bioma con identidad (todas en verde). La huella ahora incluye el generador 26.',
+      'Queda para el siguiente generador (28, junto a las cuevas), anotado en la cola: terrazas y taludes para los pueblos (I3), caminos educados (I4), caminos que rodean o hacen túnel (I10) y las construcciones típicas de los demás biomas (Mirador de la Neblina, Muelle del Piangüero, Cairn de los Antiguos, campamento del botánico, Hacienda con trapiche).',
+    ],
+  },
   {
     version: '13.3.5',
     date: '2026-11-15',

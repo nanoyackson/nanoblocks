@@ -3,13 +3,13 @@
 //   · si la regla ya se cumple, es una falla que se salga (✘ y `npm run revisar` se pone en rojo);
 //   · si hoy NO se cumple y está en «deuda», sale ⚠ con el número real y la versión que la arregla (no rompe nada: es el punto de partida);
 //   · cuando esa versión llegue, se quita la marca `deuda` y la regla pasa a ser estricta.
-// Uso: node tools/revisar-contenido.mjs [version-del-generador, 26 por omisión]
+// Uso: node tools/revisar-contenido.mjs [version-del-generador, 27 por omisión]
 import { Generator } from '../src/worldgen.js';
 import { BLOCK_BY_KEY as K } from '../src/blocks.js';
 import { cercaDeObra, structuresNear } from '../src/estructuras.js';
-import { GEN_SIMAS } from '../src/worldgen2.js';
+import { GEN_SIMAS, GEN_SUPERFICIE } from '../src/worldgen2.js';
 
-const VER = +(process.argv[2] || GEN_SIMAS);
+const VER = +(process.argv[2] || GEN_SUPERFICIE);
 const SEMILLAS = [101, 202, 303, 404, 505, 606];
 const ST = 8, N = 300, CH = 16; // ventana de 2 400 bloques con una columna cada 8
 let fallas = 0, deudas = 0;
@@ -130,14 +130,14 @@ regla('jade', 'jade por trozo', prom(jade), 0.2, 1.0);
 regla('oro2', 'oro por trozo, Z2 (plan: ≈ 11)', prom(oro.Z2), 8, 14, 'v13.4.1 (CC2)');
 lineas.push('· Biomas');
 regla('bmax', 'el bioma más grande ocupa (%)', prom(pctMax), 0, 30);
-regla('bmin', 'el menor de los 8 con identidad ocupa (%)', prom(pctMinIdent), 1.5, 100, 'v13.4.0 (B1, montaña real)');
-regla('playa', 'playa (% del mundo)', prom(playa), 6, 10, 'v13.4.0 (B1)');
-regla('mancha', 'área de los biomas con identidad en manchas ≥ 40 trozos (%)', prom(manchas), 50, 100, 'v13.4.0 (B1)');
+regla('bmin', 'el menor de los 8 con identidad ocupa (%)', prom(pctMinIdent), 1.5, 100);
+regla('playa', 'playa (% del mundo)', prom(playa), 6, 10);
+regla('mancha', 'área de los biomas con identidad en manchas ≥ 40 trozos (%)', prom(manchas), 50, 100);
 const lejos = Object.entries(hallazgo).filter(([, v]) => v.filter((d) => d <= 700).length < 5).map(([b]) => b);
-regla('hallazgo', 'biomas cuyo primer hallazgo pasa de 700 bloques en 2 o más semillas', lejos.length, 0, 0, 'v13.4.0 (B1)');
-regla('brusco', 'fronteras con salto de más de 8 de altura (%)', prom(brusco), 0, 8, 'v13.4.0 (B2)');
+regla('hallazgo', 'biomas cuyo primer hallazgo pasa de 700 bloques en 2 o más semillas', lejos.length, 0, 0);
+regla('brusco', 'fronteras con salto de más de 8 de altura (%)', prom(brusco), 0, 8);
 const sinEst = Object.entries(estruc).filter(([, v]) => prom(v) < 3).map(([b, v]) => `${b} ${prom(v).toFixed(1)}`);
-regla('estr', 'biomas con menos de 3 estructuras por 1 000 trozos', sinEst.length, 0, 0, 'v13.4.0 (B3) y BI0 · ' + sinEst.join(', '));
+regla('estr', 'biomas con menos de 3 estructuras por 1 000 trozos', sinEst.length, 0, 0, sinEst.length ? 'faltan: ' + sinEst.join(', ') : '');
 lineas.push('· Piso de los salones (' + nSalPiso + ' salones)');
 regla('seco', 'salones con ≥ 60 % de piso seco (%)', 100 * seco60 / (nSalPiso || 1), 90, 100, 'v13.4.1 (§10.5)');
 regla('lava', 'salones con lava en más de la mitad del piso (%)', 100 * lava50 / (nSalPiso || 1), 0, 1.5, 'v13.4.1 (§10.5)');
