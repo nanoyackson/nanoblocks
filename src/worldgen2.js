@@ -27,6 +27,14 @@ export const GEN_SIMAS = 26;
 // v13.4.0 (generador 27, paquete de superficie): reparto de biomas (playa solo junto al mar, manchas grandes, montaña real), bordes suaves y construcciones del desierto.
 // Todo lo nuevo solo corre con gen.version >= GEN_SUPERFICIE; los mundos <= 26 salen idénticos (tools/huella-mundos.mjs).
 export const GEN_SUPERFICIE = 27;
+// v13.4.1 (generador 28, paquete de cuevas): salones con carácter por bioma (CM3), minerales por zona y vetas de salón (CC2), lugares dentro de los salones (CC3),
+// simas moderadas y tope de lava y agua en los salones (§10.5). Todo lo nuevo solo corre con gen.version >= GEN_CARACTER; los mundos <= 27 salen idénticos.
+export const GEN_CARACTER = 28;
+const ORO_28 = [4, 4, 5], DIAMANTE_28 = [3, 5, 6]; // tamaño de las vetas por zona (el rendimiento real lo mide tools/revisar-contenido.mjs)
+// pesos (en %) del tipo de salón por clase de bioma de arriba: candil, hongueada, agujas, laguna, caldera (plan §9.2 B4)
+const PESOS_TIPO = { humedo: [10, 40, 15, 30, 5], seco: [25, 5, 50, 0, 20], frio: [45, 5, 20, 10, 20], volcan: [10, 0, 10, 0, 80], neutro: [20, 20, 25, 15, 20] };
+const TIPOS_SALON = ['candil', 'hongueada', 'agujas', 'laguna', 'caldera'];
+const claseBioma = (b) => (b === 'jungle' || b === 'nuboso' || b === 'manglar' ? 'humedo' : b === 'desert' || b === 'bosque_seco' ? 'seco' : b === 'paramo' || b === 'mountains' ? 'frio' : b === 'volcano' ? 'volcan' : 'neutro');
 // hash3 reparte igual a celdas distintas (salones gemelos en pares de regiones): la Red Honda mezcla en dos pasos, así cada región sale independiente
 const cmH = (s, x, z, q) => hash3((hash3(s, x, q, 7) * 4294967296) | 0, z, q ^ 0x2f, 13);
 const CM_SALON = 0.6;
@@ -271,7 +279,104 @@ export class GenV2 {
     n = { gx, gz, x: gx * RC + 14 + H(9302) * (RC - 28), z: gz * RC + 14 + H(9303) * (RC - 28), y: 26 + H(9304) * 20, salon,
       rx: salon ? 20 + H(9305) * 28 : 5, rz: salon ? 20 + H(9306) * 28 : 5, ry: salon ? 9 + H(9307) * 14 : 4, pil: salon && H(9309) < 0.5 };
     if (this.gen.version >= GEN_SIMAS) { n.nombre = NOMBRES_SALON[Math.floor(H(9320) * NOMBRES_SALON.length)]; n.sima = salon && H(9310) < 0.5 ? this.cmSima(n, H(9311) < 0.25, H(9312)) : null; }
+    if (this.gen.version >= GEN_CARACTER) this.caracter(n, gx, gz, H);
     this.cmC.set(k, n); return n;
+  }
+  // v28: el tipo del salón (por el bioma de arriba), su piso y nivel de líquido, la sima moderada y el lugar (todo de hash, una vez por nodo)
+  caracter(n, gx, gz, H) {
+    const dO = Math.hypot(n.x, n.z); n.dO = dO;
+    n.sima = null;
+    if (!n.salon) return;
+    const col = this.gen.column(Math.floor(n.x), Math.floor(n.z)), W = PESOS_TIPO[claseBioma(col.biome)];
+    let u = H(9340) * 100, t = 0;
+    while (t < 4 && u >= W[t]) { u -= W[t]; t++; }
+    let tipo = TIPOS_SALON[t];
+    n.piso = Math.floor(n.y - n.ry);
+    if (tipo === 'caldera' && (n.piso >= 30 || dO < 250)) tipo = 'agujas'; // la lava grande solo con el piso hondo y lejos del inicio
+    n.tipo = tipo; n.nivel = n.piso + Math.max(1, Math.round(n.ry * (0.07 + H(9341) * 0.03))); // cubre ~40 % del fondo (el fondo es un cuenco)
+    // simas moderadas: ninguna a menos de 170 del origen; las bocas gigantes solo desde 470
+    if (H(9310) < 0.8 && dO >= 170) n.sima = this.cmSima(n, H(9311) < 0.15 && dO >= 470, H(9312));
+    // lugar (CC3): probabilidad 0,15 / 0,30 / 0,45 según la zona; en la zona 1 solo campamento y cámara de eco
+    const zona = dO < 300 ? 1 : dO < 1000 ? 2 : 3;
+    if (H(9350) < [0.15, 0.3, 0.45][zona - 1]) {
+      let lug = tipo === 'caldera' ? 'altar' : tipo === 'laguna' && zona >= 2 ? 'isla' : tipo === 'candil' && H(9352) < 0.6 ? 'camara_eco' : 'campamento';
+      if (zona === 1 && lug !== 'campamento' && lug !== 'camara_eco') lug = 'campamento';
+      const a = H(9351) * 6.2832, off = 0.3 * Math.min(n.rx, n.rz);
+      n.lugar = { tipo: lug, x: Math.floor(n.x + Math.cos(a) * off), z: Math.floor(n.z + Math.sin(a) * off), y: tipo === 'laguna' ? n.nivel + 1 : tipo === 'caldera' ? n.nivel + 2 : Math.floor(n.y - n.ry * 0.9), zona };
+    }
+  }
+  // los salones que tocan el trozo (para el tope de líquidos y la decoración)
+  salonesDe(cx, cz) {
+    const x0 = cx * 16, z0 = cz * 16, RC = 96, out = [];
+    for (let gz = Math.floor((z0 - 60) / RC) - 1; gz <= Math.floor((z0 + 76) / RC) + 1; gz++) for (let gx = Math.floor((x0 - 60) / RC) - 1; gx <= Math.floor((x0 + 76) / RC) + 1; gx++) {
+      const n = this.cmNodo(gx, gz);
+      if (n.salon && n.x + n.rx > x0 && n.x - n.rx < x0 + 16 && n.z + n.rz > z0 && n.z - n.rz < z0 + 16) out.push(n);
+    }
+    return out;
+  }
+  salonEn(SL, wx, wz) { for (let i = 0; i < SL.length; i++) { const n = SL[i], dx = (wx - n.x) / n.rx, dz = (wz - n.z) / n.rz; if (dx * dx + dz * dz < 0.9) return n; } return null; }
+  // v28 (§10.5): lo que queda de líquido dentro de un salón. Normal: solo charcos (piso + 2); Laguna: agua hasta su nivel; Caldera: lava hasta su nivel
+  liquido28(n, y, id) {
+    const tope = n.piso;
+    if (n.tipo === 'laguna') { if (id === K.lava) return y <= tope ? id : 0; return y <= n.nivel ? K.water : 0; }
+    if (n.tipo === 'caldera') { if (id === K.water) return y <= tope ? id : 0; return y <= n.nivel ? K.lava : 0; }
+    return (id === K.water || id === K.lava) && y > tope ? 0 : id;
+  }
+  // v28: decoración propia de cada tipo de salón (solo hash, nada de Math.random) y los lugares (campamento, cámara de eco, isla del silencio, altar)
+  caracter28(cx, cz, blocks, colAt, structures, SL) {
+    const x0 = cx * 16, z0 = cz * 16, seed = this.gen.seed;
+    for (const n of SL) {
+      for (let lz = 0; lz < 16; lz++) for (let lx = 0; lx < 16; lx++) {
+        const wx = x0 + lx, wz = z0 + lz, dx = (wx - n.x) / n.rx, dz = (wz - n.z) / n.rz;
+        if (dx * dx + dz * dz > 0.8) continue;
+        const h = colAt(lx, lz).h, yTop = Math.min(h - 6, Math.floor(n.y + n.ry)), yBot = Math.max(8, Math.floor(n.y - n.ry) - 1);
+        for (let y = yBot; y <= yTop; y++) {
+          const i = lz * 16 + lx + y * 256;
+          if (blocks[i] !== 0) continue;
+          const below = blocks[i - 256], above = blocks[i + 256], r = hash3(seed, wx, y + 7000, wz), piso = OPAQUE[below] && below !== K.bedrock, techo = OPAQUE[above];
+          if (n.tipo === 'candil') {
+            if (techo && r < 0.05) { blocks[i] = K.cristal; if (r < 0.015) blocks[i + 256] = K.cristal_bloque; } else if (piso && r < 0.012) blocks[i] = K.glow_mushroom;
+          } else if (n.tipo === 'hongueada') {
+            if (piso) { blocks[i - 256] = K.moss; if (r < 0.14) blocks[i] = K.glow_mushroom; else if (r < 0.3) blocks[i] = K.tall_grass; } else if (techo && r < 0.12) { blocks[i + 256] = K.moss; blocks[i] = K.vine; }
+          } else if (n.tipo === 'agujas') {
+            if (piso && r < 0.16) { blocks[i] = K.stalagmite; if (r < 0.05 && blocks[i + 256] === 0) blocks[i + 256] = K.stalagmite; } else if (techo && r < 0.18) { blocks[i] = K.stalactite; if (r < 0.06 && blocks[i - 256] === 0) blocks[i - 256] = K.stalactite; }
+          } else if (n.tipo === 'laguna') {
+            if (piso && blocks[i] === 0 && r < 0.06) blocks[i - 256] = K.clay;
+          } else if (n.tipo === 'caldera') {
+            if (piso && r < 0.07) blocks[i - 256] = K.magma; else if (techo && r < 0.04) blocks[i] = K.stalactite;
+          }
+        }
+      }
+      if (n.lugar) this.lugar28(n, x0, z0, blocks, structures);
+    }
+  }
+  lugar28(n, x0, z0, blocks, structures) {
+    const L = n.lugar, rnd = mulberry32(Math.floor(L.x * 73856093 + L.z * 19349663 + this.gen.seed) | 0), R = L.tipo === 'isla' ? 2 : 3, Y = L.y;
+    const sol = L.tipo === 'altar' ? K.obsidian : L.tipo === 'isla' ? K.sand : L.tipo === 'camara_eco' ? K.calcite : K.cobble;
+    const cel = (x, z) => x >= x0 && x < x0 + 16 && z >= z0 && z < z0 + 16;
+    for (let dz = -R; dz <= R; dz++) for (let dx = -R; dx <= R; dx++) {
+      if (dx * dx + dz * dz > R * R + 1) continue;
+      const x = L.x + dx, z = L.z + dz; if (!cel(x, z)) continue;
+      const b = (x - x0) + (z - z0) * 16;
+      for (let y = Y - 2; y <= Y; y++) blocks[b + y * 256] = y === Y && rnd() < 0.25 && L.tipo !== 'camara_eco' ? K.mossy : sol;
+      for (let y = Y + 1; y <= Y + 4; y++) blocks[b + y * 256] = 0;
+    }
+    const poner = (dx, dz, id) => { const x = L.x + dx, z = L.z + dz; if (cel(x, z)) blocks[(x - x0) + (z - z0) * 16 + (Y + 1) * 256] = id; };
+    const cofre = (dx, dz, f, slots) => { const x = L.x + dx, z = L.z + dz; if (!cel(x, z)) return; blocks[(x - x0) + (z - z0) * 16 + (Y + 1) * 256] = K.chest; structures.push({ x: x - x0, y: Y + 1, z: z - z0, be: { type: 'chest', facing: f, slots, viejo: true } }); };
+    const placa = (dx, dz, f, title, text) => { const x = L.x + dx, z = L.z + dz; if (!cel(x, z)) return; blocks[(x - x0) + (z - z0) * 16 + (Y + 1) * 256] = K.placa; structures.push({ x: x - x0, y: Y + 1, z: z - z0, id: K.placa, be: { type: 'placa', facing: f, title, text } }); };
+    const slots = lootTable(rnd);
+    if (L.tipo === 'campamento') {
+      poner(0, 0, K.fogata); poner(-2, 1, K.barril); poner(2, -1, K.bed);
+      cofre(1, 2, 1, slots); placa(-1, -2, 0, 'Campamento', 'Alguien durmió aquí y se fue de prisa. Lo que dejó es de quien lo encuentre; deje algo usted también.');
+    } else if (L.tipo === 'camara_eco') {
+      for (const [dx, dz] of [[-2, -2], [2, -2], [-2, 2], [2, 2]]) { poner(dx, dz, K.cristal_bloque); if ((L.x + dx - x0) >= 0 && cel(L.x + dx, L.z + dz)) blocks[(L.x + dx - x0) + (L.z + dz - z0) * 16 + (Y + 2) * 256] = K.cristal; }
+      slots[0] = { id: 1193, count: 1, dur: ITEMS[1193] ? ITEMS[1193].durability || 12 : 12 };
+      cofre(0, 0, 1, slots); placa(0, -3, 0, 'Cámara de eco', 'Aquí la roca devuelve la voz. Un cristal de eco marca los salones cercanos.');
+    } else if (L.tipo === 'isla') {
+      cofre(0, 0, 1, slots); poner(1, 1, K.farol); placa(-1, 1, 0, 'Isla del silencio', 'El agua no se mueve. Nadie viene aquí por casualidad.');
+    } else {
+      cofre(0, 0, 1, slots); poner(-2, 0, K.farol); poner(2, 0, K.farol); placa(0, 2, 2, 'Altar de la brasa', 'Piedra negra sobre fuego. Se llevó lo que pudo; no lo vuelva a pedir.');
+    }
   }
   // los hitos de los nodos que caen en este trozo: se paran en el piso (a pie del centro) con un cairn de 3 de alto, un farol y la placa
   hitos(cx, cz, blocks, structures) {
@@ -422,6 +527,7 @@ export class GenV2 {
     const bocas = v22 ? this.bocasDe(cx, cz) : null;
     const v23 = g.version >= GEN_PROF;
     const cm = g.version >= GEN_RED ? { M: this.cmMask(cx, cz), x0, z0 } : null;
+    const v28 = g.version >= GEN_CARACTER, SL = v28 ? this.salonesDe(cx, cz) : null;
 
     for (let lz = 0; lz < CHUNK; lz++) for (let lx = 0; lx < CHUNK; lx++) {
       const wx = x0 + lx, wz = z0 + lz;
@@ -488,6 +594,7 @@ export class GenV2 {
       let nearSea = false;
       if (!underwater) for (let dz = -2; dz <= 2 && !nearSea; dz++) for (let dx = -2; dx <= 2; dx++) { if (colAt(lx + dx, lz + dz).h < SEA) { nearSea = true; break; } }
       const carveTop = underwater || biome === 'beach' ? h - 4 : h - (biome === 'volcano' ? 3 : 0);
+      const S28 = v28 ? this.salonEn(SL, wx, wz) : null;
       for (let y = 0; y <= h; y++) {
         let id;
         if (y === 0) id = K.bedrock;
@@ -503,6 +610,7 @@ export class GenV2 {
           if (y <= 10 || (lv23 && y <= lv23)) id = K.lava; // lagos de lava en lo más hondo (v23: y charcos más arriba)
           else if (v22 ? y <= aq22 : (aqOn && y <= aqLevel)) id = K.water; // lagos subterráneos
           else id = 0;
+          if (S28) id = this.liquido28(S28, y, id);
         }
         blocks[idx(lx, y, lz)] = id;
       }
@@ -521,11 +629,13 @@ export class GenV2 {
     if (g.version >= GEN_SIMAS) this.hitos(cx, cz, blocks, structures);
 
     // ---- minerales por altura (cada uno tiene su franja preferida) ----
+    // v28 (CC2): el diamante y el oro bajan y dependen de la distancia al inicio (zona 1 < 300, zona 2 < 1 000, zona 3 más lejos)
+    const dZ = v28 ? Math.hypot(x0 + 8, z0 + 8) : 0, zz = dZ < 300 ? 0 : dZ < 1000 ? 1 : 2;
     const veinOres = [
       { id: K.coal_ore, deep: K.coal_ore, veins: 16, size: 10, y0: 40, y1: 115 },
       { id: K.iron_ore, deep: K.deep_iron_ore, veins: 9, size: 7, y0: 4, y1: 72, peak: 16 },
-      { id: K.gold_ore, deep: K.deep_gold_ore, veins: 4, size: 6, y0: 4, y1: 34 },
-      { id: K.diamond_ore, deep: K.deep_diamond_ore, veins: 3, size: 5, y0: 3, y1: 17 },
+      { id: K.gold_ore, deep: K.deep_gold_ore, veins: 4, size: v28 ? ORO_28[zz] : 6, y0: 4, y1: 34 },
+      { id: K.diamond_ore, deep: K.deep_diamond_ore, veins: v28 ? 1 : 3, size: v28 ? DIAMANTE_28[zz] : 5, y0: 3, y1: 17 },
       { id: K.gravel, deep: K.gravel, veins: 4, size: 14, y0: 20, y1: 70 },
       { id: K.clay, deep: K.clay, veins: 1, size: 10, y0: 30, y1: 60 },
     ];
@@ -596,6 +706,9 @@ export class GenV2 {
         }
       }
     }
+
+    // ---- v28 (CM3 y CC3): el carácter de cada salón y sus lugares ----
+    if (v28) this.caracter28(cx, cz, blocks, colAt, structures, SL);
 
     // ---- geodas de cuarzo ----
     if (rnd() < 0.05) {

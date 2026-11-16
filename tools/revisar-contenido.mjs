@@ -7,9 +7,9 @@
 import { Generator } from '../src/worldgen.js';
 import { BLOCK_BY_KEY as K } from '../src/blocks.js';
 import { cercaDeObra, structuresNear } from '../src/estructuras.js';
-import { GEN_SIMAS, GEN_SUPERFICIE } from '../src/worldgen2.js';
+import { GEN_SIMAS, GEN_CARACTER } from '../src/worldgen2.js';
 
-const VER = +(process.argv[2] || GEN_SUPERFICIE);
+const VER = +(process.argv[2] || GEN_CARACTER);
 const SEMILLAS = [101, 202, 303, 404, 505, 606];
 const ST = 8, N = 300, CH = 16; // ventana de 2 400 bloques con una columna cada 8
 let fallas = 0, deudas = 0;
@@ -139,9 +139,9 @@ regla('brusco', 'fronteras con salto de más de 8 de altura (%)', prom(brusco), 
 const sinEst = Object.entries(estruc).filter(([, v]) => prom(v) < 3).map(([b, v]) => `${b} ${prom(v).toFixed(1)}`);
 regla('estr', 'biomas con menos de 3 estructuras por 1 000 trozos', sinEst.length, 0, 0, sinEst.length ? 'faltan: ' + sinEst.join(', ') : '');
 lineas.push('· Piso de los salones (' + nSalPiso + ' salones)');
-regla('seco', 'salones con ≥ 60 % de piso seco (%)', 100 * seco60 / (nSalPiso || 1), 90, 100, 'v13.4.1 (§10.5)');
-regla('lava', 'salones con lava en más de la mitad del piso (%)', 100 * lava50 / (nSalPiso || 1), 0, 1.5, 'v13.4.1 (§10.5)');
-regla('agua', 'salones con agua en más de la mitad del piso (%)', 100 * agua50 / (nSalPiso || 1), 0, 6, 'v13.4.1 (§10.5)');
+regla('seco', 'salones con ≥ 60 % de piso seco (%)', 100 * seco60 / (nSalPiso || 1), 90, 100);
+regla('lava', 'salones con lava en más de la mitad del piso (%)', 100 * lava50 / (nSalPiso || 1), 0, 1.5);
+regla('agua', 'salones con agua en más de la mitad del piso (%)', 100 * agua50 / (nSalPiso || 1), 0, 6);
 lineas.push('· Aún sin medir (no existen): lugares de cueva y dueños (CC3/CC4), Caldera por zona.');
 console.log(lineas.join('\n'));
 console.log(fallas ? `\n✘ ${fallas} falla(s) · ${deudas} deuda(s) conocida(s)` : `\nContenido: sin fallas (${deudas} deuda(s) conocida(s), con su versión, para cerrar en las próximas).`);

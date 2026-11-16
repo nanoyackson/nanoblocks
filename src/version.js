@@ -4,8 +4,8 @@
 export const GAME_NAME = 'NanoBlocks';
 // v13.1.0: la versión de generador de terreno MÁS NUEVA que este juego sabe hacer (la de los mundos nuevos). Si el anfitrión de una sala manda
 // una mayor, este cliente generaría un terreno distinto al suyo (cuevas flotando): se rechaza la entrada (red/sesion.js).
-export const GEN_MAX = 27; // v13.4.0: 27 = reparto de biomas, bordes suaves, montaña real y construcciones del desierto (GEN_SUPERFICIE en worldgen2.js) · v13.3.3: 26 = simas, bocas gigantes, hitos (GEN_SIMAS en worldgen2.js) · v13.3.2: 25 = la Red Honda y los Salones (GEN_RED en worldgen2.js) · v13.3.0: 24 = obras integradas al terreno (GEN_INTEGRACION en worldgen2.js) · v13.2.0: 23 = lava más abajo (GEN_PROF en worldgen2.js)
-export const GAME_VERSION = '13.4.0';
+export const GEN_MAX = 28; // v13.4.1: 28 = carácter de los salones, minerales por zona, lugares de cueva (GEN_CARACTER en worldgen2.js) · v13.4.0: 27 = reparto de biomas, bordes suaves, montaña real y construcciones del desierto (GEN_SUPERFICIE en worldgen2.js) · v13.3.3: 26 = simas, bocas gigantes, hitos (GEN_SIMAS en worldgen2.js) · v13.3.2: 25 = la Red Honda y los Salones (GEN_RED en worldgen2.js) · v13.3.0: 24 = obras integradas al terreno (GEN_INTEGRACION en worldgen2.js) · v13.2.0: 23 = lava más abajo (GEN_PROF en worldgen2.js)
+export const GAME_VERSION = '13.4.1';
 // v12.4.6: la versión MÁS VIEJA del juego que puede abrir lo que esta versión guarda. Se sube cuando un mundo guardado trae algo que un
 // juego anterior no entiende y lo rompería: bloques nuevos (ids que el mallador no conoce), un SAVE_FORMAT nuevo o un campo que cambia
 // de forma. Se guarda en meta.minVersion y el menú no abre un mundo cuyo minVersion sea más nuevo que este juego (12.4.0: los bloques 656–662).
@@ -26,6 +26,19 @@ export const CREDITS = [
 ];
 
 export const CHANGELOG = [
+  {
+    version: '13.4.1',
+    date: '2026-11-15',
+    title: 'Paquete de cuevas (generador 28)',
+    items: [
+      'Generador 28 (paquete de cuevas, `GEN_CARACTER` en worldgen2.js; `GEN_MAX` 28; los mundos creados antes salen idénticos, huella 21-27 en `tools/huella-mundos.mjs`; un mundo 28 pide la 13.4.1; ≈ 5,8 ms por trozo, igual que el 27). CM3, carácter de los salones: cada salón tiene un tipo según el bioma de arriba (pesos del plan §9.2): Candil (cristales colgando y hongos), Hongueada (musgo, hongos brillantes y lianas), Agujas (estalagmitas y estalactitas), Laguna (agua que cubre una parte del fondo, arcilla) y Caldera (lava en el fondo, magma y piedra negra; solo con el piso hondo y a más de 250 del inicio). Salen 20, 22, 28, 14 y 16 % de los salones.',
+      '§10.5, tope de lava y agua: dentro de un salón el líquido ya no llena el cuenco; los charcos quedan a ras del fondo y solo la Laguna y la Caldera tienen líquido de verdad (cubre ≈ 40 % del fondo). Salones con ≥ 60 % de piso seco: 70 % → 91 %; con lava en más de la mitad del piso: 6,8 % → 1,3 %; con agua en más de la mitad: 12 % → 2,4 %.',
+      'Simas moderadas: 3,9 por 1 000 trozos (antes 2,3 de 3-5 pedido; ninguna a menos de 170 del inicio) y bocas gigantes solo desde 470 del inicio (0,17 por 1 000).',
+      'CC2, minerales por zona: la veta de diamante pasa de 3 a 1 por trozo con tamaño según la zona (3 / 5 / 6) y el oro con tamaño 4 / 4 / 5; diamante por trozo 2,5 (zona 1, menos de 300 del inicio), 3,7 (300-1 000) y 4,4 (más lejos); oro 11,7 en la zona 2. Todo dentro de los rangos de `tools/revisar-contenido.mjs`, que ya no tiene deudas.',
+      'CC3, lugares de cueva dentro de los salones (35 % de ellos; 15 % en la zona 1, 27 % en la 2 y 45 % en la 3): Campamento (fogata, barril, cama, cofre con botín y placa), Cámara de eco (cuatro cristales, cofre con un Cristal de eco y placa), Isla del silencio (plataforma de arena en una Laguna, con cofre y farol) y Altar de la brasa (plataforma de obsidiana en una Caldera, con cofre y dos faroles). En la zona 1 solo salen los dos primeros. Cada uno trae su plataforma plana de 7×7 con 4 de aire encima.',
+      'Pruebas: `tools/revisar-caracter.mjs` (en `npm run revisar`: los cinco tipos, la densidad y la zona de los lugares y que los 24 lugares generados traigan cofre y placa con piso firme); `tools/revisar-contenido.mjs` mide ahora el generador 28 y sus reglas de piso seco, lava y agua pasan a estrictas; `tools/huella-mundos.mjs` vigila también el 27.',
+    ],
+  },
   {
     version: '13.4.0',
     date: '2026-11-15',

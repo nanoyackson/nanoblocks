@@ -168,7 +168,7 @@ export async function saveWorld(meta, mods, dirtyKeys, be = new Map()) {
   meta.format = SAVE_FORMAT;
   meta.gameVersion = GAME_VERSION;
   // v13.1.0: un mundo de generador 22 (cuevas nuevas) en un juego más viejo saldría con costuras: pide la 13.1.0. Los de 21 o menos, igual que antes
-  meta.minVersion = (meta.genVersion || 1) >= 27 && compararVersion(MIN_VERSION, '13.4.0') < 0 ? '13.4.0' : (meta.genVersion || 1) >= 26 && compararVersion(MIN_VERSION, '13.3.3') < 0 ? '13.3.3' : (meta.genVersion || 1) >= 25 && compararVersion(MIN_VERSION, '13.3.2') < 0 ? '13.3.2' : (meta.genVersion || 1) >= 24 && compararVersion(MIN_VERSION, '13.3.0') < 0 ? '13.3.0' : (meta.genVersion || 1) >= 23 && compararVersion(MIN_VERSION, '13.2.0') < 0 ? '13.2.0' : (meta.genVersion || 1) >= 22 && compararVersion(MIN_VERSION, '13.1.0') < 0 ? '13.1.0' : MIN_VERSION; // v12.4.6; v13.2.0: el generador 23 (lava más abajo) pide la 13.2.0
+  meta.minVersion = (meta.genVersion || 1) >= 28 && compararVersion(MIN_VERSION, '13.4.1') < 0 ? '13.4.1' : (meta.genVersion || 1) >= 27 && compararVersion(MIN_VERSION, '13.4.0') < 0 ? '13.4.0' : (meta.genVersion || 1) >= 26 && compararVersion(MIN_VERSION, '13.3.3') < 0 ? '13.3.3' : (meta.genVersion || 1) >= 25 && compararVersion(MIN_VERSION, '13.3.2') < 0 ? '13.3.2' : (meta.genVersion || 1) >= 24 && compararVersion(MIN_VERSION, '13.3.0') < 0 ? '13.3.0' : (meta.genVersion || 1) >= 23 && compararVersion(MIN_VERSION, '13.2.0') < 0 ? '13.2.0' : (meta.genVersion || 1) >= 22 && compararVersion(MIN_VERSION, '13.1.0') < 0 ? '13.1.0' : MIN_VERSION; // v12.4.6; v13.2.0: el generador 23 (lava más abajo) pide la 13.2.0
   meta.lastPlayed = Date.now();
   const keys = dirtyKeys ? [...dirtyKeys] : [...mods.keys()];
   const db = await openDB();
