@@ -759,6 +759,11 @@ const simpleItems = [
   { id: 1192, key: 'esquirla_cristal', name: 'Esquirla de cristal (salta de los racimos: farol, eco y lente)', icono: 'azufre', tinte: '#8fe0ff' },
   { id: 1193, key: 'cristal_eco', name: 'Cristal de eco (clic derecho bajo tierra: marca salones y hitos cercanos 20 s; 12 usos)', icono: 'azufre', tinte: '#c9a8ff', stack: 1, dur: 12 },
   { id: 1195, key: 'sopa_hongo', name: 'Sopa de hongo (comida buena y vista nocturna 2 minutos)', icono: 'caldo_hongo', tinte: '#e8c888', food: 7, sip: true },
+  // v13.3.5 (BI0, identidad.js): lo propio de cada bioma (arte provisional con íconos teñidos)
+  { id: 1196, key: 'orquidea', name: 'Orquídea de neblina (del bosque nuboso: con agua, un té que calma)', icono: 'coffee_cherry', tinte: '#c070e8' },
+  { id: 1197, key: 'tuna', name: 'Tuna (la fruta del cactus del desierto: comida y sed)', icono: 'apple', tinte: '#e0407a', food: 3 },
+  { id: 1198, key: 'coco', name: 'Coco (de las palmas de la playa)', icono: 'cacao', tinte: '#8a6a3a', food: 3, sip: true },
+  { id: 1199, key: 'te_orquidea', name: 'Té de orquídea (calma: 90 s con menos hambre)', icono: 'agua_dulce', tinte: '#c080e0', food: 3, sip: true },
   { id: 1187, icono: 'libro_recetas', tinte: '#7a5030', key: 'libro_encargos', name: 'Libro de encargos (clic derecho: los que lleva)', stack: 1 }, // v12.4.12 (C8-A): el primer ítem del rango EXT_ITEM
   { id: 578, key: 'plano_bahareque', name: 'Plano: casa de bahareque con corredor', stack: 1 }, // v12.4.7 (C4)
   { id: 448, key: 'pan_casero', name: 'Pan casero de la abuela', food: 9 },

@@ -264,7 +264,9 @@ export class Avatar {
     const inclina = (p.sneaking ? 0.35 : 0) + (p.sprinting ? amp * 0.12 : 0) + this.surfK * 0.25;
     P.body.rotation.x = k(P.body.rotation.x, inclina, 10);
     P.body.rotation.z = k(P.body.rotation.z, Math.sin(this.walk) * 0.04 * amp + (surf ? Math.sin(t * 1.9) * 0.08 : 0), 10);
-    P.head.position.z = k(P.head.position.z, p.sneaking ? 0.12 : 0, 12);
+    // v13.3.5: el tronco se inclina alrededor de la cadera (y 0,75) y la cabeza y los hombros se van con él: antes el cuerpo se partía al agacharse
+    { const R = (this.reposo ||= { head: P.head.position.clone(), armL: P.armL.position.clone(), armR: P.armR.position.clone() }), th = P.body.rotation.x, cs = Math.cos(th), sn = Math.sin(th), HIP = 0.75;
+      for (const n of ['head', 'armL', 'armR']) { const r = R[n], q = P[n].position; q.x = r.x; q.y = HIP + (r.y - HIP) * cs - r.z * sn; q.z = (r.y - HIP) * sn + r.z * cs; } }
     // rebotito del paso (y agachado sobre la tabla)
     this.root.position.y += Math.abs(Math.cos(this.walk)) * 0.05 * amp - this.surfK * 0.12;
     // las alas del Rey en la espalda, y la pose de planear

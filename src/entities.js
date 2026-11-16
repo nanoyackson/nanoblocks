@@ -33,6 +33,7 @@ import { JEFES3 } from './jefes3.js';
 import { FINAL } from './final.js';
 import { ENJAMBRE } from './abejas.js';
 import { MUNECOS } from './muneco.js';
+import { identidadSpawn } from './identidad.js'; // v13.3.5 (BI0)
 import { HONGOS, hongosSpawn } from './hongos.js';
 import { CUEVA_FAUNA, cuevaFaunaSpawn } from './cuevavida.js';
 import { armarSombra } from './modelos-sombra.js';
@@ -1088,6 +1089,7 @@ export class Entities {
     if (Math.random() < 0.5 && seaSpawn(this, g)) return;
     if (Math.random() < 0.3 && mar2Spawn(this, g)) return;
     if (Math.random() < 0.5 && bravosSpawn(this, g)) return;
+    if (Math.random() < 0.2 && identidadSpawn(this, g)) return; // v13.3.5 (BI0): fauna que faltaba en desierto, páramo y nuboso
     if (Math.random() < 0.15 && hongosSpawn(this, g)) return; // los hongos reventones (hongos.js)
     if (Math.random() < 0.45 && bichos3Spawn(this, g)) return; // los bichos de cada bioma (bichos3.js): que la noche no sea solo Sombras
     if (Math.random() < 0.4 && playaSpawn(this, g)) return;

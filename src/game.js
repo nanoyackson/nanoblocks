@@ -242,6 +242,7 @@ import { usarMapa, mapaDelCoco, cavarTesoro, usarCareta, perlaDe, MAPA, CARETA }
 import { quizaSangra, usarCura, CURAS, tickHeridas, durmio, siestita } from './supervivencia3.js';
 import { cuadroProfundidad, brilloProf, nieblaProf } from './profundidad.js';
 import { tickFuego, usarFuego, tickColada, conCasco } from './fuego.js';
+import { alPicarBioma, tickIdentidad, alComerIdentidad } from './identidad.js'; // v13.3.5 (BI0)
 import { tickCuevaCosas, alPicarCueva, usarCuevaCosas, alComerCuevaCosa, bonoLuzCueva } from './cuevacosas.js'; // v13.3.4 (CC1)
 import { tickComite, alCambiarBloqueComite } from './comite.js';
 import { tickPatronal, usarPatronal } from './patronal.js';
@@ -867,6 +868,7 @@ export class Game {
       const held = this.herramientaEnMano();
       cavarTesoro(this, t);
       quizaDerrumbe(this, t, b);
+      alPicarBioma(this, b, t.x, t.y, t.z); // v13.3.5: lo propio de cada bioma
       alPicarCueva(this, b, t.x, t.y, t.z); // v13.3.4: esquirlas, ventilar y la estalactita
       quizaAvispero(this, b, t.x, t.y, t.z);
       perlaDe(this, b, t.x, t.y, t.z);
@@ -2832,7 +2834,7 @@ export class Game {
     if (!this.paused) this.tickDiscover(dt);
     if (!this.paused) this.dimT = (this.dimT || 0) + dt;
     if (!this.paused) { this.tickGolpePropio(dt); tickCombat(this, dt); tickAturde(this, dt); tickTemblor(this, dt); tickParapente(this, dt); tickSurf(this, dt); tickVelas(this, dt); tickSacos(this, dt); }
-    if (!this.paused) { this.ambientParticles(dt); this.tickEffects(dt); tickFuego(this, dt); tickCuevaCosas(this, dt); this.clock = (this.clock || 0) + dt; this.nestT = (this.nestT || 0) - dt; if (this.nestT <= 0) { this.nestT = 1; tickNests(this); } }
+    if (!this.paused) { this.ambientParticles(dt); this.tickEffects(dt); tickFuego(this, dt); tickCuevaCosas(this, dt); tickIdentidad(this, dt); this.clock = (this.clock || 0) + dt; this.nestT = (this.nestT || 0) - dt; if (this.nestT <= 0) { this.nestT = 1; tickNests(this); } }
 
     // autoguardado cada 30 s
     if (performance.now() - this.lastSave > 30000) this.save().then(() => this.ui.guardado());
@@ -3090,6 +3092,7 @@ export class Game {
       if (skillLv(this, 'cocina') >= 10) this.player.health = Math.min(this.player.maxHealth, this.player.health + 4);
       if (AGUA[e.id]) beber(this, AGUA[e.id]);
       alComer(this, e.id);
+      alComerIdentidad(this, e.id); // v13.3.5: el té de orquídea
       alComerCuevaCosa(this, e.id); // v13.3.4: la sopa de hongo
       comerPlato(this, e.id);
       comidaFuerza(this, e.id); // la comida buena sube la vida y el aguante máximos un rato (fuerza.js)

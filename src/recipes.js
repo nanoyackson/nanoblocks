@@ -187,6 +187,7 @@ export const RECIPES = [
   // v12.1.0 C1: lo que se guarda (sal y humo) y la botica de infusiones (todo en el fogón)
   cook(564, 2, [MEAT, MEAT, 562]), // v12.4.1: 2 por 2 (antes 3: daba más comida que la asada y no se pudría)
   cook(563, 1, [MEAT, 561]),
+  cook(1199, 1, [1196, 299]), // v13.3.5 (BI0): el té de orquídea
   cook(1195, 1, [K.glow_mushroom, K.glow_mushroom, 299]), // v13.3.4 (CC1): la sopa de hongo
   cook(565, 1, [361, 562]), cook(565, 1, [362, 562]), cook(565, 1, [363, 562]), cook(565, 1, [364, 562]), // v12.4.1: el guapote también
   ...[1105, 1106, 1107, 1108, 1109, 1110, 1111, 1112].map((id) => cook(565, 1, [id, 562])), // v12.7.0: las especies nuevas, saladas

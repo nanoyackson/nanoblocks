@@ -91,7 +91,7 @@ export function armarPersonaje(A, P, ap = {}) {
 // con la armadura en vez de la camisa
 export const AGARRE = [0, -0.035, -0.262]; // el centro del mango dentro del puño, en el espacio del brazo
 export const PALMA = [0, -0.075, -0.2]; // la palma (mano abierta), donde se apoya un bloque
-export function armarBrazoMano(ap = {}, { puno = false, manga = null } = {}) {
+export function armarBrazoMano(ap = {}, { puno = false, manga = null, pulgarArriba = false } = {}) {
   const camisaIdx = ap.camisa || 0, camisa = manga ? hex(manga) : hex((CAMISAS[camisaIdx] || CAMISAS[0])[1]), piel = hex(PIELES[ap.piel ?? 1] || PIELES[1]), raya = oscurecer(camisa, 0.55);
   const P = new Pieza();
   P.tubo(camisa, [[0, 0, 0.5], [0, 0, 0.26], [0, 0, 0.06]], [0.115, 0.105, 0.1], { lados: 9, pasos: 3, grano: 0.06, amb: 0.82, pinta: !manga && camisaIdx < 4 ? (u) => (Math.floor(u.x * 8) % 2 ? raya : null) : undefined });
@@ -101,7 +101,8 @@ export function armarBrazoMano(ap = {}, { puno = false, manga = null } = {}) {
   if (puno) {
     // los dedos se doblan hacia abajo y hacia adentro, abrazando el mango; el pulgar cruza por encima
     for (const d of [-1, -0.33, 0.33, 1]) P.tubo(piel, [[d * 0.066, 0.03, -0.25], [d * 0.068, 0.012, -0.315], [d * 0.066, -0.05, -0.322], [d * 0.06, -0.09, -0.27]], [0.025, 0.024, 0.022, 0.019], { lados: 5, pasos: 3 });
-    P.tubo(piel, [[-0.08, 0.02, -0.17], [-0.1, 0.0, -0.235], [-0.06, -0.045, -0.29]], [0.03, 0.024, 0.019], { lados: 5, pasos: 2 });
+    if (pulgarArriba) P.tubo(piel, [[0.06, 0.035, -0.18], [0.13, 0.05, -0.2], [0.215, 0.045, -0.215]], [0.032, 0.028, 0.022], { lados: 6, pasos: 3 }); // v13.3.5: el pulgar en alto (el escudo)
+    else P.tubo(piel, [[-0.08, 0.02, -0.17], [-0.1, 0.0, -0.235], [-0.06, -0.045, -0.29]], [0.03, 0.024, 0.019], { lados: 5, pasos: 2 });
   } else {
     for (const d of [-1, -0.33, 0.33, 1]) P.tubo(piel, [[d * 0.066, 0.01, -0.26], [d * 0.07, 0.015, -0.33], [d * 0.07, -0.01, -0.38]], [0.024, 0.021, 0.015], { lados: 4, pasos: 2 });
     P.tubo(piel, [[-0.08, 0.02, -0.17], [-0.12, 0.05, -0.25]], [0.028, 0.019], { lados: 4, pasos: 1 }); // el pulgar

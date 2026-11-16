@@ -111,7 +111,7 @@ function cartaDeZenaida(g, G, corta = false) {
   if (!hay(G, 'chema') || corta) return;
   entregarCartaRey(g); // queda en el cuaderno de cartas (si ya estaba, no se repite)
   decirK(g, G, 'chema', FRASES.chema.pre, 4.5);
-  g.ui.dialog('Carta de Zenaida (la trae Don Chema)', 'Mi güila: si ya llegó arriba es porque ya no le quedan Sombras por aprenderse. Lo que viene no se vence a golpes: se vence con la mesa llena.', 4000);
+  g.ui.dialog('Carta de Zenaida (la trae Don Chema)', 'Mi cielo: si ya llegó arriba es porque ya no le quedan Sombras por aprenderse. Lo que viene no se vence a golpes: se vence con la mesa llena.', 4000);
   if (g.meta.corazon) { g.player.health = g.player.maxHealth; g.particles.burst(g.player.body.pos.x, g.player.body.pos.y + 1, g.player.body.pos.z, [[1, 0.4, 0.4], [1, 0.8, 0.6]], 18, 2); g.ui.toast('❤ El Corazón de Tiquicia brilla en la repisa: se siente entero', 3000); }
 }
 // Flor, Chepa (F3: otro plato si tiene hambre), Tino (arregla el arma una vez) cada segundo

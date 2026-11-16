@@ -5,15 +5,15 @@ export const GAME_NAME = 'NanoBlocks';
 // v13.1.0: la versión de generador de terreno MÁS NUEVA que este juego sabe hacer (la de los mundos nuevos). Si el anfitrión de una sala manda
 // una mayor, este cliente generaría un terreno distinto al suyo (cuevas flotando): se rechaza la entrada (red/sesion.js).
 export const GEN_MAX = 26; // v13.3.3: 26 = simas, bocas gigantes, hitos (GEN_SIMAS en worldgen2.js) · v13.3.2: 25 = la Red Honda y los Salones (GEN_RED en worldgen2.js) · v13.3.0: 24 = obras integradas al terreno (GEN_INTEGRACION en worldgen2.js) · v13.2.0: 23 = lava más abajo (GEN_PROF en worldgen2.js)
-export const GAME_VERSION = '13.3.4';
+export const GAME_VERSION = '13.3.5';
 // v12.4.6: la versión MÁS VIEJA del juego que puede abrir lo que esta versión guarda. Se sube cuando un mundo guardado trae algo que un
 // juego anterior no entiende y lo rompería: bloques nuevos (ids que el mallador no conoce), un SAVE_FORMAT nuevo o un campo que cambia
 // de forma. Se guarda en meta.minVersion y el menú no abre un mundo cuyo minVersion sea más nuevo que este juego (12.4.0: los bloques 656–662).
-export const MIN_VERSION = '13.3.4'; // 13.3.4: ítems 1192-1195 y bloque 699 (esquirla, eco, lente, sopa y farol de cristal; CC1); 12.16.5: ítems 1190, 1191 y bloque 698 (campana, mantilla y foto del Rey), SAVE_FORMAT 9; 12.16.1: SAVE_FORMAT 8 (meta.reyArena, el diario del Redondel del Rey); 12.15.4: C8-B (bloques 693–695; ítems 1180–1186); 12.15.3: C8-C (bloque 696; ítems 1188, 1189); 12.15.2: C7 (bloques 685, 688–691; ítems 1160–1169); 12.15.1: C6 (bloques 672–684; ítems 1130–1153); 12.6.0: C5-B (bloques 668, 669, 671, 697; ítems 1121, 1124–1126); 12.7.0: C5-A1 (ítems 1100–1112); 12.7.2: C5-A2 (bloque 670; ítems 1113–1120)
+export const MIN_VERSION = '13.3.5'; // 13.3.5: ítems 1196-1199 (orquídea, tuna, coco y té de orquídea; BI0); 13.3.4: ítems 1192-1195 y bloque 699 (esquirla, eco, lente, sopa y farol de cristal; CC1); 12.16.5: ítems 1190, 1191 y bloque 698 (campana, mantilla y foto del Rey), SAVE_FORMAT 9; 12.16.1: SAVE_FORMAT 8 (meta.reyArena, el diario del Redondel del Rey); 12.15.4: C8-B (bloques 693–695; ítems 1180–1186); 12.15.3: C8-C (bloque 696; ítems 1188, 1189); 12.15.2: C7 (bloques 685, 688–691; ítems 1160–1169); 12.15.1: C6 (bloques 672–684; ítems 1130–1153); 12.6.0: C5-B (bloques 668, 669, 671, 697; ítems 1121, 1124–1126); 12.7.0: C5-A1 (ítems 1100–1112); 12.7.2: C5-A2 (bloque 670; ítems 1113–1120)
 // v12.4.9: los ids que cubre MIN_VERSION. v12.5.1 (undécima revisión): antes solo se miraba el id más alto y un id nuevo por debajo
 // (el 665 de C5, el 1100 de la pesca) pasaba en verde. Ahora es una FIRMA de todos los ids definidos: cuántos bloques, cuántos ítems y
 // un hash de la lista. tools/revisar-version.mjs falla si cambia: al agregar ids, subir MIN_VERSION y copiar la firma nueva que imprime
-export const MIN_IDS = { bloques: 348, items: 395, hash: 'ba5301c3', version: '13.3.4' }; // firma de la 13.3.4 (CC1: esquirla, eco, lente, sopa y farol de cristal); antes, la 12.16.5 (campana, mantilla y foto del Rey); antes, la 12.15.4 (C8-B); antes, la 12.15.3 (C8-C), la 12.15.2 (C7), la 12.15.1 (C6), la 12.7.2 (C5-A2); v12.6.3: con la versión que la trajo, que tiene que ser MIN_VERSION
+export const MIN_IDS = { bloques: 348, items: 399, hash: '15649e13', version: '13.3.5' }; // firma de la 13.3.5 (BI0: orquídea, tuna, coco y té de orquídea); antes, la 13.3.4 (CC1: esquirla, eco, lente, sopa y farol de cristal); antes, la 12.16.5 (campana, mantilla y foto del Rey); antes, la 12.15.4 (C8-B); antes, la 12.15.3 (C8-C), la 12.15.2 (C7), la 12.15.1 (C6), la 12.7.2 (C5-A2); v12.6.3: con la versión que la trajo, que tiene que ser MIN_VERSION
 export const SAVE_FORMAT = 10; // 10: la experiencia con la curva nueva del balance de progresión (v13.2.4, se conserva el nivel) · 9: las mañas de jefe y los premios del Rey (meta.manasJefe, meta.reyPremio, v12.16.5) · 8: el diario del Redondel del Rey (meta.reyArena, v12.16.1) · 7: las fichas de otras personas (meta.jugadores) y la época (v12.10.0) · 3: la plata con denominaciones (v11.10.3) · 4: la billetera (v11.10.5) · 5: el chanchito y los topes de paga (v11.10.7) · 6: el tipo de mundo (v11.13.0)
 
 // Recursos de terceros (todos de uso libre).
@@ -26,6 +26,20 @@ export const CREDITS = [
 ];
 
 export const CHANGELOG = [
+  {
+    version: '13.3.5',
+    date: '2026-11-15',
+    title: 'BI0: identidad de cada bioma (tuna, orquídea, coco, notas, fauna) + pulgar del escudo, agacharse en 3ª persona y armaduras con detalle',
+    items: [
+      'BI0, la identidad de cada bioma en tiempo real (sin generador: vale en los mundos viejos): un recurso propio por bioma que sale al picar lo que ya hay: tuna del cactus (45 %), orquídea de neblina en las hojas y el musgo del bosque nuboso (8 %), coco en las palmas de la playa (14 %), cacao silvestre en la selva (5 %) y esquirlas de cristal frío en la roca del páramo (4 %). Receta: té de orquídea (orquídea + agua dulce, fogón) que da «calma» 90 s. Solo en supervivencia; los ítems comunes no pagan dinero.',
+      'Una nota de libreta la primera vez que se pisa cada bioma (nuboso, selva, desierto, páramo, playa, bosque seco, manglar, volcán y montaña) con lo que se busca ahí. Fauna que faltaba: el desierto ya no está vacío (zorro pelón de día, armadillo también de noche, máximo 2 de cada), el páramo tiene coyotes (máximo 2, solo con peligros) y el bosque nuboso ranas dardo (máximo 3). Los decide el anfitrión o quien juega solo.',
+      'Pedido de Isaac, el escudo: en primera persona el puño que sostiene el escudo ahora muestra el pulgar en alto (`armarBrazoMano` con la opción `pulgarArriba`).',
+      'Las cartas de la abuela Zenaida (y las del prólogo, Anselmo y el correo) ahora dicen «Mi cielo» en vez de «Mi güila».',
+      'Pedido de Isaac, agacharse en tercera persona (y en las demás personas de la sala): antes el tronco se inclinaba alrededor de la cadera pero la cabeza y los hombros se quedaban en su sitio y el cuerpo se partía; ahora la cabeza y los hombros giran con el tronco (misma cuenta alrededor de la cadera) y quedan pegados. Vale también para recibir un golpe y correr.',
+      'Pedido de Isaac, armaduras con más modelo 3D: ribete de color más claro en los bordes, banda de la frente en cascos, quilla, gema y gorguera en la pechera, filos entre las láminas, hombreras con dos láminas colgando y remache, faldones al frente y a los lados de la cintura, rodillera con aleta, filo en el muslo, puntera y borde del caño en las botas, y codera y remaches en el antebrazo.',
+      'Ajuste de la prueba en red de la 13.3.4 (tag v13.3.4-red): el aire malo y la estalactita también le llegan al invitado. Prueba nueva `tools/revisar-identidad.mjs` (en `npm run revisar`). MIN_VERSION 13.3.5 (ítems 1196-1199), sin generador nuevo (huella de mundos 21-25 idéntica).',
+    ],
+  },
   {
     version: '13.3.4',
     date: '2026-11-15',

@@ -1,6 +1,6 @@
 // El prólogo: al empezar un mundo nuevo en supervivencia, unos segundos en negro con el principio de la historia. Cualquier tecla lo salta.
 // Solo capa de pantalla: el mundo sigue cargando detrás.
-const LINEAS = ['A su casa llegó una carta.', 'La letra es de alguien que ya no está.', '«Mi güila: si esto le llegó, ya me fui a descansar…»'];
+const LINEAS = ['A su casa llegó una carta.', 'La letra es de alguien que ya no está.', '«Mi cielo: si esto le llegó, ya me fui a descansar…»'];
 export function prologo() {
   const el = document.createElement('div');
   el.id = 'prologo';

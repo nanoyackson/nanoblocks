@@ -80,12 +80,13 @@ const dt = 0.1;
   for (let t = 0; t < 40; t += dt) { g.clock += dt; tickCuevaCosas(g, dt); }
   ok(log.danos.length === 0, 'picar un hueco ventila la bolsa (2 minutos)');
 }
-// 4) la estalactita
+// 4) la estalactita (con un azar de semilla fija: la prueba no depende de la suerte)
 {
+  const azarReal = Math.random; let sem = 12345; Math.random = () => { sem = (sem + 0x6d2b79f5) | 0; let t = Math.imul(sem ^ (sem >>> 15), 1 | sem); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
   const { g, log } = juego(); g.player.body.pos.x = 50; g.player.body.pos.z = 50; g.env.cave = 0;
   for (let i = 0; i < 6; i++) { g.world.setBlock(50 + i, 21, 50, K.stalactite); g.world.setBlock(50 + i, 12, 50, K.stone); }
   let aviso = 0, cayo = 0, danos = 0;
-  for (let k = 0; k < 1500; k++) {
+  for (let k = 0; k < 4000; k++) {
     g.cuevaCosas && (g.cuevaCosas.cdEvento = 0);
     g.player.body.pos.x = 50; g.player.body.pos.y = 13;
     alPicarCueva(g, BLOCKS[K.stone], 50, 18, 50);
@@ -100,6 +101,7 @@ const dt = 0.1;
       g.world.setBlock(c.x, c.y, c.z, K.stalactite);
     }
   }
+  Math.random = azarReal;
   ok(aviso > 5 && cayo === aviso, `la estalactita avisa y cae (${aviso} veces, solo por el ruido de picar)`);
   ok(danos === aviso * 3, `quita 3 de vida y nada más (${danos} en ${aviso} caídas)`);
 }

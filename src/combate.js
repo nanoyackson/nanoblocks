@@ -359,7 +359,7 @@ export function updateShieldHand(g, dt, light) {
       const X = new T.Vector3(0, 1, 0), Z = new T.Vector3(-0.45, -0.6, 0.66).normalize(); Z.sub(X.clone().multiplyScalar(Z.dot(X))).normalize();
       const Y = new T.Vector3().crossVectors(Z, X), R = new T.Matrix4().makeBasis(X, Y, Z);
       const punto = new T.Vector3(-0.53, -0.53, -0.69), pos = punto.sub(new T.Vector3(0, -0.035, -0.262).applyMatrix4(R));
-      const brazo = g.armMesh({ puno: true });
+      const brazo = g.armMesh({ puno: true, pulgarArriba: true });
       base.invert().multiply(R.setPosition(pos)).decompose(brazo.position, brazo.quaternion, brazo.scale);
       brazo.userData.brazo = true;
       m.add(brazo);
