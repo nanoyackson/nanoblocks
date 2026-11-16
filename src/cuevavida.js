@@ -268,7 +268,7 @@ export function cuadroCueva(g, dt) {
     S.emisores = elegirEmisores(S.fuentes, e).map((f) => viejos.get(`${f.x},${f.y},${f.z}`) || f);
     // v13.3.3: al entrar a un salón de la Red Honda aparece su nombre (una vez por salón y visita)
     const sn = salonAqui(w.gen, e);
-    if (sn !== S.salon) { S.salon = sn; if (sn) { g.ui.toast('🏛 Salón ' + sn.nombre, 2600); anotarCueva(g, 'nombre'); } }
+    if (sn !== S.salon) { S.salon = sn; if (sn) { const vv = (g.meta.salonesVistos ||= []), kk = sn.gx + ',' + sn.gz; if (!vv.includes(kk) && vv.length < 400) vv.push(kk); g.ui.toast('🏛 Salón ' + sn.nombre, 2600); anotarCueva(g, 'nombre'); } }
     if (S.sala > 0.7 && g.env.cave > 0.8) anotarCueva(g, 'sala');
     if (S.emisores.some((q) => q.tipo === 'gota')) anotarCueva(g, 'goteo');
     if (S.emisores.some((q) => q.tipo === 'agua')) anotarCueva(g, 'agua');

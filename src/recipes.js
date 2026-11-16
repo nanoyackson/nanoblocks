@@ -187,6 +187,7 @@ export const RECIPES = [
   // v12.1.0 C1: lo que se guarda (sal y humo) y la botica de infusiones (todo en el fogón)
   cook(564, 2, [MEAT, MEAT, 562]), // v12.4.1: 2 por 2 (antes 3: daba más comida que la asada y no se pudría)
   cook(563, 1, [MEAT, 561]),
+  cook(1195, 1, [K.glow_mushroom, K.glow_mushroom, 299]), // v13.3.4 (CC1): la sopa de hongo
   cook(565, 1, [361, 562]), cook(565, 1, [362, 562]), cook(565, 1, [363, 562]), cook(565, 1, [364, 562]), // v12.4.1: el guapote también
   ...[1105, 1106, 1107, 1108, 1109, 1110, 1111, 1112].map((id) => cook(565, 1, [id, 562])), // v12.7.0: las especies nuevas, saladas
   cook(566, 3, [290, 429, 297], [289]),
@@ -390,6 +391,10 @@ export const RECIPES = [
   shapeless(1161, 1, [1160, 1160, STICK, 1126]),
   shapeless(1168, 1, [LEATHER, LEATHER, LEATHER, 1163, 1163, 1163, 1163, 1162]),
   shapeless(1167, 1, [IRON, IRON, IRON, IRON, LEATHER, LEATHER, K.torch, K.glass]),
+  // v13.3.4 (CC1): lo que se arma con esquirlas de cristal (cuevacosas.js) y la sopa de hongo
+  shapeless(K.farol_cristal, 1, [1192, 1192, 1192, K.torch]),
+  shapeless(1193, 1, [1192, 1192, 1192, 1192, IRON]),
+  shapeless(1194, 1, [1167, 1192, 1192]),
 ];
 
 // Horno: entrada -> salida, combustible -> segundos que arde

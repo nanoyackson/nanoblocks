@@ -273,4 +273,4 @@ export function tickColada(g, zn) {
 }
 
 export const botasDeCeniza = (g) => { const b = g.inventory.armor && g.inventory.armor[3]; return !!(b && b.id === BOTAS); };
-export const conCasco = (g) => { const h = g.inventory.armor && g.inventory.armor[0]; return !!(h && h.id === CASCO); };
+export const conCasco = (g) => { const h = g.inventory.armor && g.inventory.armor[0]; return !!(h && (h.id === CASCO || h.id === 1194)); }; // v13.3.4: el casco con lente también alumbra

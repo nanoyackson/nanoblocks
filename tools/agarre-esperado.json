@@ -389,5 +389,9 @@
  "sello_comite": "pequeno",
  "pase_caminos": "pequeno",
  "campana_casa": "pequeno",
- "mantilla_zenaida": "pequeno"
+ "mantilla_zenaida": "pequeno",
+ "esquirla_cristal": "pequeno",
+ "cristal_eco": "herramienta",
+ "casco_lente": "pequeno",
+ "sopa_hongo": "recipiente"
 }

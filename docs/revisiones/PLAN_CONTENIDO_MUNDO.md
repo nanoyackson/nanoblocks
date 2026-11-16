@@ -2,6 +2,26 @@
 
 > Los §1-§8 son el plan de cuevas. Los §9-§11 (biomas, criterio de balance para todo y orden revisado) se añadieron después a pedido de Isaac y **mandan** sobre §3 (frecuencia de lugares) y §7 (orden) cuando se contradicen.
 
+## Decisiones de Isaac (15-nov)
+
+**Decididas por Isaac:**
+- **Diamante:** ≈ 4 por trozo, casi todo en vetas hondas y más raro cerca del inicio (§5 y §10.2: 2,5 / 4 / 5 por zona). El oro baja a ≈ 11.
+- **Contenido en tiempo real** (criaturas, recetas, peligros, ambientes): llega **también a los mundos viejos**, sin cambiar el terreno.
+- **Desierto:** se queda como desierto y dunas; se le agregan construcciones y fauna (nada de salinas). El «Oasis con ruina» de §9 y las estructuras mínimas (≥ 3 por 1 000 trozos) siguen, la pregunta 8 queda cerrada.
+- **Dueños de los salones:** uno por mundo, no regresan.
+
+**Por defecto** (no se preguntó; es lo que recomienda el plan):
+- Vender minerales con el tope diario de ganancias (`TOPE_DIA`, §5).
+- El aire se queda en 8 % (`CMS` 0,6).
+- Montaña como **bioma real del 3-4 %** (macizos de roca a h > 100; §9 B1).
+- Para no perderse: **las dos cosas** (Cristal de eco y mapa de cueva; el mapa ya salió en la v13.3.3).
+- Superficie primero.
+
+**Quedan cerradas las preguntas 1, 2, 3, 4, 5, 6, 7, 8 y 9** de §8 y §11 con lo de arriba.
+
+**Estado real (15-nov):** el generador 26 **ya se usó** en la v13.3.3 (CM2: simas, bocas gigantes, hitos, mapa de cueva y tope de fauna; publicado). Por eso los paquetes de §11 pasan a los generadores **27 (superficie)** y **28 (cuevas)**. Donde §2-§7 dicen «generador 26», léase **28**, y donde §10 dice «generador 27», léase **28** (las simas moderadas de §10.1 y el tope de líquido de §10.5 van en el 28).
+
+
 Investigación de solo lectura sobre `master` en la v13.3.2 (generador 25: Red Honda y Salones). Pedido de Isaac: «agregue más contenido en las cuevas», con los cuatro pilares marcados: **1** salones con carácter, **2** lugares para descubrir, **3** criaturas y peligros, **4** minerales y botín (el C2 del `PLAN_CUEVAS.md`, que ahora sí entra). Sin cambios en `src/`. Los números de minerales salen de generar 1 024 trozos en 4 semillas (`scripts_integracion/ores.mjs`, generador 25); los de balance, de `BALANCE_PICAR.md`, `BALANCE_PROGRESION.md`, `precios.js`, `jefes-balance.js` y `MAPA_ECONOMIA.md`. Todo nombre, criatura y aspecto es original y tico.
 
 **Idea central.** El salón ya existe (CM1) pero todos son «una sala vacía». Cada nodo de la Red Honda recibe un **tipo** que sale de `hash3` (y del bioma de arriba y la profundidad), y de ese tipo cuelga todo: decoración, sonido, criaturas, peligro, veta y, en casi la mitad, un **lugar** construido. Así el contenido se reparte solo y encaja con la red de venas que ya está.
@@ -292,26 +312,46 @@ Prueba nueva `tools/revisar-contenido.mjs`, ≥ 6 semillas, ventana de 2 400 × 
 | Primer hallazgo de cada bioma jugable | ≤ 700 bloques en ≥ 5 de 6 semillas |
 | Fronteras con salto > 8 de altura | < 8 % |
 | Estructuras por 1 000 trozos de cada bioma jugable | ≥ 3 (desierto hoy: 0) |
-| Huella: mundos 21-25 idénticos; tiempo de trozo | sin cambio; ≤ 12 ms |
+| Salones con ≥ 60 % de piso seco / lava > 50 % / agua > 50 % | ≥ 90 % / ≤ 1,5 % / ≤ 6 % (§10.5) |
+| Huella: mundos 21-26 idénticos; tiempo de trozo | sin cambio; ≤ 12 ms |
 
 Se extienden `revisar-picar` (bloques nuevos) y `revisar-progresion` (sin bonos nuevos) como en §5.
 
-## 11. Orden revisado (sustituye a §7)
+### 10.5 Salones inundados o de lava (observado en las capturas de CM2)
 
-Dos paquetes de generador para no mezclar riesgos: **superficie** y **cuevas**. Las cuevas leen el bioma, así que la superficie va primero; lo que no necesita generador sale antes para que Isaac vea avances ya.
+**Medido** (`scripts_integracion/piso.mjs`; 4 semillas, 1 166 salones en una ventana de 2 000 × 2 000 bloques; por cada salón se mira el primer bloque no vacío bajo 120 puntos del 70 % central de su elipse). Los generadores 25 y 26 dan **lo mismo** (el 26 solo cambia simas, bocas e hitos). «Piso» = y del fondo del salón (`n.y - ry`).
 
-1. **CB0 · Prueba de densidades** (1 día, sin generador): `revisar-contenido.mjs` con los rangos de §10.4 aplicados a lo que ya existe (fija el punto de partida y avisa si algo se pasa).
-2. **CC1 · Botín, recetas y peligros hondos** (3 días, sin generador).
-3. **CM2 · Hitos, mapa de cueva y tope de fauna por salón** (2 días, sin generador). Las simas y bocas gigantes, ya **moderadas**, esperan al paquete de cuevas.
-4. **BI0 · Identidad de biomas en tiempo real** (3 días, sin generador): recursos-ítem, fauna, recetas, notas y música por bioma (B3); vale en mundos viejos.
-5. **Paquete superficie · generador 26** (7-9 días): B1 reparto, B2 bordes, flora y estructuras típicas de B3, **I9+I10, I3+I4**, I7, I11. Una sola subida; huella de 21-25 idéntica y `revisar-contenido`.
-6. **Paquete cuevas · generador 27** (8-10 días): **CM3 + CC2** (salones por tipo y bioma con B4, vetas y rebalance), **CC3** (lugares con las densidades de §10.2) y **CM2 simas y bocas gigantes moderadas**.
-7. **CC4 · Dueños y peligros hondos** (4 días) y **CC5 · Pulido** (2 días), sin generador.
+| Banda del piso | Salones | Lava en > 50 % del piso | Agua en > 50 % | Lava + agua > 50 % | Lava media / agua media |
+|---|---|---|---|---|---|
+| Media (y 30-44) | 122 | 0 % | 4 % | 4 % | 0,00 / 0,06 |
+| Honda alta (y 20-29) | 520 | 1 % | 13 % | 15 % | 0,04 / 0,16 |
+| **Honda baja (y < 20)** | 524 | **9 %** | **28 %** | **47 %** | 0,18 / 0,29 |
+| Todos | 1 166 | 4 % | 19 % | **28 %** | |
 
-Total ≈ 31-36 días. Alternativa si Isaac quiere cuevas antes que superficie: las cuevas salen como generador 26 (el bioma de arriba se incorpora después como generador 27) y la superficie, al final; es más trabajo duplicado, por eso recomiendo el orden de arriba.
+(No hay salones con piso ≥ 45: los nodos nacen en y 26-46.)
 
-### Preguntas nuevas para Isaac
-6. **Aire.** ¿Se queda en 8 % (salones grandes) o prefiere un poco menos (≈ 7 %, generador nuevo)?
-7. **Montaña.** ¿Cerros (se renombra) o bioma real de 3-4 % con macizos de roca?
-8. **Desierto.** ¿Se queda como desierto y dunas o lo volvemos «salinas» de Guanacaste (más tico)? Hoy es 7 % del mundo y no tiene estructuras.
-9. **Orden.** ¿Superficie primero (generador 26) y cuevas después, o cuevas primero?
+**Causa:** la lava (zonas de 28 bloques, `LAVA_PROB` 0,75, nivel 11-30) y el agua por cuencas (nivel 18-33) se rellenan **sin mirar el salón**: un salón de piso en y 17 con una zona de lava a nivel 28 queda con 11 bloques de lava y el hito en un pilar suelto. **Casi 1 de cada 2 salones hondos queda con más de la mitad del piso inundado**; el 53 % restante es transitable. En total, el 28 % de los salones. Eso no lo pidió Isaac («que no aparezca tan exagerado»).
+
+**Tope propuesto** (generador siguiente, 27; los mundos 25 y 26 no se tocan):
+1. Salón normal (cualquier tipo salvo Caldera y Laguna): **líquido ≤ 25 % del piso** y **lava ≤ 10 %**. Mecanismo: dentro de la elipse del salón el nivel de agua y de lava se recorta a `piso + 2` (charcos y orillas, no lago), con una **banda de 6-8 bloques de piso seco alrededor de los pilares, hitos y lugares**.
+2. **Laguna** (agua) y **Caldera** (lava): líquido hasta **60 %** del piso, siempre con **islas y puentes de roca** que unen el piso seco con el lugar (altar, hito, cofre) y una entrada seca desde la vena.
+3. La **lava grande** (> 30 % del piso) solo en **Caldera con piso < 30** y no más de **3,3 por 1 000 trozos** (es el mismo número de §10.2); ninguna a D < 250.
+4. Bocas gigantes y simas: el fondo del tiro cae sobre piso seco (rampa o repisa de 8 × 8 como mínimo); si el salón de abajo es de lava, la boca no se abre (se elige otro salón) o termina en una repisa a ≥ 3 sobre la lava. *(No lo medí: son pocas bocas; hay que mirarlo con una semilla de las capturas.)*
+5. Las vetas y el botín de §5 nunca quedan bajo lava del salón; el diamante junto a lava es la gracia de la Caldera, no de todos.
+
+**Metas medidas** (se suman a `revisar-contenido`, §10.4): **≥ 90 % de los salones con ≥ 60 % de piso seco**, salones con lava > 50 % del piso **≤ 1,5 %** del total (hoy 4 %) y todos en Caldera; salones con agua > 50 % **≤ 6 %** (hoy 19 %) y todos en Laguna o con piso < 20; **todo hito, lugar y centro de salón sobre piso seco** (ya cumplido para el hito desde la 13.3.3; el pilar del hito de la captura es el síntoma). Costo: 0 ms (se lee el nivel de `nivelLava`/`nivelAgua` una vez por columna con un mínimo contra el piso del salón).
+
+Si Isaac prefiere arreglarlo antes sin generador nuevo: no es posible, porque cambia bloques de trozos nuevos; sí se puede **dejar a los mundos 25 y 26 como están** y tratar el lago de lava del hito como la gracia de ese mundo.
+
+## 11. Orden de trabajo (sustituye a §7; ajustado a las decisiones de Isaac del 15-nov)
+
+Dos paquetes de generador para no mezclar riesgos: **superficie (27)** y **cuevas (28)**. Las cuevas leen el bioma, así que la superficie va primero; lo que no necesita generador sale antes para que Isaac vea avances ya. El generador 26 ya está usado (v13.3.3: CM2 simas, bocas gigantes, hitos, mapa de cueva, tope de fauna).
+
+1. **CB0 · `revisar-contenido`** (1 día, sin generador): la prueba de §10.4 (densidades de salones, simas, lugares, minerales, biomas, §10.5 de piso seco) aplicada a lo que ya existe en 25 y 26; fija el punto de partida y avisa de lo que ya se pasa (diamante 11,9, playa 17 %, desierto sin estructuras, salones inundados 28 %).
+2. **CC1 · Botín, recetas y peligros** (3 días, sin generador): esquirla, guano, brasa, cuerda, farol, Cristal de eco, casco con lente, sopa, abono; fichas de bestiario y logros; aire malo y estalactita que cae sobre lo ya generado. Valen en mundos viejos.
+3. **BI0 · Identidad de biomas en tiempo real** (3 días, sin generador): recursos-ítem, fauna, recetas, notas de libreta y música por bioma (B3); más fauna y construcciones para el desierto (sin salinas) en lo que se pueda sin cambiar terreno. Vale en mundos viejos.
+4. **Paquete superficie · generador 27** (8-10 días): **B1** reparto (playa 17 → 7-9 %, manchas ≥ 40 trozos, **montaña real 3-4 %**), **B2** bordes suaves, **B3** flora y estructuras típicas (Mirador, Muelle, Cairn, **Oasis con ruina y otras construcciones del desierto**, Hacienda), **I9 + I10**, **I3 + I4**, **I7**, I11. Una sola subida; huella de los mundos 21-26 idéntica y `revisar-contenido` en verde.
+5. **Paquete cuevas · generador 28** (9-11 días): **CM3** (salones con carácter por bioma, B4), **CC2** (vetas, diamante ≈ 4 por trozo con 2,5 / 4 / 5 por zona, oro ≈ 11, rebalance, **venta de minerales bajo el tope diario**), **CC3** (lugares con las densidades de §10.2), **simas moderadas** (3-5 por 1 000) y **el tope de lava y agua en los salones de §10.5**. Un solo salto de cuevas; huella 21-27 idéntica.
+6. **CC4 · Dueños y peligros hondos** (4 días; un dueño por mundo, no regresan) y **CC5 · Pulido** (2 días), sin generador; el ambiente y los dueños nuevos también en mundos viejos donde existan los salones (≥ 25).
+
+Total ≈ 30-35 días. Los pasos 1-3 no suben el generador y llegan a todos los mundos.

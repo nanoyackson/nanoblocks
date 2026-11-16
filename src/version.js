@@ -5,15 +5,15 @@ export const GAME_NAME = 'NanoBlocks';
 // v13.1.0: la versión de generador de terreno MÁS NUEVA que este juego sabe hacer (la de los mundos nuevos). Si el anfitrión de una sala manda
 // una mayor, este cliente generaría un terreno distinto al suyo (cuevas flotando): se rechaza la entrada (red/sesion.js).
 export const GEN_MAX = 26; // v13.3.3: 26 = simas, bocas gigantes, hitos (GEN_SIMAS en worldgen2.js) · v13.3.2: 25 = la Red Honda y los Salones (GEN_RED en worldgen2.js) · v13.3.0: 24 = obras integradas al terreno (GEN_INTEGRACION en worldgen2.js) · v13.2.0: 23 = lava más abajo (GEN_PROF en worldgen2.js)
-export const GAME_VERSION = '13.3.3';
+export const GAME_VERSION = '13.3.4';
 // v12.4.6: la versión MÁS VIEJA del juego que puede abrir lo que esta versión guarda. Se sube cuando un mundo guardado trae algo que un
 // juego anterior no entiende y lo rompería: bloques nuevos (ids que el mallador no conoce), un SAVE_FORMAT nuevo o un campo que cambia
 // de forma. Se guarda en meta.minVersion y el menú no abre un mundo cuyo minVersion sea más nuevo que este juego (12.4.0: los bloques 656–662).
-export const MIN_VERSION = '12.16.5'; // 12.16.5: ítems 1190, 1191 y bloque 698 (campana, mantilla y foto del Rey), SAVE_FORMAT 9; 12.16.1: SAVE_FORMAT 8 (meta.reyArena, el diario del Redondel del Rey); 12.15.4: C8-B (bloques 693–695; ítems 1180–1186); 12.15.3: C8-C (bloque 696; ítems 1188, 1189); 12.15.2: C7 (bloques 685, 688–691; ítems 1160–1169); 12.15.1: C6 (bloques 672–684; ítems 1130–1153); 12.6.0: C5-B (bloques 668, 669, 671, 697; ítems 1121, 1124–1126); 12.7.0: C5-A1 (ítems 1100–1112); 12.7.2: C5-A2 (bloque 670; ítems 1113–1120)
+export const MIN_VERSION = '13.3.4'; // 13.3.4: ítems 1192-1195 y bloque 699 (esquirla, eco, lente, sopa y farol de cristal; CC1); 12.16.5: ítems 1190, 1191 y bloque 698 (campana, mantilla y foto del Rey), SAVE_FORMAT 9; 12.16.1: SAVE_FORMAT 8 (meta.reyArena, el diario del Redondel del Rey); 12.15.4: C8-B (bloques 693–695; ítems 1180–1186); 12.15.3: C8-C (bloque 696; ítems 1188, 1189); 12.15.2: C7 (bloques 685, 688–691; ítems 1160–1169); 12.15.1: C6 (bloques 672–684; ítems 1130–1153); 12.6.0: C5-B (bloques 668, 669, 671, 697; ítems 1121, 1124–1126); 12.7.0: C5-A1 (ítems 1100–1112); 12.7.2: C5-A2 (bloque 670; ítems 1113–1120)
 // v12.4.9: los ids que cubre MIN_VERSION. v12.5.1 (undécima revisión): antes solo se miraba el id más alto y un id nuevo por debajo
 // (el 665 de C5, el 1100 de la pesca) pasaba en verde. Ahora es una FIRMA de todos los ids definidos: cuántos bloques, cuántos ítems y
 // un hash de la lista. tools/revisar-version.mjs falla si cambia: al agregar ids, subir MIN_VERSION y copiar la firma nueva que imprime
-export const MIN_IDS = { bloques: 347, items: 391, hash: '126c3544', version: '12.16.5' }; // firma de la 12.16.5 (campana, mantilla y foto del Rey); antes, la 12.15.4 (C8-B); antes, la 12.15.3 (C8-C), la 12.15.2 (C7), la 12.15.1 (C6), la 12.7.2 (C5-A2); v12.6.3: con la versión que la trajo, que tiene que ser MIN_VERSION
+export const MIN_IDS = { bloques: 348, items: 395, hash: 'ba5301c3', version: '13.3.4' }; // firma de la 13.3.4 (CC1: esquirla, eco, lente, sopa y farol de cristal); antes, la 12.16.5 (campana, mantilla y foto del Rey); antes, la 12.15.4 (C8-B); antes, la 12.15.3 (C8-C), la 12.15.2 (C7), la 12.15.1 (C6), la 12.7.2 (C5-A2); v12.6.3: con la versión que la trajo, que tiene que ser MIN_VERSION
 export const SAVE_FORMAT = 10; // 10: la experiencia con la curva nueva del balance de progresión (v13.2.4, se conserva el nivel) · 9: las mañas de jefe y los premios del Rey (meta.manasJefe, meta.reyPremio, v12.16.5) · 8: el diario del Redondel del Rey (meta.reyArena, v12.16.1) · 7: las fichas de otras personas (meta.jugadores) y la época (v12.10.0) · 3: la plata con denominaciones (v11.10.3) · 4: la billetera (v11.10.5) · 5: el chanchito y los topes de paga (v11.10.7) · 6: el tipo de mundo (v11.13.0)
 
 // Recursos de terceros (todos de uso libre).
@@ -26,6 +26,17 @@ export const CREDITS = [
 ];
 
 export const CHANGELOG = [
+  {
+    version: '13.3.4',
+    date: '2026-11-15',
+    title: 'Botin y peligros de las cuevas, y la prueba de contenido',
+    items: [
+      'CB0, la prueba de contenido del mundo (plan de contenido §10.4, tools/revisar-contenido.mjs, ya en npm run revisar): mide con 6 semillas y una ventana de 2 400 x 2 400 las densidades de lo que ya existe en el generador 26: salones, simas y bocas gigantes, diamante, oro y jade por zona (Z1/Z2/Z3), biomas (el mayor, el menor con identidad, playa, manchas, primer hallazgo, fronteras con salto, estructuras por bioma) y el piso seco de 700 salones. Cada regla tiene su rango: si ya se cumple, salirse es falla; si hoy no se cumple va marcada como DEUDA con la version que la arregla (salen con ⚠ y el numero real, sin romper nada). Punto de partida medido: diamante 11,7 por trozo (rango 1,5-6,5), oro 16, playa 17 %, desierto 0,3 estructuras por 1 000 trozos, simas 2,0 y 4 bocas gigantes cerca del inicio, salones con piso seco 64 % (meta 90 %), con lava en mas de la mitad 3,8 % y con agua 19 %. Cuando llegue cada paquete se le quita la marca y pasa a estricta.',
+      'CC1, botin, recetas y peligros de las cuevas EN TIEMPO REAL (src/cuevacosas.js): llega tambien a los mundos viejos, sin generador. Los racimos y bloques de cristal sueltan esquirlas de cristal (1 a 3). Con ellas: farol de cristal (3 esquirlas + antorcha; luz fria que no se apaga y mantiene limpio el aire malo), Cristal de eco (4 esquirlas + hierro; clic derecho bajo tierra marca 20 s en el minimapa los salones y hitos a 120 bloques; 12 usos), casco con lente (casco de espeleologo + 2 esquirlas; la linterna llega mas lejos) y la sopa de hongo (2 hongos brillantes + agua dulce en el fogon: comida 7 y vista nocturna 2 minutos). El minimapa de cueva ahora muestra solo lo visitado o a 40 bloques; el eco muestra todo a 120.',
+      'Peligros (los decide el anfitrion o quien juega solo; apagados en creativo y en pacifico; ninguno mata de un golpe): el AIRE MALO (bolsas de 20 x 12 x 20 por semilla, ~7 % de las celdas bajo y 46; a los 6 s sin proteccion quita 1 y nunca mas de 1 cada 10 s; se cura picando un hueco para ventilar 2 minutos, con la mascarilla en la mochila, con un farol de cristal en la mano o saliendo) y la ESTALACTITA QUE CAE (el ruido de picar puede soltar una cercana: sombra y polvo 1,2 s antes y 3 de daño solo si se sigue debajo). Logros nuevos: Ventile una bolsa de aire malo, una estalactita fallo, Cristal de eco y Sopa de hongo; lineas nuevas en la libreta.',
+      'Pendiente de CC1 y por que: la cuerda de espeleologo y la brasa viva quedan para CC4 (la brasa la suelta el Culebron de brasa, que llega con los duenos; la cuerda pide un bloque trepable nuevo); el guano y su abono ya existian (los murcielagos sueltan guano que abona), no se duplico. Pruebas nuevas en npm run revisar: revisar-contenido.mjs y revisar-cuevacosas.mjs (juego de mentira: recetas, bolsas por semilla, el aire malo a los 6 s y 1 por 10 s, la estalactita con aviso y 3 de daño, el invitado que no la decide, esquirlas y eco).',
+    ],
+  },
   {
     version: '13.3.3',
     date: '2026-11-15',

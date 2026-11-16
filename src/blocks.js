@@ -306,6 +306,7 @@ const defs = [
   { id: 681, key: 'jarron_chorotega', name: 'Jarrón chorotega', tex: 'clay', render: 'shape', boxes: [[4, 0, 4, 12, 10, 12], [6, 10, 6, 10, 14, 10]], hardness: 0.6, sound: 'stone' },
   { id: 682, key: 'puerta_tallada', name: 'Puerta tallada (adorno de pared; da comodidad)', tex: 'planks', render: 'shape', boxes: [[0, 0, 7, 16, 16, 9]], hardness: 1.5, tool: 'axe', sound: 'wood' },
   { id: 683, key: 'verja_forjada', name: 'Verja forjada', tex: 'verja', render: 'cutout', hardness: 2.5, tool: 'pickaxe', sound: 'glass' },
+  { id: 699, key: 'farol_cristal', name: 'Farol de cristal (luz fría que no se apaga y mantiene limpio el aire malo)', tex: { top: 'farol_top', side: 'farol', bottom: 'farol_top' }, render: 'shape', solid: false, glow: true, boxes: [[6, 0, 6, 10, 10, 10], [5, 10, 5, 11, 14, 11]], hardness: 0.8, tool: 'pickaxe', sound: 'glass' }, // v13.3.4 (CC1)
   { id: 684, key: 'farol_forjado', name: 'Farol forjado (luz de plaza)', tex: { top: 'farol_top', side: 'farol', bottom: 'farol_top' }, render: 'shape', solid: false, glow: true, boxes: [[7, 0, 7, 9, 12, 9], [5, 12, 5, 11, 16, 11]], hardness: 1, tool: 'pickaxe', sound: 'glass' },
   // v12.15.2 (C7 «Fuego de la tierra»): tubos de lava, fumarolas y aguas termales (el observatorio, la ceniza y la erupción quedan para otra vuelta)
   { id: 685, key: 'fumarola', name: 'Fumarola (vapor y gas: con la mascarilla se pica y suelta cristales de azufre)', tex: 'fumarola', hardness: 1.5, tool: 'pickaxe', sound: 'stone', drop: 1162 },
@@ -754,6 +755,10 @@ const simpleItems = [
   // v12.16.5 (fase 7 del final): los únicos del Rey. La campana (clic derecho en el patio: llama a la mesa) y la mantilla (el epílogo); la foto es un bloque (698)
   { id: 1190, key: 'campana_casa', name: 'Campana de la casa (clic derecho en el patio: llama a la gente a la mesa)', stack: 1 },
   { id: 1191, key: 'mantilla_zenaida', name: 'Mantilla de Zenaida (en el bolso: recibe 5 % menos de daño)', stack: 1 },
+  // v13.3.4 (CC1, cuevacosas.js): el botín de las cuevas (arte provisional con íconos teñidos)
+  { id: 1192, key: 'esquirla_cristal', name: 'Esquirla de cristal (salta de los racimos: farol, eco y lente)', icono: 'azufre', tinte: '#8fe0ff' },
+  { id: 1193, key: 'cristal_eco', name: 'Cristal de eco (clic derecho bajo tierra: marca salones y hitos cercanos 20 s; 12 usos)', icono: 'azufre', tinte: '#c9a8ff', stack: 1, dur: 12 },
+  { id: 1195, key: 'sopa_hongo', name: 'Sopa de hongo (comida buena y vista nocturna 2 minutos)', icono: 'caldo_hongo', tinte: '#e8c888', food: 7, sip: true },
   { id: 1187, icono: 'libro_recetas', tinte: '#7a5030', key: 'libro_encargos', name: 'Libro de encargos (clic derecho: los que lleva)', stack: 1 }, // v12.4.12 (C8-A): el primer ítem del rango EXT_ITEM
   { id: 578, key: 'plano_bahareque', name: 'Plano: casa de bahareque con corredor', stack: 1 }, // v12.4.7 (C4)
   { id: 448, key: 'pan_casero', name: 'Pan casero de la abuela', food: 9 },
@@ -884,6 +889,7 @@ for (const [id, key, name, mat, block, dur, color] of [[560, 'escudo_concha', 'E
   ITEMS[id] = { id, key, name, isBlock: false, stack: 1, armor: 'offhand', armorSlot: 4, points: 0, toughness: 0, durability: dur, block, mat, color };
 }
 // el sombrero de la Tulevieja: casco con un poquito de protección y mucho estilo
+ITEMS[1194] = { id: 1194, key: 'casco_lente', name: 'Casco con lente (la linterna llega más lejos bajo tierra)', isBlock: false, stack: 1, armor: 'head', armorSlot: 0, points: 2, toughness: 0, durability: 300, mat: 'iron', color: '#6cc8e8' }; // v13.3.4 (CC1)
 ITEMS[1167] = { id: 1167, key: 'casco_minero', name: 'Casco de espeleólogo (con linterna propia: alumbra las cuevas)', isBlock: false, stack: 1, armor: 'head', armorSlot: 0, points: 2, toughness: 0, durability: 300, mat: 'iron', color: '#c89a30' };
 ITEMS[1168] = { id: 1168, key: 'botas_ceniza', name: 'Botas de ceniza (lava y fuego a la mitad; no queman en ceniza caliente)', isBlock: false, stack: 1, armor: 'feet', armorSlot: 3, points: 1, toughness: 0, durability: 400, mat: 'leather', color: '#6a6660' };
 ITEMS[504] = { id: 504, key: 'delantal_zenaida', name: 'Delantal de Zenaida', isBlock: false, stack: 1, armor: 'chest', armorSlot: 1, points: 6, toughness: 2, durability: 700, mat: 'leather', color: '#e8dcc0' };
@@ -956,7 +962,7 @@ export const esCana = (id) => !!(ITEMS[id] && ITEMS[id].rod);
 // fogatas, lava, el horno y la cocina encendidos. v12.8.6: también el hongo de fuego, el corazón de Tiquicia, los portales y la jarra
 // de morfos. «glow» es otra cosa: la bandera del motor de luz de vóxeles (todos esos bloques alumbran el mapa); los de SIN_RESPLANDOR
 // alumbran pero no resplandecen. tools/revisar-luces.mjs exige que cada bloque con glow esté en una de las dos listas.
-export const LUCES = new Set(['lamp', 'quartz_lamp', 'furnace_lit', 'stove', 'torch', 'wall_torch0', 'wall_torch1', 'wall_torch2', 'wall_torch3', 'lava', 'lava_flow1', 'lava_flow2', 'lava_flow3', 'lava_fall', 'magma', 'farol', 'farol_zenaida', 'fogata', 'fogata_brasas', 'farol_forjado', 'hongo_fuego', 'corazon_tiquicia', 'portal', 'portal_cielo', 'morpho_jar']);
+export const LUCES = new Set(['lamp', 'quartz_lamp', 'furnace_lit', 'stove', 'torch', 'wall_torch0', 'wall_torch1', 'wall_torch2', 'wall_torch3', 'lava', 'lava_flow1', 'lava_flow2', 'lava_flow3', 'lava_fall', 'magma', 'farol', 'farol_zenaida', 'fogata', 'fogata_brasas', 'farol_forjado', 'farol_cristal', 'hongo_fuego', 'corazon_tiquicia', 'portal', 'portal_cielo', 'morpho_jar']);
 export const SIN_RESPLANDOR = new Set(['glow_mushroom', 'quartz_block', 'coral_purple', 'cristal', 'cristal_bloque', 'meteorito', 'oro_volcanico', 'tele_on']);
 for (const b of BLOCKS) if (b && LUCES.has(b.key)) b.luz = true;
 // v12.8.6 (decimoctava revisión, punto 2): el aAnim del mallador. El emisor del bloom SUMA 8 a la animación del bloque (el farol y la

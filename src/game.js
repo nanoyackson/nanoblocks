@@ -242,6 +242,7 @@ import { usarMapa, mapaDelCoco, cavarTesoro, usarCareta, perlaDe, MAPA, CARETA }
 import { quizaSangra, usarCura, CURAS, tickHeridas, durmio, siestita } from './supervivencia3.js';
 import { cuadroProfundidad, brilloProf, nieblaProf } from './profundidad.js';
 import { tickFuego, usarFuego, tickColada, conCasco } from './fuego.js';
+import { tickCuevaCosas, alPicarCueva, usarCuevaCosas, alComerCuevaCosa, bonoLuzCueva } from './cuevacosas.js'; // v13.3.4 (CC1)
 import { tickComite, alCambiarBloqueComite } from './comite.js';
 import { tickPatronal, usarPatronal } from './patronal.js';
 import { RANGO, disparar, tieneMunicion, tickArmas, limpiarArmas, NOMBRES_MINI } from './armas2.js';
@@ -866,6 +867,7 @@ export class Game {
       const held = this.herramientaEnMano();
       cavarTesoro(this, t);
       quizaDerrumbe(this, t, b);
+      alPicarCueva(this, b, t.x, t.y, t.z); // v13.3.4: esquirlas, ventilar y la estalactita
       quizaAvispero(this, b, t.x, t.y, t.z);
       perlaDe(this, b, t.x, t.y, t.z);
       if (this.canHarvest(id)) {
@@ -1145,6 +1147,7 @@ export class Game {
     // v12.15.4 (C8-B): tambor, trompeta y vela de la novena
     if (held && (held.id === 1180 || held.id === 1181 || held.id === 1186) && usarPatronal(this, held)) { this.useCd = 0.45; this.tocar(); return; }
     // v12.15.2 (C7): el pase de los termales y el huevo en la poza
+    if (held && held.id === 1193 && usarCuevaCosas(this, held)) { this.useCd = 0.5; this.tocar(); return; } // v13.3.4: el Cristal de eco
     if (held && (held.id === 1169 || held.id === 287) && usarFuego(this, held)) { this.useCd = 0.5; this.tocar(); return; }
     // pluma dorada: caída lenta
     if (held && held.id === 388) {
@@ -2829,7 +2832,7 @@ export class Game {
     if (!this.paused) this.tickDiscover(dt);
     if (!this.paused) this.dimT = (this.dimT || 0) + dt;
     if (!this.paused) { this.tickGolpePropio(dt); tickCombat(this, dt); tickAturde(this, dt); tickTemblor(this, dt); tickParapente(this, dt); tickSurf(this, dt); tickVelas(this, dt); tickSacos(this, dt); }
-    if (!this.paused) { this.ambientParticles(dt); this.tickEffects(dt); tickFuego(this, dt); this.clock = (this.clock || 0) + dt; this.nestT = (this.nestT || 0) - dt; if (this.nestT <= 0) { this.nestT = 1; tickNests(this); } }
+    if (!this.paused) { this.ambientParticles(dt); this.tickEffects(dt); tickFuego(this, dt); tickCuevaCosas(this, dt); this.clock = (this.clock || 0) + dt; this.nestT = (this.nestT || 0) - dt; if (this.nestT <= 0) { this.nestT = 1; tickNests(this); } }
 
     // autoguardado cada 30 s
     if (performance.now() - this.lastSave > 30000) this.save().then(() => this.ui.guardado());
@@ -3087,6 +3090,7 @@ export class Game {
       if (skillLv(this, 'cocina') >= 10) this.player.health = Math.min(this.player.maxHealth, this.player.health + 4);
       if (AGUA[e.id]) beber(this, AGUA[e.id]);
       alComer(this, e.id);
+      alComerCuevaCosa(this, e.id); // v13.3.4: la sopa de hongo
       comerPlato(this, e.id);
       comidaFuerza(this, e.id); // la comida buena sube la vida y el aguante máximos un rato (fuerza.js)
       // la carne y el pescado crudos pueden caer mal
@@ -3294,7 +3298,7 @@ export class Game {
     } else if (this.tripOn) { cv.style.filter = ''; cv.style.transform = ''; this.tripOn = false; this.tripT = 0; this.brilloFilter = null; }
     // el «ojo» de las pociones todavía aclara la imagen entera
     cuadroProfundidad(this, dt); // v13.2.0: menos luz conforme se baja (uniforme del shader) y el aviso de lava
-    BRILLO.value = brilloProf(luzDeAjuste(this.settings.luz), !!(this.env && this.env.cave > 0.6 && conCasco(this)), this.profK || 0); // v13.2.0: el deslizador no lava lo hondo y el casco sube con la hondura // v12.15.2 (C7): la linterna del casco de espeleólogo // v11.11.0: el brillo va en la luz del mundo (brillo.js), ya no en un filtro
+    BRILLO.value = brilloProf(luzDeAjuste(this.settings.luz), !!(this.env && this.env.cave > 0.6 && (conCasco(this) || this.player.effects.vista_noche > 0)), this.profK || 0) + (this.env && this.env.cave > 0.6 ? bonoLuzCueva(this) : 0); // v13.2.0: el deslizador no lava lo hondo y el casco sube con la hondura // v12.15.2 (C7): la linterna del casco de espeleólogo // v11.11.0: el brillo va en la luz del mundo (brillo.js), ya no en un filtro
     if (!this.tripOn) { const bri = this.ojoBrillo || 0, want = (bri > 0.01 ? `brightness(${(1 + bri * 0.6).toFixed(2)}) contrast(${(1 - bri * 0.08).toFixed(2)})` : '') + (this.cansaBlur ? ` blur(${this.cansaBlur.toFixed(2)}px)` : '') + (this.fotoFiltro ? ` ${this.fotoFiltro}` : '') + filtroMuerte(this); if (this.brilloFilter !== want) { this.brilloFilter = want; cv.style.filter = want; } }
     // la cámara se inclina con la avioneta y el parapente en las curvas, y se mece sobre la tabla de surf
     const av = this.riding && this.riding.type === 'avioneta' ? this.riding.data : null;
