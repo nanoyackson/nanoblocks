@@ -161,6 +161,8 @@ export class Body {
         v.x += this.flow.x * 7 * dt; v.z += this.flow.z * 7 * dt;
         if (this.flow.y < 0) v.y -= 6 * dt;
         if (this.inLava) { v.x *= Math.pow(0.05, dt); v.z *= Math.pow(0.05, dt); }
+      } else if (this.enCuerda) { // v13.4.3 (CC4): colgado de una cuerda; sube y baja lo manda el jugador, no cae
+        v.y *= Math.pow(0.002, dt); v.x *= Math.pow(0.02, dt); v.z *= Math.pow(0.02, dt);
       } else if (this.inWeb) {
         v.y = Math.max(v.y - this.gravity * dt * 0.05, -0.6);
         v.x *= Math.pow(0.001, dt); v.z *= Math.pow(0.001, dt);

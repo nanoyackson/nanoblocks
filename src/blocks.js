@@ -306,6 +306,7 @@ const defs = [
   { id: 681, key: 'jarron_chorotega', name: 'Jarrón chorotega', tex: 'clay', render: 'shape', boxes: [[4, 0, 4, 12, 10, 12], [6, 10, 6, 10, 14, 10]], hardness: 0.6, sound: 'stone' },
   { id: 682, key: 'puerta_tallada', name: 'Puerta tallada (adorno de pared; da comodidad)', tex: 'planks', render: 'shape', boxes: [[0, 0, 7, 16, 16, 9]], hardness: 1.5, tool: 'axe', sound: 'wood' },
   { id: 683, key: 'verja_forjada', name: 'Verja forjada', tex: 'verja', render: 'cutout', hardness: 2.5, tool: 'pickaxe', sound: 'glass' },
+  { id: 700, key: 'cuerda', name: 'Cuerda de espeleólogo (se cuelga en vertical: salte para subir, agáchese para bajar)', tex: 'vine', render: 'cross', solid: false, hardness: 0.2, sound: 'leaves', climb: true },
   { id: 699, key: 'farol_cristal', name: 'Farol de cristal (luz fría que no se apaga y mantiene limpio el aire malo)', tex: { top: 'farol_top', side: 'farol', bottom: 'farol_top' }, render: 'shape', solid: false, glow: true, boxes: [[6, 0, 6, 10, 10, 10], [5, 10, 5, 11, 14, 11]], hardness: 0.8, tool: 'pickaxe', sound: 'glass' }, // v13.3.4 (CC1)
   { id: 684, key: 'farol_forjado', name: 'Farol forjado (luz de plaza)', tex: { top: 'farol_top', side: 'farol', bottom: 'farol_top' }, render: 'shape', solid: false, glow: true, boxes: [[7, 0, 7, 9, 12, 9], [5, 12, 5, 11, 16, 11]], hardness: 1, tool: 'pickaxe', sound: 'glass' },
   // v12.15.2 (C7 «Fuego de la tierra»): tubos de lava, fumarolas y aguas termales (el observatorio, la ceniza y la erupción quedan para otra vuelta)
@@ -758,6 +759,7 @@ const simpleItems = [
   // v13.3.4 (CC1, cuevacosas.js): el botín de las cuevas (arte provisional con íconos teñidos)
   { id: 1192, key: 'esquirla_cristal', name: 'Esquirla de cristal (salta de los racimos: farol, eco y lente)', icono: 'azufre', tinte: '#8fe0ff' },
   { id: 1193, key: 'cristal_eco', name: 'Cristal de eco (clic derecho bajo tierra: marca salones y hitos cercanos 20 s; 12 usos)', icono: 'azufre', tinte: '#c9a8ff', stack: 1, dur: 12 },
+  { id: 1200, key: 'brasa_viva', name: 'Brasa viva (del Guardián de la Colada: en el horno quema 8 ítems)', icono: 'brick', tinte: '#ff6a20' },
   { id: 1195, key: 'sopa_hongo', name: 'Sopa de hongo (comida buena y vista nocturna 2 minutos)', icono: 'caldo_hongo', tinte: '#e8c888', food: 7, sip: true },
   // v13.3.5 (BI0, identidad.js): lo propio de cada bioma (arte provisional con íconos teñidos)
   { id: 1196, key: 'orquidea', name: 'Orquídea de neblina (del bosque nuboso: con agua, un té que calma)', icono: 'coffee_cherry', tinte: '#c070e8' },

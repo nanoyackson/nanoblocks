@@ -242,6 +242,7 @@ import { usarMapa, mapaDelCoco, cavarTesoro, usarCareta, perlaDe, MAPA, CARETA }
 import { quizaSangra, usarCura, CURAS, tickHeridas, durmio, siestita } from './supervivencia3.js';
 import { cuadroProfundidad, brilloProf, nieblaProf } from './profundidad.js';
 import { tickFuego, usarFuego, tickColada, conCasco } from './fuego.js';
+import { tickDuenos, NOMBRES_DUENO } from './duenos.js';
 import { alPicarBioma, tickIdentidad, alComerIdentidad } from './identidad.js'; // v13.3.5 (BI0)
 import { tickCuevaCosas, alPicarCueva, usarCuevaCosas, alComerCuevaCosa, bonoLuzCueva } from './cuevacosas.js'; // v13.3.4 (CC1)
 import { tickComite, alCambiarBloqueComite } from './comite.js';
@@ -1554,6 +1555,7 @@ export class Game {
       if (names[m.type]) this.achieve(`vencer_${m.type}`, names[m.type]);
       if (m.type === 'rey_murcielago') { (this.meta.reyVencido = this.meta.reyVencido || {})[m.data.zona] = true; this.achieve('vencer_rey_murcielago', 'Vencí al Murciélago Rey'); this.addXP(60); this.ui.toast('🦇 ¡El Murciélago Rey cayó! La caverna quedó en paz', 3200); }
       if (NOMBRES_MINI[m.type]) { this.achieve(`vencer_${m.type}`, NOMBRES_MINI[m.type]); this.addXP(40); this.ui.toast(`🏆 ¡${m.kind.name} cayó! Su trofeo sirve para el machete de doble filo`, 3200); }
+      if (NOMBRES_DUENO[m.type]) { this.achieve(`vencer_${m.type}`, NOMBRES_DUENO[m.type]); this.addXP(45); (this.meta.duenosVencidos = this.meta.duenosVencidos || {})[m.data.salon] = true; this.ui.toast(`🏆 ¡${m.kind.name} cayó! El salón queda en paz`, 3200); }
       if (m.type === 'guardian_colada') (this.meta.coladaVencida = this.meta.coladaVencida || {})[m.data.zona] = true;
       if (Object.keys(NOMBRES_MINI).filter((k) => k !== 'guardian_colada').every((k) => this.achievements.has(`vencer_${k}`))) this.achieve('mini_jefes', 'Mandamás del monte');
     }
@@ -2072,6 +2074,7 @@ export class Game {
     this.zoneT = (this.zoneT || 0) - dt;
     if (this.zoneT > 0 || this.dim !== 'tierra') return;
     this.zoneT = 1;
+    tickDuenos(this); // v13.4.3 (CC4): los dueños de los salones los despierta el anfitrión (cada segundo)
     const p = this.player.body.pos;
     this.zoneState = this.zoneState || {};
     this.envVolcan = 0;

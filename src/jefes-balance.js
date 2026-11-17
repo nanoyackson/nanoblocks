@@ -11,6 +11,10 @@ export const JEFES_BALANCE = {
     alias: ['cocodrilo'] },
   jaguar_viejo: { vida: 105, dano: 1.45 },
   guardian_colada: { vida: 150, dano: 1, alias: ['Guardián'] }, // v12.15.2 (C7): 150 de vida y 8 de golpe del diseño; sin recalibrar con bot-pelea (pendiente)
+  // v13.4.3 (CC4): los dueños de los salones; vida y daño del plan (§4), calibrados con las vueltas de `tools/revisar-duenos.mjs` (sin duelo con el bot todavía)
+  centinela_cristal: { vida: 95, dano: 1.1, alias: ['Centinela'] },
+  madre_esporal: { vida: 85, dano: 0.8, alias: ['Madre Esporal'] },
+  reina_agujas: { vida: 110, dano: 1.2, alias: ['Reina de las Agujas'] },
   llorona: { vida: 50, dano: 3 },
   segua: { vida: 70, dano: 2.95 },
   mona: { vida: 135, dano: 1.65 },

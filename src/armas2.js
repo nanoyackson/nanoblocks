@@ -228,7 +228,7 @@ export const MINIJEFES = {
 
 // v12.15.2 (C7): el Guardián de la Colada, un lagarto de fuego en la cámara del magma de los tubos de lava (no sale solo: lo despierta fuego.js)
 MINIJEFES.guardian_colada = grande(FAUNA.iguana, 6, {
-  name: 'El Guardián de la Colada', health: 150, speed: 3, hostile: true, drops: [[1160, 4, 4], [1162, 2, 2]], tono: 0.55,
+  name: 'El Guardián de la Colada', health: 150, speed: 3, hostile: true, drops: [[1160, 4, 4], [1162, 2, 2], [1200, 1, 2]], tono: 0.55,
   brain(m, dt, c) {
     const { g, distP, dxp, dzp, pl } = c;
     m.data.angry = distP < 30 && g.player.alive && g.mode === 'survival';

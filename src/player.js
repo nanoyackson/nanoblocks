@@ -2,7 +2,7 @@
 import { quizaQuebrar } from './mina.js';
 import { ventaja, mana } from './progreso.js';
 import { Body } from './physics.js';
-import { BLOCKS } from './blocks.js';
+import { BLOCKS, BLOCK_BY_KEY } from './blocks.js';
 import { difOf } from './supervivencia.js';
 import { mult, lv as skillLv } from './habilidades.js';
 import { caidaPendiente } from './cuerpo.js';
@@ -143,6 +143,9 @@ export class Player {
       this.swimT = (this.swimT || 0) - dt;
       if (this.swimT <= 0) { this.swimT = 0.75; game.audio.play('swim', { vol: 0.3, pos: { x: b.pos.x, y: b.pos.y + 1, z: b.pos.z } }); }
     }
+    // v13.4.3 (CC4): la cuerda de espeleólogo se trepa: salto sube, agacharse baja, y quieto se sostiene
+    b.enCuerda = !this.flying && !b.inWater && (game.world.getBlock(Math.floor(b.pos.x), Math.floor(b.pos.y + 0.4), Math.floor(b.pos.z)) === BLOCK_BY_KEY.cuerda || game.world.getBlock(Math.floor(b.pos.x), Math.floor(b.pos.y + 1.2), Math.floor(b.pos.z)) === BLOCK_BY_KEY.cuerda);
+    if (b.enCuerda) v.y = input.jump ? 3.2 : input.sneak ? -3.2 : 0;
     const wasAir = !b.onGround, wasWater = b.inWater;
     const vyBefore = v.y;
     const res = b.step(game.world, dt, { flying: this.flying, sneak: this.sneaking });

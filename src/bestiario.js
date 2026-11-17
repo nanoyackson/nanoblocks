@@ -34,6 +34,7 @@ const DESC = {
   loro: 'Loro de frente roja: con semillas se vuelve su amigo, va en el hombro y repite frases.',
   sirena: 'Canta de noche en los ríos y encanta: agáchese para resistir. Con una flor se va contenta.',
   zancudo: 'Pica al anochecer cerca del agua. El repelente los aleja.', jaguar_viejo: 'Mini-jefe: un jaguar enorme y lleno de cicatrices.',
+  centinela_cristal: 'Dueño de un Candil: de cristal e invulnerable mientras cuatro racimos lo alimentan. Rómpalos primero.', madre_esporal: 'Dueña de una Hongueada: suelta nubes de esporas que frenan y ahogan.', reina_agujas: 'Dueña de las Agujas: tiende telarañas y hace caer estalactitas.',
   cocodrilo_gigante: 'Mini-jefe: el famoso cocodrilo del Tárcoles.', terciopelo_reina: 'Mini-jefe: escupe veneno y llama a sus crías.',
   sombra_brincona: 'Se agacha con los ojos encendidos y brinca encima. Si falla, queda aturdida: ahí se le pega.',
   saino: 'Chancho de monte con collar claro. En manada; castañetean los dientes antes de cargar.', cuche_monte: 'El macho viejo que manda a los saínos. Su colmillo deja sangrando.',

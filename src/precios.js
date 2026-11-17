@@ -26,7 +26,7 @@ export const PREMIO_BAJA = {
   // élites (T2): ₡500–1 000
   sombra_grande: [1, 2], toro_guaco: [1, 2],
   // minijefes (T3): ₡3 500–4 500 el primero del día, el 10 % los demás
-  terciopelo_reina: [7, 9], jaguar_viejo: [7, 9], cocodrilo_gigante: [7, 9], guardian_colada: [8, 10],
+  terciopelo_reina: [7, 9], jaguar_viejo: [7, 9], cocodrilo_gigante: [7, 9], guardian_colada: [8, 10], centinela_cristal: [7, 9], madre_esporal: [7, 9], reina_agujas: [7, 9], // v13.4.3 (CC4): los dueños de los salones
   // leyendas (T4): ₡2 000–4 000 la primera del día, el 10 % las demás
   cadejos: [4, 6], segua: [4, 6], llorona: [4, 6], mona: [4, 6], viejo_monte: [5, 7], tulevieja: [6, 8], mono_congo_gigante: [6, 8],
   // jefes del monte (T5): ₡20 000–35 000, una sola vez por mundo (después, el 10 %)
@@ -36,7 +36,7 @@ export const PREMIO_BAJA = {
 };
 const JEFE = new Set(['reina_bananera', 'cascabel_rey', 'escarabajo_hercules', 'sapo_tata', 'cangrejo_rey', 'ciempies_rey', 'rey_murcielago', 'senor_arenal', 'arpia', 'jefa_ventanilla', 'el_olvido', 'sombra_madre', 'rey_zopilote']);
 
-export const MINIJEFE = new Set(['terciopelo_reina', 'jaguar_viejo', 'cocodrilo_gigante', 'guardian_colada']);
+export const MINIJEFE = new Set(['terciopelo_reina', 'jaguar_viejo', 'cocodrilo_gigante', 'guardian_colada', 'centinela_cristal', 'madre_esporal', 'reina_agujas']);
 export const LEYENDA = new Set(['cadejos', 'segua', 'llorona', 'mona', 'viejo_monte', 'tulevieja', 'mono_congo_gigante']);
 export const REPITE = 0.1; // lo que paga un jefe ya cobrado, o la segunda leyenda o el segundo minijefe del mismo día
 // lo que paga una baja (0 si no paga) y si fue la paga completa (v11.10.6, contra «cultivar» jefes):

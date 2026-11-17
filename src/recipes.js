@@ -394,6 +394,7 @@ export const RECIPES = [
   shapeless(1167, 1, [IRON, IRON, IRON, IRON, LEATHER, LEATHER, K.torch, K.glass]),
   // v13.3.4 (CC1): lo que se arma con esquirlas de cristal (cuevacosas.js) y la sopa de hongo
   shapeless(K.farol_cristal, 1, [1192, 1192, 1192, K.torch]),
+  shapeless(K.cuerda, 6, [1126, 1126, 1126]), // v13.4.3 (CC4): tres cabuyas, seis cuerdas
   shapeless(1193, 1, [1192, 1192, 1192, 1192, IRON]),
   shapeless(1194, 1, [1167, 1192, 1192]),
 ];
@@ -404,7 +405,7 @@ export const SMELT = {
   [K.clay]: BRICK, [MEAT]: COOKED, [K.log]: COAL, [K.birch_log]: COAL, [K.jungle_log]: COAL,
   [287]: 288, [275]: 356, [K.oro_volcanico]: GOLD, [K.ceniza]: K.glass, [361]: 365, [362]: 365, [363]: 365, [364]: 365, [1105]: 365, [1106]: 365, [1107]: 365, [1108]: 365, [1109]: 365, [1110]: 365, [1111]: 365, [1112]: 365, [294]: 295, [K.deep_iron_ore]: IRON, [K.deep_gold_ore]: GOLD, [K.deep_rock]: K.smooth_stone, [K.stone]: K.smooth_stone,
 };
-export const FUEL = { [291]: 80, [COAL]: 40, [K.log]: 8, [K.birch_log]: 8, [K.planks]: 8, [STICK]: 2.5, [K.table]: 8, [K.bookshelf]: 8, [K.chest]: 8 };
+export const FUEL = { [291]: 80, [COAL]: 40, [K.log]: 8, [K.birch_log]: 8, [K.planks]: 8, [STICK]: 2.5, [K.table]: 8, [K.bookshelf]: 8, [K.chest]: 8, [1200]: 80 }; // v13.4.3: la brasa viva quema 8 ítems
 export const COOK_TIME = 5; // segundos por ítem
 
 // Recorta la cuadrícula a su caja mínima: devuelve filas de ids (0 = vacío)
