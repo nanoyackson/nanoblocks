@@ -4,8 +4,8 @@
 export const GAME_NAME = 'NanoBlocks';
 // v13.1.0: la versión de generador de terreno MÁS NUEVA que este juego sabe hacer (la de los mundos nuevos). Si el anfitrión de una sala manda
 // una mayor, este cliente generaría un terreno distinto al suyo (cuevas flotando): se rechaza la entrada (red/sesion.js).
-export const GEN_MAX = 30; // v13.5.0: 30 = pueblos en sitio llano sin río y calles con perfil suave y media losa (GEN_PUEBLOS en worldgen2.js) · v13.4.2: 29 = caminos guiados con talud, taludes de obras y lugares típicos por bioma (GEN_RUTAS en worldgen2.js) · v13.4.1: 28 = carácter de los salones, minerales por zona, lugares de cueva (GEN_CARACTER en worldgen2.js) · v13.4.0: 27 = reparto de biomas, bordes suaves, montaña real y construcciones del desierto (GEN_SUPERFICIE en worldgen2.js) · v13.3.3: 26 = simas, bocas gigantes, hitos (GEN_SIMAS en worldgen2.js) · v13.3.2: 25 = la Red Honda y los Salones (GEN_RED en worldgen2.js) · v13.3.0: 24 = obras integradas al terreno (GEN_INTEGRACION en worldgen2.js) · v13.2.0: 23 = lava más abajo (GEN_PROF en worldgen2.js)
-export const GAME_VERSION = '13.5.0';
+export const GEN_MAX = 31; // v13.5.1: 31 = caminos con zigzag, túnel y rodeo de lo ajeno, y flora propia de los lugares típicos (GEN_CAMINOS en worldgen2.js) · v13.5.0 (b): v13.5.0: 30 = pueblos en sitio llano sin río y calles con perfil suave y media losa (GEN_PUEBLOS en worldgen2.js) · v13.4.2: 29 = caminos guiados con talud, taludes de obras y lugares típicos por bioma (GEN_RUTAS en worldgen2.js) · v13.4.1: 28 = carácter de los salones, minerales por zona, lugares de cueva (GEN_CARACTER en worldgen2.js) · v13.4.0: 27 = reparto de biomas, bordes suaves, montaña real y construcciones del desierto (GEN_SUPERFICIE en worldgen2.js) · v13.3.3: 26 = simas, bocas gigantes, hitos (GEN_SIMAS en worldgen2.js) · v13.3.2: 25 = la Red Honda y los Salones (GEN_RED en worldgen2.js) · v13.3.0: 24 = obras integradas al terreno (GEN_INTEGRACION en worldgen2.js) · v13.2.0: 23 = lava más abajo (GEN_PROF en worldgen2.js)
+export const GAME_VERSION = '13.5.2';
 // v12.4.6: la versión MÁS VIEJA del juego que puede abrir lo que esta versión guarda. Se sube cuando un mundo guardado trae algo que un
 // juego anterior no entiende y lo rompería: bloques nuevos (ids que el mallador no conoce), un SAVE_FORMAT nuevo o un campo que cambia
 // de forma. Se guarda en meta.minVersion y el menú no abre un mundo cuyo minVersion sea más nuevo que este juego (12.4.0: los bloques 656–662).
@@ -26,6 +26,27 @@ export const CREDITS = [
 ];
 
 export const CHANGELOG = [
+  {
+    version: '13.5.2',
+    date: '2026-11-17',
+    title: 'Rendimiento: volcanes y cerros por celda y obras solo cerca de un pueblo',
+    items: [
+      'Rendimiento, sin generador nuevo y sin cambiar ningún bloque (mundos de cualquier versión salen idénticos). Basado en la investigación `docs/revisiones/COSTO_TRAMOS.md`: casi todo el costo de `roadsNear` era buscar los lugares con camino (`ROAD_TO`) y llamar a `column()`. A: los volcanes y cerros del vecindario se guardan por celda (`volcanesCerca` y `cerroVec` en worldgen2.js, mismo orden y mismos valores) en vez de preguntar 9 + 9 veces por columna con claves de texto; gana todo `column()` y la generación de trozos. B: un camino a un lugar sale de un pueblo a 450 o menos, así que `segmentsIn` solo busca lugares en las celdas a 450 o menos de un pueblo cercano a la zona (`structuresNear` con `cellOk`).',
+      'Equivalencia (en `tools/revisar-rutas.mjs`, con `gen.referencia` = la búsqueda completa de siempre): `column()` en 4 000 puntos y `roadsNear` (id, largo, extremos, suma de control y orden) en 564 consultas, en 4 pruebas (semillas 303, 101, 202 y 101 en los generadores 30, 31 y 22): 0 diferencias; huella 21 a 31 idéntica. Las pruebas de costo (`revisar-rutas`, `revisar-pueblos`, `revisar-caminos`) ahora toman el mínimo de 3 repeticiones (`medirMin` en `tools/medir-tramo.mjs`) y comparan solo contra otro generador en el mismo proceso, nunca milisegundos absolutos.',
+      'Medido con la semilla 303 sola (mínimo de 3, generador 31): primera llamada de `roadsNear` 468 ms (antes ≈ 976) y mayor tirón al caminar 3 000 bloques 76 ms; las demás semillas, primera llamada 62 a 317 ms y mayor tirón 79 a 241 ms (202 y 404 quedan sobre 200 en una celda grande de lugares). Queda fuera por ahora C (calentar las celdas de lugares por cuadros).',
+    ],
+  },
+  {
+    version: '13.5.1',
+    date: '2026-11-17',
+    title: 'Generador 31: zigzag, túneles, rodeo de pueblos ajenos y flora propia',
+    items: [
+      'Generador 31 (caminos y flora, `GEN_CAMINOS` en worldgen2.js; `GEN_MAX` 31; los mundos creados antes salen idénticos, huella 21-30 en `tools/huella-mundos.mjs`; un mundo 31 pide la 13.5.1). Zigzag R3 (`zigzag` en carreteras.js): donde el camino sube más de 1 por bloque en una ventana de 14 (45 grados) se prueban 12 serpenteos (amplitud 10, 16 o 22; vuelta cada 36 o 52; dos fases) y se queda el de menor costo (largo, desnivel y un recargo por cada punto con pendiente de más de 0,7) si lo baja 15 % o más; solo se miden las columnas del tramo empinado. Medido en 6 semillas: 9 tramos con zigzag de 190, pendiente máxima 1,83 → 1,55 de media y mejora en 7 de 9.',
+      'Túnel R4 como último recurso (`tunelDe`): después del rodeo (la mejor de las curvas) y del zigzag, donde una loma estrecha sobresale 14 o más del perfil «abierto» (mínimo y luego máximo en un radio de 22) durante 6 a 70 puntos seguidos, sin agua y a más de 26 puntos de los extremos, el camino entra en túnel: piso del camino, 4 de aire, paredes y techo de piedra, un farol en la pared cada 8, y la loma queda encima; ahí no se ponen rótulos, obras ni peajes. En trozos reales: 50 de 50 puntos del interior con aire, piso y techo; 5 túneles en 6 semillas; ninguno dentro de un pueblo.',
+      'Rodeo de lo ajeno, la parte barata: `mejorCurva` suma 60 por muestra que cae dentro de otro pueblo (los de las celdas vecinas que no son el origen ni el destino, de `villageAt`, ya cacheado). Los lugares con gente (`structuresNear` por tramo) se probaron y costaban +36 % en los tramos, así que quedan fuera; en las 6 semillas del 30 ningún tramo cruzaba un pueblo ajeno, o sea que hoy es una protección y no un cambio visible. Flora propia de los lugares típicos (`flora` en tipicas.js): orquídeas, bromelias y helechos en el Mirador de la Neblina, matas sobre la baranda del Muelle del Piangüero, musgo y flores en el Cairn, selva en el Campamento del botánico y caña y flores en la Hacienda vieja (+10 a +21 plantas alrededor de cada uno).',
+      'Medido (`tools/revisar-caminos.mjs`, nueva y enlazada en `npm run revisar`): costo de los tramos de camino al caminar 3 000 bloques en seis semillas, 6 588 → 6 964 ms en total (+5,7 %) y 4 149 → 4 525 ms la peor llamada (+9 %); trozo con camino de 9,6 ms de mediana. Capturas en `docs/revisiones/capturas_1351/` (interior de un túnel y un camino con zigzag en una ladera). Prueba en red con dos pestañas: 285 trozos alrededor de un túnel y de un zigzag dan el mismo hash en anfitrión e invitado.',
+    ],
+  },
   {
     version: '13.5.0',
     date: '2026-11-17',

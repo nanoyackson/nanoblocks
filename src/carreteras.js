@@ -33,18 +33,23 @@ function makeSegment(gen, A, B) {
   // un poco de curva para que no sea una regla
   let off = (hash3(s, ax, 7071, az) - 0.5) * 0.5 * len;
   // v13.4.2 (I4 + I10 R1, generador 29): se prueban nueve curvas laterales y se queda la de menor costo (subidas, cumbres, mar y obras que no son su destino)
-  if (gen.version >= 29) off = mejorCurva(gen, ax, az, bx, bz, len, off);
+  // v13.5.1 (generador 31): las obras ajenas a rodear (los otros pueblos y los lugares con gente de la zona) salen de villageAt y de la lista de lugares con camino, que ya se calculan (barato)
+  const obras = gen.version >= 31 ? obrasAjenas(gen, A, B, ax, az, bx, bz, len) : null;
+  if (gen.version >= 29) off = mejorCurva(gen, ax, az, bx, bz, len, off, obras);
   const mx = (ax + bx) / 2 + (-(bz - az) / len) * off, mz = (az + bz) / 2 + ((bx - ax) / len) * off;
   const N = Math.ceil(len * 1.3);
-  const xs = [], zs = [];
+  let xs = [], zs = [];
   for (let i = 0; i <= N; i++) {
     const t = i / N, u = 1 - t;
     const x = Math.round(u * u * ax + 2 * u * t * mx + t * t * bx), z = Math.round(u * u * az + 2 * u * t * mz + t * t * bz);
     if (xs.length && xs[xs.length - 1] === x && zs[zs.length - 1] === z) continue;
     xs.push(x); zs.push(z);
   }
-  const n = xs.length;
-  const h = xs.map((x, i) => gen.column(x, zs[i]).h);
+  let n = xs.length;
+  let h = xs.map((x, i) => gen.column(x, zs[i]).h);
+  // v13.5.1 (generador 31, R3): en una ladera fuerte el camino hace zigzag (serpentea de lado a lado) para que la pendiente baje; el rodeo (la mejor curva) ya se probó antes
+  let zig = false;
+  if (gen.version >= 31) { const z = zigzag(gen, xs, zs, h); if (z) { xs = z.xs; zs = z.zs; h = z.h; n = xs.length; zig = true; } }
   // agua honda: puente; agua baja (lagunas, manglar): relleno de tierra a la altura del mar
   // v13.3.0 (I2, generador 24): el cauce de un río (rio < 0.045 y bajo el mar) también es agua: el camino lo cruza con puente en vez de taparlo con un dique de tierra; la regla
   // de «más de 46 bloques de agua» sigue contando solo el mar
@@ -53,10 +58,13 @@ function makeSegment(gen, A, B) {
   // no se hacen carreteras que crucen el mar
   let run = 0;
   for (const w of mar) { run = w ? run + 1 : 0; if (run > 46) return null; }
+  // v13.5.1 (generador 31, R4): último recurso, un túnel donde una loma estrecha se interpone (la loma sobresale 14 o más del perfil que sale al abrir el relieve) y no hubo otra salida
+  const tunel = gen.version >= 31 ? tunelDe(h, water, n) : null;
+  const hr = tunel ? tunel.hr : h;
   const ys = h.map((_, i) => {
     if (water[i]) return SEA + 1;
     let sum = 0, c = 0;
-    for (let k = Math.max(0, i - 5); k <= Math.min(n - 1, i + 5); k++) if (!water[k]) { sum += Math.max(h[k], SEA + 1); c++; }
+    for (let k = Math.max(0, i - 5); k <= Math.min(n - 1, i + 5); k++) if (!water[k]) { sum += Math.max(hr[k], SEA + 1); c++; }
     return Math.max(SEA + 1, Math.round(sum / c));
   });
   // v13.4.2 (I4, generador 29): el perfil sube o baja como máximo 1 por bloque (hacia delante y hacia atrás), sin bajar del puente
@@ -65,11 +73,11 @@ function makeSegment(gen, A, B) {
     for (let i = n - 2; i >= 0; i--) if (!water[i]) ys[i] = Math.max(SEA + 1, Math.min(ys[i + 1] + 1, Math.max(ys[i + 1] - 1, ys[i])));
   }
   const kind = A.city && B.city ? 'nacional' : !A.streets || !B.streets ? (hid < 0.6 ? 'lastre' : 'cantonal') : hid < 0.45 ? 'nacional' : 'cantonal';
-  const seg = { id: `ruta@${ax},${az}`, xs, zs, ys, water, n, kind, w: kind === 'nacional' ? 5 : kind === 'cantonal' ? 4 : 3, A, B, feats: [] };
+  const seg = { id: `ruta@${ax},${az}`, xs, zs, ys, water, n, kind, w: kind === 'nacional' ? 5 : kind === 'cantonal' ? 4 : 3, A, B, feats: [], zig, tunel: tunel ? tunel.flags : null };
   seg.x0 = Math.min(...xs) - 8; seg.x1 = Math.max(...xs) + 8; seg.z0 = Math.min(...zs) - 8; seg.z1 = Math.max(...zs) + 8;
   // lo que pasa en la carretera
   const f = (k) => hash3(s, ax + k, 7100, az);
-  const land = (i) => i > 8 && i < n - 9 && !water[i] && !water[i - 6] && !water[i + 6];
+  const land = (i) => i > 8 && i < n - 9 && !water[i] && !water[i - 6] && !water[i + 6] && !(seg.tunel && (seg.tunel[i] || seg.tunel[i - 6] || seg.tunel[i + 6]));
   const at = (t) => { let i = Math.floor(t * n); for (let k = 0; k < 20 && !land(i); k++) i++; return land(i) ? i : -1; };
   const add = (type, t, extra = {}) => { const i = at(t); if (i > 0) seg.feats.push({ type, i, ...extra }); };
   if (f(1) < 0.65) add('obra', 0.3 + f(2) * 0.4);
@@ -83,10 +91,84 @@ function makeSegment(gen, A, B) {
   return seg;
 }
 
+// v13.5.1 (generador 31): lo ajeno que un camino debe rodear: los pueblos de las celdas vecinas que no son sus extremos (villageAt, cacheado: no suma trabajo). Los lugares con gente quedan fuera:
+// buscarlos con structuresNear por tramo costaba +36 % (ver tools/revisar-caminos.mjs).
+function obrasAjenas(gen, A, B, ax, az, bx, bz, len) {
+  const mx = (ax + bx) / 2, mz = (az + bz) / 2, R = len / 2 + 60, res = [];
+  const cx0 = Math.floor((mx - R) / CELL), cx1 = Math.floor((mx + R) / CELL), cz0 = Math.floor((mz - R) / CELL), cz1 = Math.floor((mz + R) / CELL);
+  for (let gz = cz0; gz <= cz1; gz++) for (let gx = cx0; gx <= cx1; gx++) {
+    const v = villageAt(gen, gx, gz);
+    if (!v || v === A || v === B || (v.x === A.x && v.z === A.z) || (v.x === B.x && v.z === B.z)) continue;
+    res.push({ x: v.x, z: v.z, r: (v.L ?? 46) + 4 });
+  }
+  return res.length ? res : null;
+}
+
+// v13.5.1 (R3): zigzag. Donde el desnivel pasa de 1 por bloque (45 grados) en una ventana de 14 hay un tramo empinado; ahí se prueban 12 serpenteos (amplitud 10, 16 o 22, vuelta cada 36 o 52,
+// dos fases) y se queda el de menor costo (3 por bloque de largo, 4 por bloque de desnivel y un recargo grande por cada punto con pendiente de más de 0,7), solo si baja el costo 15 % o más; si no, el camino sigue recto. Solo se miden
+// las columnas del tramo empinado (los demás tramos no pagan nada). Devuelve null si no hace falta.
+function zigzag(gen, xs, zs, h) {
+  const n = xs.length, W = 14;
+  if (n < 50) return null;
+  const emp = new Uint8Array(n); let hay = false;
+  for (let i = 10; i + W < n - 10; i++) if (Math.abs(h[i + W] - h[i]) / W > 1.0) { hay = true; for (let k = Math.max(10, i - 8); k <= Math.min(n - 11, i + W + 8); k++) emp[k] = 1; }
+  if (!hay) return null;
+  const zonas = [];
+  for (let i = 0; i < n;) { if (!emp[i]) { i++; continue; } let j = i; while (j < n && emp[j]) j++; if (j - i >= 24) zonas.push([i, j - 1]); i = j; }
+  if (!zonas.length) return null;
+  const nrm = (i) => { const a = Math.max(0, i - 2), b = Math.min(n - 1, i + 2), tx = xs[b] - xs[a], tz = zs[b] - zs[a], L = Math.hypot(tx, tz) || 1; return [-tz / L, tx / L]; };
+  const costo = (px, pz, hh) => { let c = 0; for (let i = 1; i < px.length; i++) { const e = Math.hypot(px[i] - px[i - 1], pz[i] - pz[i - 1]) || 1, g = Math.abs(hh[i] - hh[i - 1]) / e; c += 3 * e + 4 * Math.abs(hh[i] - hh[i - 1]) + (g > 0.7 ? (g - 0.7) * 40 * e : 0); } return c; };
+  const outX = xs.slice(), outZ = zs.slice(); let cambio = false;
+  const piezas = []; // [a, b, X[], Z[]]
+  for (const [za, zb] of zonas) {
+    const m = zb - za + 1, base = costo(xs.slice(za, zb + 1), zs.slice(za, zb + 1), h.slice(za, zb + 1));
+    let mejor = null, mejorC = base * 0.85;
+    for (const A of [10, 16, 22]) for (const lam of [36, 52]) for (const fase of [0, Math.PI]) {
+      const X = [], Z = [];
+      for (let i = za; i <= zb; i++) {
+        const u = (i - za) / (m - 1), env = Math.sin(Math.PI * u), d = A * env * Math.sin(fase + (i - za) * 2 * Math.PI / lam), [nx, nz] = nrm(i);
+        X.push(Math.round(xs[i] + nx * d)); Z.push(Math.round(zs[i] + nz * d));
+      }
+      const c = costo(X, Z, X.map((x, k) => gen.column(x, Z[k]).h));
+      if (c < mejorC) { mejorC = c; mejor = [X, Z]; }
+    }
+    if (mejor) { piezas.push([za, zb, mejor[0], mejor[1]]); cambio = true; }
+  }
+  if (!cambio) return null;
+  // armar el camino: lo de antes, la pieza serpenteada (rellenando para que los puntos vecinos queden a 1) y lo de después
+  const X = [], Z = [];
+  const empuja = (x, z) => {
+    if (X.length) { let px = X[X.length - 1], pz = Z[Z.length - 1]; while (Math.max(Math.abs(x - px), Math.abs(z - pz)) > 1) { px += Math.sign(x - px); pz += Math.sign(z - pz); X.push(px); Z.push(pz); } if (X[X.length - 1] === x && Z[Z.length - 1] === z) return; }
+    X.push(x); Z.push(z);
+  };
+  let i = 0;
+  for (const [za, zb, PX, PZ] of piezas) { for (; i < za; i++) empuja(xs[i], zs[i]); for (let k = 0; k < PX.length; k++) empuja(PX[k], PZ[k]); i = zb + 1; }
+  for (; i < n; i++) empuja(xs[i], zs[i]);
+  void outX; void outZ;
+  return { xs: X, zs: Z, h: X.map((x, k) => gen.column(x, Z[k]).h) };
+}
+
+// v13.5.1 (R4): el perfil «abierto» (mínimo y luego máximo en un radio de 22: quita lo estrecho) y donde la altura sobrepasa 14 o más durante 6 a 70 puntos seguidos, sin agua, hay túnel.
+// Devuelve las banderas por punto y la altura que debe seguir el camino (el perfil abierto adentro del túnel).
+function tunelDe(h, water, n) {
+  const R = 22, er = new Float32Array(n), op = new Float32Array(n);
+  for (let i = 0; i < n; i++) { let m = 1e9; for (let k = Math.max(0, i - R); k <= Math.min(n - 1, i + R); k++) if (h[k] < m) m = h[k]; er[i] = m; }
+  for (let i = 0; i < n; i++) { let m = -1e9; for (let k = Math.max(0, i - R); k <= Math.min(n - 1, i + R); k++) if (er[k] > m) m = er[k]; op[i] = m; }
+  const flags = new Uint8Array(n), hr = Array.from(h); let hubo = false;
+  for (let i = 26; i < n - 26;) {
+    if (h[i] - op[i] < 14) { i++; continue; }
+    let j = i; while (j < n - 26 && h[j] - op[j] >= 14) j++;
+    let agua = false; for (let k = i - 3; k <= j + 3; k++) if (water[k]) agua = true;
+    if (!agua && j - i >= 6 && j - i <= 70) { hubo = true; for (let k = i - 2; k <= j + 2; k++) { flags[k] = 1; hr[k] = Math.min(h[k], op[k]); } }
+    i = j + 1;
+  }
+  return hubo ? { flags, hr } : null;
+}
+
 // v13.4.2 (generador 29): costo de una curva lateral = 3 por cada bloque de largo + 9 por cada bloque de desnivel entre muestras + 6 por muestra sobre 90 de alto + 400 si cruza más de 46 de mar.
 // Se mide cada ~14 bloques (len / 14 muestras por curva, 9 curvas): una vez por tramo y sin buscar obras (structuresNear costaba 4 s la primera vez; las obras ajenas se
 // respetan al dibujar, ver buildRoadsInChunk). Todo sale de column(), igual en anfitrión e invitado.
-function mejorCurva(gen, ax, az, bx, bz, len, off0) {
+function mejorCurva(gen, ax, az, bx, bz, len, off0, obras) {
   const nx = -(bz - az) / len, nz = (bx - ax) / len, M = Math.max(8, Math.ceil(len / (gen.version >= 30 ? 20 : 14)));
   let mejor = off0, costeMejor = Infinity;
   for (let k = -4; k <= 4; k++) {
@@ -96,6 +178,7 @@ function mejorCurva(gen, ax, az, bx, bz, len, off0) {
       const t = i / M, u = 1 - t, x = u * u * ax + 2 * u * t * mx + t * t * bx, z = u * u * az + 2 * u * t * mz + t * t * bz;
       const h = gen.column(Math.round(x), Math.round(z)).h;
       cost += 3 * Math.hypot(x - px, z - pz) + (ph === null ? 0 : 9 * Math.abs(h - ph)) + (h > 90 ? 6 : 0);
+      if (obras) for (const o of obras) if (Math.abs(x - o.x) < o.r && Math.abs(z - o.z) < o.r) { cost += 60; break; } // v13.5.1: rodear lo ajeno (pueblos y lugares con gente)
       run = h < SEA - 3 ? run + 1 : 0; mar = Math.max(mar, run);
       px = x; pz = z; ph = h;
     }
@@ -143,7 +226,14 @@ function segmentsIn(gen, gx0, gx1, gz0, gz1) {
   }
   // caminos de lastre o cantonales desde el pueblo más cercano hasta cada monumento con gente
   const x0 = gx0 * CELL - 460, x1 = (gx1 + 1) * CELL + 460, z0 = gz0 * CELL - 460, z1 = (gz1 + 1) * CELL + 460;
-  for (const P of structuresNear(gen, (x0 + x1) / 2, (z0 + z1) / 2, Math.max(x1 - x0, z1 - z0) / 2, ROAD_TO)) {
+  // pueblos que pueden arrancar un camino hacia una obra que toque esta zona: el camino sale de un pueblo y no pasa de ~700 bloques de él (obra a <= 450 + curva + salida)
+  const REACH = 720, aldeas = [];
+  for (let gz = gz0 - 2; gz <= gz1 + 2; gz++) for (let gx = gx0 - 2; gx <= gx1 + 2; gx++) {
+    const v = villageAt(gen, gx, gz);
+    if (v && v.x > gx0 * CELL - REACH && v.x < (gx1 + 1) * CELL + REACH && v.z > gz0 * CELL - REACH && v.z < (gz1 + 1) * CELL + REACH) aldeas.push(v);
+  }
+  const cercaDeAldea = (T, gx, gz) => { const ax = gx * T.cell - 450, bx = (gx + 1) * T.cell + 450, az = gz * T.cell - 450, bz = (gz + 1) * T.cell + 450; return aldeas.some((v) => v.x > ax && v.x < bx && v.z > az && v.z < bz); };
+  for (const P of aldeas.length || gen.referencia ? structuresNear(gen, (x0 + x1) / 2, (z0 + z1) / 2, Math.max(x1 - x0, z1 - z0) / 2, ROAD_TO, gen.referencia ? null : cercaDeAldea) : []) {
     const key = `s:${P.id}`;
     if (seen.has(key)) continue;
     seen.add(key);
@@ -195,6 +285,16 @@ export function buildRoadsInChunk(gen, cx, cz, blocks, idx, out) {
     for (const c of cols.values()) {
       if (insideTown(seg.A, c.x, c.z) || insideTown(seg.B, c.x, c.z)) continue;
       const y = seg.ys[c.i], h = gen.column(c.x, c.z).h;
+      if (seg.tunel && seg.tunel[c.i]) { // v13.5.1 (R4): túnel. Adentro el aire (4 de alto), paredes y techo de piedra; la loma queda encima
+        if (c.d <= half + 1.5) {
+          const pared = c.d > half + 0.5;
+          for (let yy = y + 1; yy <= y + 4; yy++) set(c.x, yy, c.z, pared ? K.cobble : 0);
+          set(c.x, y + 5, c.z, K.cobble);
+          if (pared && c.i % 8 === 0) set(c.x, y + 3, c.z, K.farol);
+          if (!pared) { set(c.x, y, c.z, c.d < 0.5 && seg.kind === 'nacional' && c.i % 6 < 3 ? K.asfalto_linea : seg.kind === 'lastre' ? K.gravel : K.asfalto); if (get(c.x, y - 1, c.z) === 0) set(c.x, y - 1, c.z, K.dirt); }
+        }
+        continue;
+      }
       if (TAL && c.d > half + 0.5) { // talud: corte o terraplén que se abre 1:1 en vez de la pared
         if (seg.water[c.i]) continue;
         const tc = Math.ceil(c.d - half - 0.5);

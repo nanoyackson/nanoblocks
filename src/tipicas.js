@@ -9,6 +9,18 @@ const LOOT_PARAMO = [[360, 6, 14], [1192, 1, 3], [258, 1, 3], [259, 1, 2], [K.to
 const LOOT_SELVA = [[360, 6, 16], [1196, 1, 3], [327, 3, 8], [299, 1, 3], [258, 1, 3]];
 const LOOT_HACIENDA = [[360, 10, 24], [327, 4, 10], [258, 1, 4], [259, 1, 3], [299, 1, 3], [K.torch, 4, 10]];
 
+// v13.5.1 (generador 31): flora propia de cada lugar, sembrada sobre el terreno natural dentro del radio de la obra (solo donde hay suelo firme y aire encima)
+function flora(c, R, n, plantas) {
+  if (c.gen.version < 31) return;
+  for (let k = 0; k < n; k++) {
+    const dx = Math.floor(c.rnd() * (2 * R + 1)) - R, dz = Math.floor(c.rnd() * (2 * R + 1)) - R, p = plantas[Math.floor(c.rnd() * plantas.length)];
+    if (Math.hypot(dx, dz) > R) continue;
+    const g = c.ground(dx, dz);
+    if (g + c.oy <= SEA || c.getMaybe(dx, g, dz) || !c.getMaybe(dx, g + 1, dz)) continue;
+    c.set(dx, g + 1, dz, p);
+  }
+}
+
 // Mirador de la Neblina: una plataforma de tablas entre las copas, sobre cuatro troncos, con escalera de caracol, baranda, farol y un cofre
 export function buildMirador(c) {
   c.foundation(-3, -3, 3, 3, K.dirt, K.grass, 18);
@@ -20,6 +32,7 @@ export function buildMirador(c) {
   c.spiral(K.escalera_tablas, 1, A);
   c.set(0, A + 1, 0, K.cerca); c.set(0, A + 2, 0, K.cerca); c.set(0, A + 3, 0, K.farol);
   c.chest(2, A + 1, -2, 3, c.loot(LOOT_NUBOSO, 4));
+  flora(c, 9, 45, [K.orquidea, K.bromelia, K.helecho]);
   c.placa(-2, A + 1, 2, 2, 'Mirador de la Neblina', 'Subió por la escalera y la nube quedó abajo. Mire despacio: por aquí pasan los quetzales.');
 }
 
@@ -48,6 +61,7 @@ export function buildMuelle(c) {
   c.set(0, D + 3, Z0 + 2, K.lamp);
   c.placa(2, D + 1, 3, 1, 'Muelle del Piangüero', 'Aquí se cambian piangüas por colones. Pregunte por el encargo de pesca al que esté remendando la red.');
   c.zone(0, D + 1, Z0 + 2, 'muelle', 10);
+  if (c.gen.version >= 31) for (let z = 1; z <= L; z += 2) for (const x of [-2, 2]) if (c.getMaybe(x, D + 2, z)) c.set(x, D + 2, z, z % 4 === 1 ? K.bromelia : K.helecho); // flora propia: matas sobre la baranda del muelle
 }
 
 // Cairn de los Antiguos: una pirámide de piedra apilada a mano en lo alto, con un círculo de piedras, un banco y un cofre al pie
@@ -63,6 +77,7 @@ export function buildCairn(c) {
   c.set(0, H + 1, 0, K.cobble); c.set(0, H + 2, 0, K.farol);
   c.fill(-4, 1, 3, -2, 1, 3, K.planks);
   c.chest(3, 1, -3, 3, c.loot(LOOT_PARAMO, 4));
+  flora(c, 8, 110, [K.musgo, K.flower_yellow, K.pajon]);
   c.placa(0, 1, -4, 0, 'Cairn de los Antiguos', 'Cada piedra la dejó alguien que subió hasta aquí. Deje la suya y mire el valle.');
 }
 
@@ -77,6 +92,7 @@ export function buildBotanico(c) {
   c.chest(1, 1, -2, 3, c.loot(LOOT_SELVA, 4));
   c.set(-3, 1, 3, K.table); c.set(-2, 1, 3, K.bookshelf);
   c.set(2, 1, 4, K.fogata); c.set(4, 1, 3, K.barril);
+  flora(c, 9, 150, [K.orquidea, K.helecho, K.bromelia, K.mata_flor]);
   c.placa(0, 1, 3, 0, 'Campamento del botánico', 'Notas: orquídea de la sombra, flor abierta de noche; cacao silvestre río arriba. No me esperen para cenar.');
 }
 
@@ -101,5 +117,6 @@ export function buildHaciendaVieja(c) {
   c.set(0, 1, 5, K.trapiche);
   c.fill(-3, 1, 6, -2, 2, 6, K.saco_cafe); c.fill(2, 1, 6, 3, 1, 6, K.saco_cafe);
   for (let k = 0; k < 6; k++) { const x = -8 + Math.floor(c.rnd() * 17), z = 2 + Math.floor(c.rnd() * 6); if (c.getMaybe(x, 1, z)) c.set(x, 1, z, K.cane); }
+  flora(c, 13, 50, [K.cane, K.flower_yellow, K.flower_red, K.pajon]);
   c.placa(6, 1, 3, 3, 'Hacienda vieja', 'La casa se cayó pero el trapiche sigue sano. Con tres cañas y un balde, guarapo para el camino.');
 }

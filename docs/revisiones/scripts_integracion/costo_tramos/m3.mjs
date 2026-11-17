@@ -1,0 +1,11 @@
+const R=process.argv[2], ver=+process.argv[3], seed=+process.argv[4];
+const {pathToFileURL}=await import('url');
+const U=(p)=>import(pathToFileURL(R+'/src/'+p).href);
+const {Generator,CHUNK,HEIGHT}=await U('worldgen.js'); const C=await U('carreteras.js');
+const g=new Generator(seed,ver,'tierra','normal'); const sp=g.findSpawn();
+const buf=new Uint16Array(CHUNK*CHUNK*HEIGHT), tint=new Float32Array(CHUNK*CHUNK*3);
+const cx=Math.floor(sp.x/16), cz=Math.floor(sp.z/16);
+let t=performance.now(); g.generate(cx,cz,buf,tint); const gen1=performance.now()-t;
+t=performance.now(); C.roadsNear(g,sp.x,sp.z,12); const road1=performance.now()-t;
+t=performance.now(); for(let dx=-2;dx<=2;dx++)for(let dz=-2;dz<=2;dz++){buf.fill(0); g.generate(cx+dx,cz+dz,buf,tint);} const gen25=performance.now()-t;
+console.log(JSON.stringify({ver,seed,primerTrozo:+gen1.toFixed(0),roadsNearDespues:+road1.toFixed(0),veinticincoTrozos:+gen25.toFixed(0)}));

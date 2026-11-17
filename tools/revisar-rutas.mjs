@@ -8,9 +8,10 @@
 import { Generator, CHUNK, HEIGHT } from '../src/worldgen.js';
 import { roadsNear } from '../src/carreteras.js';
 import { structuresNear } from '../src/estructuras.js';
-import { medir } from './medir-tramo.mjs';
+import { medirMin as medir } from './medir-tramo.mjs'; // mínimo de 3 repeticiones
 import { GEN_RUTAS } from '../src/worldgen2.js';
 import { GEN_MAX } from '../src/version.js';
+import { hash3 } from '../src/noise.js';
 
 let fallas = 0;
 const ok = (c, m) => { console.log((c ? '  ✔ ' : '  ✘ ') + m); if (!c) fallas++; };
@@ -71,5 +72,23 @@ ok(total > 0 && enBioma === total, `todos caen en su bioma (${enBioma}/${total})
 ok(conCofre === total && conPlaca === total, `todos traen cofre y placa (${conCofre} y ${conPlaca} de ${total})`);
 tiempos.sort((a, b) => a - b); const mediana = tiempos[tiempos.length >> 1] || 0;
 ok(mediana <= 12, `trozo con lugar típico: ${mediana.toFixed(1)} ms de mediana (≤ 12)`);
+// v13.5.2 (rendimiento, sin generador nuevo): equivalencia. Los volcanes y cerros por celda (A) y la búsqueda de obras solo cerca de un pueblo (B) no cambian ningún valor: contra la búsqueda completa de
+// siempre (gen.referencia), en 2 semillas y 2 generadores, column() en 4 000 puntos y roadsNear (id, largo, extremos, suma de control y orden) cada 16 bloques a lo largo de 3 000.
+{
+  let col = 0, difCol = 0, cons = 0, difTramos = 0;
+  for (const [seed, ver] of [[303, 30], [101, 31], [202, 31], [101, 22]]) {
+    const a = new Generator(seed, ver, 'tierra', 'normal'), b = new Generator(seed, ver, 'tierra', 'normal');
+    b.referencia = true;
+    for (let k = 0; k < 1000; k++) {
+      const x = Math.floor((hash3(seed, k, 11, 0) - 0.5) * 12000), z = Math.floor((hash3(seed, k, 12, 0) - 0.5) * 12000);
+      const p = a.column(x, z), q = b.column(x, z); col++;
+      if (p.h !== q.h || p.biome !== q.biome) difCol++;
+    }
+    const sp = a.findSpawn(), firma = (g, x, z) => roadsNear(g, x, z, 12).map((s) => s.id + ':' + s.n + ':' + s.xs[0] + ',' + s.zs[0] + ':' + s.xs[s.n - 1] + ',' + s.zs[s.n - 1] + ':' + s.ys.reduce((u, v) => u + v, 0) + ':' + s.kind).join('|');
+    if (seed === 303 || ver === 31) for (let d = 0; d <= 3000; d += 16) { cons++; if (firma(a, sp.x + d, sp.z) !== firma(b, sp.x + d, sp.z)) difTramos++; }
+  }
+  ok(difCol === 0, `column() igual con la búsqueda completa de volcanes y cerros (${col} puntos, ${difCol} distintos)`);
+  ok(difTramos === 0, `roadsNear igual con la búsqueda completa de obras (${cons} consultas, ${difTramos} distintas)`);
+}
 console.log(fallas ? `\n✘ ${fallas} falla(s)` : '\nResto de la superficie (generador 29): todo bien.');
 process.exitCode = fallas ? 1 : 0;

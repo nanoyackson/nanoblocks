@@ -11,7 +11,7 @@ import { gradeH } from '../src/pueblo6.js';
 import { GEN_PUEBLOS } from '../src/worldgen2.js';
 import { GEN_MAX } from '../src/version.js';
 import { BLOCK_BY_KEY as K } from '../src/blocks.js';
-import { medir } from './medir-tramo.mjs';
+import { medirMin as medir } from './medir-tramo.mjs'; // mínimo de 3 repeticiones
 
 let fallas = 0;
 const ok = (c, m) => { console.log((c ? '  ✔ ' : '  ✘ ') + m); if (!c) fallas++; };

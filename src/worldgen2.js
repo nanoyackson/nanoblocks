@@ -36,6 +36,9 @@ export const GEN_RUTAS = 29;
 // v13.5.0 (generador 30, pueblos y calles): sitio de pueblo llano y sin río (hasta cuatro intentos por celda) y calles con perfil suave y media losa. Vive en pueblogen.js y pueblo6.js
 // (`gen.version >= 30`); los mundos <= 29 salen idénticos.
 export const GEN_PUEBLOS = 30;
+// v13.5.1 (generador 31, caminos y flora): zigzag en laderas fuertes (R3), túnel como último recurso (R4), caminos que rodean pueblos y lugares con gente ajenos, y la flora propia de los lugares típicos de cada bioma.
+// Vive en carreteras.js y tipicas.js (`gen.version >= 31`); los mundos <= 30 salen idénticos.
+export const GEN_CAMINOS = 31;
 const ORO_28 = [4, 4, 5], DIAMANTE_28 = [3, 5, 6]; // tamaño de las vetas por zona (el rendimiento real lo mide tools/revisar-contenido.mjs)
 // pesos (en %) del tipo de salón por clase de bioma de arriba: candil, hongueada, agujas, laguna, caldera (plan §9.2 B4)
 const PESOS_TIPO = { humedo: [10, 40, 15, 30, 5], seco: [25, 5, 50, 0, 20], frio: [45, 5, 20, 10, 20], volcan: [10, 0, 10, 0, 80], neutro: [20, 20, 25, 15, 20] };
@@ -91,6 +94,14 @@ export class GenV2 {
     return v;
   }
 
+  volcanesCerca(vcx, vcz) {
+    if (this.gen.referencia) { const r = []; for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) { const v = this.volcanoIn(vcx + dx, vcz + dz); if (v) r.push(v); } return r; } // (solo la prueba de equivalencia: la búsqueda completa de siempre)
+    this.volcVec = this.volcVec || new Map();
+    const k = vcx * 100003 + vcz; let a = this.volcVec.get(k);
+    if (!a) { a = []; for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) { const v = this.volcanoIn(vcx + dx, vcz + dz); if (v) a.push(v); } this.volcVec.set(k, a); }
+    return a;
+  }
+
   // Modifica la columna base: volcanes y selva.
   shapeColumn(x, z, col) {
     // v16: el cauce de un río no se levanta con el cerro ni con el volcán (antes quedaba colgado, como una zanja seca o con agua en bajada)
@@ -98,9 +109,7 @@ export class GenV2 {
     if (this.gen.version >= 16 && col.rio < 0.045 && col.h >= SEA - 3) kr = (col.rio / 0.045) * (col.rio / 0.045);
     const h0 = col.h;
     const vcx = Math.floor(x / VOLCANO_CELL), vcz = Math.floor(z / VOLCANO_CELL);
-    for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) {
-      const v = this.volcanoIn(vcx + dx, vcz + dz);
-      if (!v) continue;
+    for (const v of this.volcanesCerca(vcx, vcz)) {
       const d = Math.hypot(x - v.x, z - v.z);
       if (d >= v.r) continue;
       const k = 1 - d / v.r;
@@ -164,10 +173,11 @@ export class GenV2 {
   cerroNear(x, z) {
     const CELL = 1300;
     const gx = Math.floor(x / CELL), gz = Math.floor(z / CELL);
-    for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) {
-      const c = this.cerroIn(gx + dx, gz + dz);
-      if (c && Math.abs(x - c.x) < c.r * 1.3 && Math.abs(z - c.z) < c.r * 1.3) return c;
-    }
+    if (this.gen.referencia) { for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) { const c = this.cerroIn(gx + dx, gz + dz); if (c && Math.abs(x - c.x) < c.r * 1.3 && Math.abs(z - c.z) < c.r * 1.3) return c; } return null; }
+    this.cerroVec = this.cerroVec || new Map();
+    const k = gx * 100003 + gz; let a = this.cerroVec.get(k);
+    if (!a) { a = []; for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) { const c = this.cerroIn(gx + dx, gz + dz); if (c) a.push(c); } this.cerroVec.set(k, a); }
+    for (const c of a) if (Math.abs(x - c.x) < c.r * 1.3 && Math.abs(z - c.z) < c.r * 1.3) return c;
     return null;
   }
 

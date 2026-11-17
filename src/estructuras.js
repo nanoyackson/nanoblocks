@@ -1110,13 +1110,13 @@ export function sitiosAnillo(gen) {
 }
 
 // todas las estructuras de un tipo cerca de (x, z) (para el mapa y los comandos)
-export function structuresNear(gen, x, z, radius, only = null) {
+export function structuresNear(gen, x, z, radius, only = null, cellOk = null) {
   const res = [];
   for (const T of typesFor(gen)) {
     if (only && !only.has(T.key)) continue;
     const g0x = Math.floor((x - radius) / T.cell), g1x = Math.floor((x + radius) / T.cell);
     const g0z = Math.floor((z - radius) / T.cell), g1z = Math.floor((z + radius) / T.cell);
-    for (let gz = g0z; gz <= g1z; gz++) for (let gx = g0x; gx <= g1x; gx++) { const P = placeOf(gen, T, gx, gz); if (P) res.push(P); }
+    for (let gz = g0z; gz <= g1z; gz++) for (let gx = g0x; gx <= g1x; gx++) { if (cellOk && !cellOk(T, gx, gz)) continue; const P = placeOf(gen, T, gx, gz); if (P) res.push(P); }
   }
   return res;
 }

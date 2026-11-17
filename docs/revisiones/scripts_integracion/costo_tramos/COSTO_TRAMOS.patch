@@ -1,0 +1,78 @@
+--- a/src/worldgen2.js
++++ b/src/worldgen2.js
+@@ -91,6 +91,13 @@
+     return v;
+   }
+ 
++  volcanesCerca(vcx, vcz) {
++    this.volcVec = this.volcVec || new Map();
++    const k = vcx * 100003 + vcz; let a = this.volcVec.get(k);
++    if (!a) { a = []; for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) { const v = this.volcanoIn(vcx + dx, vcz + dz); if (v) a.push(v); } this.volcVec.set(k, a); }
++    return a;
++  }
++
+   // Modifica la columna base: volcanes y selva.
+   shapeColumn(x, z, col) {
+     // v16: el cauce de un río no se levanta con el cerro ni con el volcán (antes quedaba colgado, como una zanja seca o con agua en bajada)
+@@ -98,9 +105,7 @@
+     if (this.gen.version >= 16 && col.rio < 0.045 && col.h >= SEA - 3) kr = (col.rio / 0.045) * (col.rio / 0.045);
+     const h0 = col.h;
+     const vcx = Math.floor(x / VOLCANO_CELL), vcz = Math.floor(z / VOLCANO_CELL);
+-    for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) {
+-      const v = this.volcanoIn(vcx + dx, vcz + dz);
+-      if (!v) continue;
++    for (const v of this.volcanesCerca(vcx, vcz)) {
+       const d = Math.hypot(x - v.x, z - v.z);
+       if (d >= v.r) continue;
+       const k = 1 - d / v.r;
+@@ -164,10 +169,10 @@
+   cerroNear(x, z) {
+     const CELL = 1300;
+     const gx = Math.floor(x / CELL), gz = Math.floor(z / CELL);
+-    for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) {
+-      const c = this.cerroIn(gx + dx, gz + dz);
+-      if (c && Math.abs(x - c.x) < c.r * 1.3 && Math.abs(z - c.z) < c.r * 1.3) return c;
+-    }
++    this.cerroVec = this.cerroVec || new Map();
++    const k = gx * 100003 + gz; let a = this.cerroVec.get(k);
++    if (!a) { a = []; for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) { const c = this.cerroIn(gx + dx, gz + dz); if (c) a.push(c); } this.cerroVec.set(k, a); }
++    for (const c of a) if (Math.abs(x - c.x) < c.r * 1.3 && Math.abs(z - c.z) < c.r * 1.3) return c;
+     return null;
+   }
+ 
+--- a/src/estructuras.js
++++ b/src/estructuras.js
+@@ -1110,13 +1110,13 @@
+ }
+ 
+ // todas las estructuras de un tipo cerca de (x, z) (para el mapa y los comandos)
+-export function structuresNear(gen, x, z, radius, only = null) {
++export function structuresNear(gen, x, z, radius, only = null, cellOk = null) {
+   const res = [];
+   for (const T of typesFor(gen)) {
+     if (only && !only.has(T.key)) continue;
+     const g0x = Math.floor((x - radius) / T.cell), g1x = Math.floor((x + radius) / T.cell);
+     const g0z = Math.floor((z - radius) / T.cell), g1z = Math.floor((z + radius) / T.cell);
+-    for (let gz = g0z; gz <= g1z; gz++) for (let gx = g0x; gx <= g1x; gx++) { const P = placeOf(gen, T, gx, gz); if (P) res.push(P); }
++    for (let gz = g0z; gz <= g1z; gz++) for (let gx = g0x; gx <= g1x; gx++) { if (cellOk && !cellOk(T, gx, gz)) continue; const P = placeOf(gen, T, gx, gz); if (P) res.push(P); }
+   }
+   return res;
+ }
+--- a/src/carreteras.js
++++ b/src/carreteras.js
+@@ -143,7 +143,14 @@
+   }
+   // caminos de lastre o cantonales desde el pueblo más cercano hasta cada monumento con gente
+   const x0 = gx0 * CELL - 460, x1 = (gx1 + 1) * CELL + 460, z0 = gz0 * CELL - 460, z1 = (gz1 + 1) * CELL + 460;
+-  for (const P of structuresNear(gen, (x0 + x1) / 2, (z0 + z1) / 2, Math.max(x1 - x0, z1 - z0) / 2, ROAD_TO)) {
++  // pueblos que pueden arrancar un camino hacia una obra que toque esta zona: el camino sale de un pueblo y no pasa de ~700 bloques de él (obra a <= 450 + curva + salida)
++  const REACH = 720, aldeas = [];
++  for (let gz = gz0 - 2; gz <= gz1 + 2; gz++) for (let gx = gx0 - 2; gx <= gx1 + 2; gx++) {
++    const v = villageAt(gen, gx, gz);
++    if (v && v.x > gx0 * CELL - REACH && v.x < (gx1 + 1) * CELL + REACH && v.z > gz0 * CELL - REACH && v.z < (gz1 + 1) * CELL + REACH) aldeas.push(v);
++  }
++  const cercaDeAldea = (T, gx, gz) => { const ax = gx * T.cell - 450, bx = (gx + 1) * T.cell + 450, az = gz * T.cell - 450, bz = (gz + 1) * T.cell + 450; return aldeas.some((v) => v.x > ax && v.x < bx && v.z > az && v.z < bz); };
++  for (const P of aldeas.length ? structuresNear(gen, (x0 + x1) / 2, (z0 + z1) / 2, Math.max(x1 - x0, z1 - z0) / 2, ROAD_TO, cercaDeAldea) : []) {
+     const key = `s:${P.id}`;
+     if (seen.has(key)) continue;
+     seen.add(key);
