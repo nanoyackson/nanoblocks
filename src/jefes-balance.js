@@ -11,10 +11,10 @@ export const JEFES_BALANCE = {
     alias: ['cocodrilo'] },
   jaguar_viejo: { vida: 105, dano: 1.45 },
   guardian_colada: { vida: 150, dano: 1, alias: ['Guardián'] }, // v12.15.2 (C7): 150 de vida y 8 de golpe del diseño; sin recalibrar con bot-pelea (pendiente)
-  // v13.4.3 (CC4): los dueños de los salones; vida y daño del plan (§4), calibrados con las vueltas de `tools/revisar-duenos.mjs` (sin duelo con el bot todavía)
+  // v13.4.3 (CC4): los dueños de los salones; vida y daño del plan (§4), calibrados en la v13.4.4 con duelos de `tools/bot-pelea.js` (JEFES, equipo «media», 6 duelos por perfil): promedio gana 4 de 6 (igual que el Jaguar viejo, 3 de 4), torpe 0 de 6; la Madre pasó de 0,8 a 1,8 (ganaba 4 de 4 recibiendo 4,5) y la Reina de 1,2 a 1
   centinela_cristal: { vida: 95, dano: 1.1, alias: ['Centinela'] },
-  madre_esporal: { vida: 85, dano: 0.8, alias: ['Madre Esporal'] },
-  reina_agujas: { vida: 110, dano: 1.2, alias: ['Reina de las Agujas'] },
+  madre_esporal: { vida: 85, dano: 1.8, alias: ['Madre Esporal'] },
+  reina_agujas: { vida: 110, dano: 1, alias: ['Reina de las Agujas'] },
   llorona: { vida: 50, dano: 3 },
   segua: { vida: 70, dano: 2.95 },
   mona: { vida: 135, dano: 1.65 },

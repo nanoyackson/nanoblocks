@@ -362,6 +362,21 @@ export class Audio {
         this.noise(1.3, 1500, 0.5, 0.09, 'bandpass', 0, out, 0.35);
         this.noise(1.1, 3200, 0.8, 0.035, 'bandpass', 0.1, out, 0.3);
         break;
+      // v13.4.4 (CC5): el sonido propio de cada tipo de salón: el cristal canta (Candil), el hongo burbujea (Hongueada), el magma bulle (Caldera)
+      case 'cristal_canta': {
+        const f = 1500 + Math.random() * 900;
+        this.tone(f, 1.1, 0.07, 'sine', f * 0.997, 0, out, 0.005);
+        this.tone(f * 2.76, 0.7, 0.03, 'sine', f * 2.74, 0, out, 0.005);
+        break;
+      }
+      case 'hongo_burbuja':
+        this.tone(240, 0.16, 0.1, 'sine', 520, 0, out, 0.01);
+        this.tone(330, 0.12, 0.06, 'sine', 640, 0.09, out, 0.01);
+        break;
+      case 'magma_burbujea':
+        this.noise(0.5, 220, 0.7, 0.12, 'lowpass', 0, out, 0.05);
+        this.tone(70, 0.4, 0.1, 'sine', 110, 0, out, 0.03);
+        break;
       case 'grillo_cueva':
         for (let i = 0; i < 3; i++) this.tone(3600 + i * 120, 0.05, 0.05, 'square', 3300, i * 0.09, out, 0.004);
         break;

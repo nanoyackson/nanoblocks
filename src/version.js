@@ -5,7 +5,7 @@ export const GAME_NAME = 'NanoBlocks';
 // v13.1.0: la versión de generador de terreno MÁS NUEVA que este juego sabe hacer (la de los mundos nuevos). Si el anfitrión de una sala manda
 // una mayor, este cliente generaría un terreno distinto al suyo (cuevas flotando): se rechaza la entrada (red/sesion.js).
 export const GEN_MAX = 29; // v13.4.2: 29 = caminos guiados con talud, taludes de obras y lugares típicos por bioma (GEN_RUTAS en worldgen2.js) · v13.4.1: 28 = carácter de los salones, minerales por zona, lugares de cueva (GEN_CARACTER en worldgen2.js) · v13.4.0: 27 = reparto de biomas, bordes suaves, montaña real y construcciones del desierto (GEN_SUPERFICIE en worldgen2.js) · v13.3.3: 26 = simas, bocas gigantes, hitos (GEN_SIMAS en worldgen2.js) · v13.3.2: 25 = la Red Honda y los Salones (GEN_RED en worldgen2.js) · v13.3.0: 24 = obras integradas al terreno (GEN_INTEGRACION en worldgen2.js) · v13.2.0: 23 = lava más abajo (GEN_PROF en worldgen2.js)
-export const GAME_VERSION = '13.4.3';
+export const GAME_VERSION = '13.4.4';
 // v12.4.6: la versión MÁS VIEJA del juego que puede abrir lo que esta versión guarda. Se sube cuando un mundo guardado trae algo que un
 // juego anterior no entiende y lo rompería: bloques nuevos (ids que el mallador no conoce), un SAVE_FORMAT nuevo o un campo que cambia
 // de forma. Se guarda en meta.minVersion y el menú no abre un mundo cuyo minVersion sea más nuevo que este juego (12.4.0: los bloques 656–662).
@@ -26,6 +26,16 @@ export const CREDITS = [
 ];
 
 export const CHANGELOG = [
+  {
+    version: '13.4.4',
+    date: '2026-11-15',
+    title: 'Pulido de las cuevas: dueños calibrados y sonido por tipo (CC5)',
+    items: [
+      'CC5, pulido. Los tres dueños de los salones quedan calibrados con duelos reales del bot (`tools/bot-pelea.js`, `JEFES`, equipo «media», 6 duelos por perfil, junto al Jaguar viejo, el Cocodrilo gigante y la Terciopelo reina como referencia): el perfil promedio gana 4 de 6 con la Madre Esporal y con la Reina de las Agujas y 3 de 4 con el Centinela (los minijefes de referencia, 3 de 4), y el torpe no gana ninguno (igual que los de referencia). Ajustes: el daño de la Madre Esporal sube de 0,8 a 1,8 (ganaba 4 de 4 recibiendo 4,5 de daño) y el de la Reina de las Agujas baja de 1,2 a 1. Los tres entran en la lista de duelos del bot.',
+      'El sonido propio de cada tipo de salón (tiempo real, vale en mundos viejos): el cristal canta (Candil: dos campanitas), el hongo burbujea (Hongueada) y el magma bulle (Caldera). Cuentan entre los tres emisores de sonido más cercanos de la cueva, así que no suman más sonidos a la vez. `audio.js` trae las tres síntesis nuevas y `cuevavida.js` las toca; la prueba `tools/revisar-duenos.mjs` comprueba que existan y que la cueva las use.',
+      'Queda para una versión propia «La Hondura» (la segunda capa honda del plan): pide un generador nuevo (30) y su propia huella, así que no entra en un pulido sin generador.',
+    ],
+  },
   {
     version: '13.4.3',
     date: '2026-11-15',

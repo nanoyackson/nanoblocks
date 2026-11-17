@@ -12,6 +12,7 @@ import { PREMIO_BAJA, MINIJEFE, premioBaja } from '../src/precios.js';
 import { FUEL, RECIPES } from '../src/recipes.js';
 import { ITEMS, BLOCK_BY_KEY as K } from '../src/blocks.js';
 import { Body } from '../src/physics.js';
+import fs from 'node:fs';
 
 let fallas = 0;
 const ok = (c, m) => { console.log((c ? '  ✔ ' : '  ✘ ') + m); if (!c) fallas++; };
@@ -100,6 +101,11 @@ ok(RECIPES.some((r) => r.out && r.out[0] === K.cuerda && r.out[1] === 6), 'la cu
   ok(b.pos.y > 8, `colgado de la cuerda se sube (de 6 a ${b.pos.y.toFixed(1)})`);
   const y0 = b.pos.y; for (let i = 0; i < 20; i++) { b.enCuerda = true; b.vel.y = 0; b.step(mundo, 0.05); }
   ok(Math.abs(b.pos.y - y0) < 0.3, 'y quieto se sostiene');
+}
+// 5) v13.4.4 (CC5): el sonido propio de cada tipo de salón existe y la cueva lo toca
+{
+  const audio = fs.readFileSync(new URL('../src/audio.js', import.meta.url), 'utf8'), cueva = fs.readFileSync(new URL('../src/cuevavida.js', import.meta.url), 'utf8');
+  for (const nombre of ['cristal_canta', 'hongo_burbuja', 'magma_burbujea']) ok(audio.includes("case '" + nombre + "'") && cueva.includes("'" + nombre + "'"), 'el sonido «' + nombre + '» existe en audio.js y lo toca cuevavida.js');
 }
 console.log(fallas ? `\n✘ ${fallas} falla(s)` : '\nDueños de los salones: todo bien.');
 process.exitCode = fallas ? 1 : 0;

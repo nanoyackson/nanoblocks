@@ -260,6 +260,11 @@ export function cuadroCueva(g, dt) {
         const col = colorBrillo(id === K.glow_mushroom ? 'hongo' : 'cristal', bioma, regionAt(w.gen, x, z));
         g.particles.spawn(x + 0.5 + (Math.random() - 0.5) * 0.6, y + 0.6, z + 0.5 + (Math.random() - 0.5) * 0.6, col, (Math.random() - 0.5) * 0.1, 0.12, (Math.random() - 0.5) * 0.1, 1.4, -0.05, true);
         anotarCueva(g, id === K.glow_mushroom ? 'hongos' : 'cristal');
+        // v13.4.4 (CC5): y suena: el cristal canta y el hongo burbujea (los tres emisores más cercanos)
+        nuevas.push({ tipo: id === K.glow_mushroom ? 'hongo' : 'cristal', x: x + 0.5, y: y + 0.5, z: z + 0.5, prox: Math.random() * 4 }); seen.add(k);
+      }
+      else if (id === K.magma) {
+        nuevas.push({ tipo: 'magma', x: x + 0.5, y: y + 0.9, z: z + 0.5, prox: Math.random() * 2 }); seen.add(k);
       }
     }
     S.fuentes = nuevas.slice(0, 30);
@@ -277,6 +282,9 @@ export function cuadroCueva(g, dt) {
     q.prox -= dt;
     if (q.prox > 0) continue;
     if (q.tipo === 'gota') { q.prox = 1.8 + Math.random() * 3.8; A.play('gota', { pos: q, vol: 0.45, pitch: 0.85 + Math.random() * 0.6 }); }
+    else if (q.tipo === 'cristal') { q.prox = 4 + Math.random() * 6; A.play('cristal_canta', { pos: q, vol: 0.3, pitch: 0.9 + Math.random() * 0.3 }); }
+    else if (q.tipo === 'hongo') { q.prox = 5 + Math.random() * 7; A.play('hongo_burbuja', { pos: q, vol: 0.28, pitch: 0.85 + Math.random() * 0.4 }); }
+    else if (q.tipo === 'magma') { q.prox = 2 + Math.random() * 3; A.play('magma_burbujea', { pos: q, vol: 0.4, pitch: 0.9 + Math.random() * 0.2 }); }
     else { q.prox = 1.0 + Math.random() * 0.5; A.play('agua_corre', { pos: q, vol: 0.32, pitch: 0.9 + Math.random() * 0.2 }); }
   }
 }

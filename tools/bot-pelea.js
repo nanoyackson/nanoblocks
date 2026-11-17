@@ -54,7 +54,7 @@ const DUELO_MOBS = [
 export const DUELOS = ['temprana', 'media', 'tardia'].flatMap((e) => DUELO_MOBS.map(([m, x]) => duelo(m, e, x)));
 // v12.4.8: los 19 jefes con el equipo esperado de la tabla 1.3 del diseño (los del cielo, con arco)
 export const JEFES_LISTA = [
-  ['terciopelo_reina', 'media'], ['cocodrilo_gigante', 'media'], ['jaguar_viejo', 'media'], ['llorona', 'media'], ['segua', 'media'], ['mona', 'media'], ['cadejos', 'media'],
+  ['terciopelo_reina', 'media'], ['cocodrilo_gigante', 'media'], ['jaguar_viejo', 'media'], ['centinela_cristal', 'media'], ['madre_esporal', 'media'], ['reina_agujas', 'media'], ['llorona', 'media'], ['segua', 'media'], ['mona', 'media'], ['cadejos', 'media'],
   ['viejo_monte', 'media'], ['tulevieja', 'media', { arco: true }], ['mono_congo_gigante', 'media'], // el capitán de la goleta no se mide: fuera de su barco no pelea (sale con 0 s)
   ['reina_bananera', 'jefeHierro'], ['cascabel_rey', 'jefeHierro'], ['escarabajo_hercules', 'jefeHierro'], ['sapo_tata', 'jefeHierro'], ['cangrejo_rey', 'jefeHierro'], ['ciempies_rey', 'jefeHierro'],
   ['rey_murcielago', 'jefeHierro', { arco: true }], ['jefa_ventanilla', 'jefeHierro'],
