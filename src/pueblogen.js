@@ -2,7 +2,7 @@
 // Plaza de fútbol, iglesia con campanario, pulpería, soda, parada de bus y casitas de colores con techo de teja.
 import { hash3, mulberry32 } from './noise.js';
 import { BLOCK_BY_KEY as K, SOLID } from './blocks.js';
-import { planVillage6, buildStreets, buildKind6 } from './pueblo6.js';
+import { planVillage6, buildStreets, buildKind6, gradeH } from './pueblo6.js';
 
 export const CELL = 384;
 const SEA = 62;
@@ -21,6 +21,23 @@ export function rellenarBajoObras(blocks, idx, toc) {
   }
 }
 
+// v13.5.0 (generador 30): sitio del pueblo. Tres anillos alrededor del centro: a 15 (8 puntos) y a 30 (12 puntos) ni agua ni río (el pueblo no queda partido por un río); a 56 (8 puntos, donde llegan las calles)
+// puede haber río (las calles lo cruzan por un puente de madera). Desnivel máximo a 30 de 16 y a 56 de 30: lo que no es llano se aplana (gradeH en pueblo6.js: corte y relleno con talud 1:1). Un caserío (sin calles)
+// pide el sitio llano de antes (7 y 16). «Río» = dentro del valle que talla el generador (ruido del río bajo la banda de ese punto).
+const anillo30 = (R, n, ph) => { const a = []; for (let i = 0; i < n; i++) a.push([Math.round(R * Math.cos(i * 2 * Math.PI / n + ph)), Math.round(R * Math.sin(i * 2 * Math.PI / n + ph))]); return a; };
+// (los puntos van salteados para que lo que falla se encuentre pronto)
+const salto30 = (a) => a.map((_, i) => a[(i * 5) % a.length]);
+const A15 = salto30(anillo30(15, 8, 0)), A30 = salto30(anillo30(30, 12, 0)), A56 = salto30(anillo30(56, 8, 0.39));
+const enRio30 = (q) => q.rio < 0.1 * (1 + Math.max(0, q.h - SEA - 6) / 14);
+function sitioLlano(gen, x, z, h0, caserio) {
+  const anillos = [[A30, caserio ? 7 : 16, true], [A15, 99, true], [A56, caserio ? 16 : 30, caserio]];
+  for (const [pts, dmax, rio] of anillos) for (const [dx, dz] of pts) {
+    const q = gen.column(x + dx, z + dz);
+    if (Math.abs(q.h - h0) > dmax || q.h <= SEA + 1 || (rio && enRio30(q))) return false;
+  }
+  return true;
+}
+
 // ---------- elegir dónde hay pueblo ----------
 export function villageAt(gen, cx, cz) {
   const key = `${cx},${cz}`;
@@ -30,13 +47,18 @@ export function villageAt(gen, cx, cz) {
   const s = gen.seed;
   const v6 = gen.version >= 6, m = v6 ? 110 : 70;
   if (hash3(s, cx, 9191, cz) < 0.45) {
-    const x = Math.floor(cx * CELL + m + hash3(s, cx, 1, cz) * (CELL - 2 * m));
-    const z = Math.floor(cz * CELL + m + hash3(s, cx, 2, cz) * (CELL - 2 * m));
-    const c = gen.column(x, z);
-    const ok = (v6 ? ['plains', 'forest', 'jungle', 'bosque_seco'] : ['plains', 'forest', 'jungle']).includes(c.biome) && c.h > SEA + 2 && c.h < 92;
-    let flat = ok;
-    if (ok) for (const [dx, dz] of [[20, 0], [-20, 0], [0, 20], [0, -20], [14, 14], [-14, -14]]) if (Math.abs(gen.column(x + dx, z + dz).h - c.h) > 7) flat = false;
-    if (flat) v = (v6 && planVillage6(gen, x, z, c.h, hash3(s, cx, 3, cz))) || planVillage(gen, x, z, c.h, hash3(s, cx, 3, cz));
+    // v13.5.0 (generador 30): hasta once sitios por celda (el primero es el de siempre) y el sitio se escoge con sitioLlano y el pueblo se aplana con gradeH
+    const intentos = gen.version >= 30 ? 11 : 1;
+    for (let k = 0; k < intentos && !v; k++) {
+      const x = Math.floor(cx * CELL + m + hash3(s, cx, k ? 1000 + k : 1, cz) * (CELL - 2 * m));
+      const z = Math.floor(cz * CELL + m + hash3(s, cx, k ? 2000 + k : 2, cz) * (CELL - 2 * m));
+      const c = gen.column(x, z);
+      const ok = (v6 ? ['plains', 'forest', 'jungle', 'bosque_seco'] : ['plains', 'forest', 'jungle']).includes(c.biome) && c.h > SEA + 2 && c.h < 92;
+      let flat = ok;
+      if (ok && gen.version >= 30) flat = sitioLlano(gen, x, z, c.h, hash3(s, cx, 3, cz) < 0.28);
+      else if (ok) for (const [dx, dz] of [[20, 0], [-20, 0], [0, 20], [0, -20], [14, 14], [-14, -14]]) if (Math.abs(gen.column(x + dx, z + dz).h - c.h) > 7) flat = false;
+      if (flat) v = (v6 && planVillage6(gen, x, z, c.h, hash3(s, cx, 3, cz))) || planVillage(gen, x, z, c.h, hash3(s, cx, 3, cz));
+    }
   }
   gen.villageCache.set(key, v);
   return v;
@@ -100,7 +122,7 @@ export function buildVillageInChunk(gen, cx, cz, blocks, idx) {
   for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) {
     const v = villageAt(gen, vcx + dx, vcz + dz);
     if (!v) continue;
-    const VR = v.R || 46;
+    const VR = (v.R || 46) + (gen.version >= 30 && v.streets ? 18 : 0); // v30: el talud del aplanado llega hasta 48 fuera del cuadro del pueblo
     if (Math.abs(v.x - (x0 + 8)) > VR + 24 || Math.abs(v.z - (z0 + 8)) > VR + 24) continue;
     const set = (wx, wy, wz, id) => {
       const lx = wx - x0, lz = wz - z0;
@@ -118,8 +140,13 @@ export function buildVillageInChunk(gen, cx, cz, blocks, idx) {
     for (let lz = 0; lz < 16; lz++) for (let lx = 0; lx < 16; lx++) {
       const wx = x0 + lx, wz = z0 + lz;
       if (v.R ? Math.max(Math.abs(wx - v.x), Math.abs(wz - v.z)) > VR : Math.hypot(wx - v.x, wz - v.z) > 46) continue;
-      const hh = gen.column(wx, wz).h;
+      const col = gen.column(wx, wz), hh = col.h;
       for (let yy = hh + 1; yy < Math.min(128, hh + 26); yy++) if (TREE.has(blocks[idx(lx, yy, lz)])) blocks[idx(lx, yy, lz)] = 0;
+      if (gen.version >= 30 && v.streets) { // v30: el terreno del pueblo se corta y se rellena a la superficie aplanada, con talud 1:1 hacia afuera
+        const t = gradeH(gen, v, wx, wz, col);
+        if (t < hh) { for (let yy = t + 1; yy <= Math.min(127, hh + 26); yy++) blocks[idx(lx, yy, lz)] = 0; blocks[idx(lx, t, lz)] = K.grass; blocks[idx(lx, t - 1, lz)] = K.dirt; }
+        else if (t > hh) { for (let yy = hh; yy < t; yy++) blocks[idx(lx, yy, lz)] = K.dirt; blocks[idx(lx, t, lz)] = K.grass; }
+      }
     }
     // caminos de grava desde la plaza a cada edificio
     const c6 = { gen, set, get, inChunk, out, door: (dx, dy, dz, f) => door(set, out, dx, dy, dz, f, inChunk), foundation: (b) => foundation(gen, b, set, inChunk) };

@@ -87,7 +87,7 @@ function makeSegment(gen, A, B) {
 // Se mide cada ~14 bloques (len / 14 muestras por curva, 9 curvas): una vez por tramo y sin buscar obras (structuresNear costaba 4 s la primera vez; las obras ajenas se
 // respetan al dibujar, ver buildRoadsInChunk). Todo sale de column(), igual en anfitrión e invitado.
 function mejorCurva(gen, ax, az, bx, bz, len, off0) {
-  const nx = -(bz - az) / len, nz = (bx - ax) / len, M = Math.max(8, Math.ceil(len / 14));
+  const nx = -(bz - az) / len, nz = (bx - ax) / len, M = Math.max(8, Math.ceil(len / (gen.version >= 30 ? 20 : 14)));
   let mejor = off0, costeMejor = Infinity;
   for (let k = -4; k <= 4; k++) {
     const off = k === 0 ? off0 : (k / 4) * 0.35 * len, mx = (ax + bx) / 2 + nx * off, mz = (az + bz) / 2 + nz * off;

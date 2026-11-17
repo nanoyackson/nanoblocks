@@ -33,6 +33,9 @@ export const GEN_CARACTER = 28;
 // v13.4.2 (generador 29, resto de la superficie): caminos que rodean y con talud (I4, I10), talud de las obras (I3) y los lugares típicos de cada bioma (B3). Lo nuevo vive en
 // carreteras.js (`gen.version >= 29`), estructuras.js (`minV: 29` y `talud`) y tipicas.js; los mundos <= 28 salen idénticos.
 export const GEN_RUTAS = 29;
+// v13.5.0 (generador 30, pueblos y calles): sitio de pueblo llano y sin río (hasta cuatro intentos por celda) y calles con perfil suave y media losa. Vive en pueblogen.js y pueblo6.js
+// (`gen.version >= 30`); los mundos <= 29 salen idénticos.
+export const GEN_PUEBLOS = 30;
 const ORO_28 = [4, 4, 5], DIAMANTE_28 = [3, 5, 6]; // tamaño de las vetas por zona (el rendimiento real lo mide tools/revisar-contenido.mjs)
 // pesos (en %) del tipo de salón por clase de bioma de arriba: candil, hongueada, agujas, laguna, caldera (plan §9.2 B4)
 const PESOS_TIPO = { humedo: [10, 40, 15, 30, 5], seco: [25, 5, 50, 0, 20], frio: [45, 5, 20, 10, 20], volcan: [10, 0, 10, 0, 80], neutro: [20, 20, 25, 15, 20] };

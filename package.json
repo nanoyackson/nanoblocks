@@ -1,6 +1,6 @@
 {
   "name": "nanoblocks",
-  "version": "13.4.4",
+  "version": "13.5.0",
   "private": true,
   "description": "NanoBlocks: juego voxel de supervivencia y construcción hecho desde cero con IA",
   "type": "module",
@@ -9,7 +9,7 @@
     "build": "vite build && node tools/generar-sw.mjs",
     "preview": "vite preview",
     "lint": "eslint . --max-warnings 0",
-    "revisar": "node tools/revisar-version.mjs && node tools/revisar-trozos.mjs && node tools/revisar-nombres.mjs && node tools/revisar-recetas.mjs && node tools/revisar-iconos.mjs && node tools/revisar-agarre.mjs && node tools/revisar-avisos.mjs && node tools/revisar-pide.mjs && node tools/revisar-plata.mjs && node tools/revisar-importar.mjs && node tools/revisar-ext-item.mjs && node tools/revisar-luces.mjs && node tools/revisar-red.mjs && node tools/revisar-inventario-red.mjs && node tools/revisar-cofres.mjs && node tools/revisar-rey.mjs && node tools/revisar-red4.mjs && node tools/revisar-separar.mjs && node tools/revisar-picar.mjs && node tools/revisar-progresion.mjs && node tools/revisar-cuevas.mjs && node tools/revisar-karst.mjs && node tools/revisar-cuevavida.mjs && node tools/revisar-profundidad.mjs && node tools/revisar-pwa.mjs && node tools/revisar-masa.mjs && node tools/huella-mundos.mjs && node tools/revisar-integracion.mjs && node tools/revisar-golpe3p.mjs && node tools/revisar-red-honda.mjs && node tools/revisar-simas.mjs && node tools/revisar-contenido.mjs && node tools/revisar-cuevacosas.mjs && node tools/revisar-identidad.mjs && node tools/revisar-superficie.mjs && node tools/revisar-caracter.mjs && node tools/revisar-rutas.mjs && node tools/revisar-duenos.mjs"
+    "revisar": "node tools/revisar-version.mjs && node tools/revisar-trozos.mjs && node tools/revisar-nombres.mjs && node tools/revisar-recetas.mjs && node tools/revisar-iconos.mjs && node tools/revisar-agarre.mjs && node tools/revisar-avisos.mjs && node tools/revisar-pide.mjs && node tools/revisar-plata.mjs && node tools/revisar-importar.mjs && node tools/revisar-ext-item.mjs && node tools/revisar-luces.mjs && node tools/revisar-red.mjs && node tools/revisar-inventario-red.mjs && node tools/revisar-cofres.mjs && node tools/revisar-rey.mjs && node tools/revisar-red4.mjs && node tools/revisar-separar.mjs && node tools/revisar-picar.mjs && node tools/revisar-progresion.mjs && node tools/revisar-cuevas.mjs && node tools/revisar-karst.mjs && node tools/revisar-cuevavida.mjs && node tools/revisar-profundidad.mjs && node tools/revisar-pwa.mjs && node tools/revisar-masa.mjs && node tools/huella-mundos.mjs && node tools/revisar-integracion.mjs && node tools/revisar-golpe3p.mjs && node tools/revisar-red-honda.mjs && node tools/revisar-simas.mjs && node tools/revisar-contenido.mjs && node tools/revisar-cuevacosas.mjs && node tools/revisar-identidad.mjs && node tools/revisar-superficie.mjs && node tools/revisar-caracter.mjs && node tools/revisar-rutas.mjs && node tools/revisar-pueblos.mjs && node tools/revisar-duenos.mjs"
   },
   "dependencies": {
     "three": "0.170.0",

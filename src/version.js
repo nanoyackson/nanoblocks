@@ -4,8 +4,8 @@
 export const GAME_NAME = 'NanoBlocks';
 // v13.1.0: la versión de generador de terreno MÁS NUEVA que este juego sabe hacer (la de los mundos nuevos). Si el anfitrión de una sala manda
 // una mayor, este cliente generaría un terreno distinto al suyo (cuevas flotando): se rechaza la entrada (red/sesion.js).
-export const GEN_MAX = 29; // v13.4.2: 29 = caminos guiados con talud, taludes de obras y lugares típicos por bioma (GEN_RUTAS en worldgen2.js) · v13.4.1: 28 = carácter de los salones, minerales por zona, lugares de cueva (GEN_CARACTER en worldgen2.js) · v13.4.0: 27 = reparto de biomas, bordes suaves, montaña real y construcciones del desierto (GEN_SUPERFICIE en worldgen2.js) · v13.3.3: 26 = simas, bocas gigantes, hitos (GEN_SIMAS en worldgen2.js) · v13.3.2: 25 = la Red Honda y los Salones (GEN_RED en worldgen2.js) · v13.3.0: 24 = obras integradas al terreno (GEN_INTEGRACION en worldgen2.js) · v13.2.0: 23 = lava más abajo (GEN_PROF en worldgen2.js)
-export const GAME_VERSION = '13.4.4';
+export const GEN_MAX = 30; // v13.5.0: 30 = pueblos en sitio llano sin río y calles con perfil suave y media losa (GEN_PUEBLOS en worldgen2.js) · v13.4.2: 29 = caminos guiados con talud, taludes de obras y lugares típicos por bioma (GEN_RUTAS en worldgen2.js) · v13.4.1: 28 = carácter de los salones, minerales por zona, lugares de cueva (GEN_CARACTER en worldgen2.js) · v13.4.0: 27 = reparto de biomas, bordes suaves, montaña real y construcciones del desierto (GEN_SUPERFICIE en worldgen2.js) · v13.3.3: 26 = simas, bocas gigantes, hitos (GEN_SIMAS en worldgen2.js) · v13.3.2: 25 = la Red Honda y los Salones (GEN_RED en worldgen2.js) · v13.3.0: 24 = obras integradas al terreno (GEN_INTEGRACION en worldgen2.js) · v13.2.0: 23 = lava más abajo (GEN_PROF en worldgen2.js)
+export const GAME_VERSION = '13.5.0';
 // v12.4.6: la versión MÁS VIEJA del juego que puede abrir lo que esta versión guarda. Se sube cuando un mundo guardado trae algo que un
 // juego anterior no entiende y lo rompería: bloques nuevos (ids que el mallador no conoce), un SAVE_FORMAT nuevo o un campo que cambia
 // de forma. Se guarda en meta.minVersion y el menú no abre un mundo cuyo minVersion sea más nuevo que este juego (12.4.0: los bloques 656–662).
@@ -26,6 +26,17 @@ export const CREDITS = [
 ];
 
 export const CHANGELOG = [
+  {
+    version: '13.5.0',
+    date: '2026-11-17',
+    title: 'Generador 30: los mismos pueblos, aplanados, con calles suaves',
+    items: [
+      'Generador 30 (pueblos y calles, `GEN_PUEBLOS` en worldgen2.js; `GEN_MAX` 30; los mundos creados antes salen idénticos, huella 21-29 en `tools/huella-mundos.mjs`; un mundo 30 pide la 13.5.0). Los MISMOS pueblos que el 29, aplanados: en cuatro semillas 58 pueblos contra 64 (de esos 64, 53 estaban en ladera, con agua o con un río adentro). `sitioLlano` (pueblogen.js) elige el sitio con tres anillos alrededor del centro: a 15 (8 puntos) y a 30 (12 puntos) sin agua ni río (el pueblo no queda partido por un río), a 56 (8 puntos) puede haber río y las calles lo cruzan por un puente de madera; desnivel hasta 16 a 30 y 30 a 56 (un caserío, sin calles, sigue pidiendo 7 y 16 y sin río). Cada celda prueba hasta once sitios (el primero es el de siempre, los otros salen de `hash3`).',
+      'El pueblo se aplana en vez de seguir la ladera (`perfil` y `gradeH` en pueblo6.js): un plano ajustado al terreno con la mitad de la pendiente (12 columnas) es la superficie del pueblo; dentro del cuadro del pueblo el terreno se corta y se rellena a esa superficie y hasta 48 bloques más afuera se une con talud 1:1 (nunca pared); el aplanado se desvanece cerca del agua y de la costa para que la orilla no quede en una zanja. Los edificios, parques, plazas y campos se asientan a la altura aplanada (en el 29 un edificio más de 10 sobre o bajo el centro se descartaba). Las calles leen el mismo plano (se cruzan a la misma altura), sube o baja como máximo 1 entre un bloque y el siguiente (el 29 daba 17 saltos de 2 o más en 9 pueblos) y donde sube hay media losa de asfalto antes del escalón. Los tramos de camino prueban la curva con una muestra cada ~20 bloques (antes ~14).',
+      'Medido (`tools/revisar-pueblos.mjs`, nueva y enlazada en `npm run revisar`): 58 pueblos del 30 contra 64 del 29 (±10 %), ninguno con agua, con río a 30 del centro ni en ladera mayor que la que se aplana; el aplanado mueve el 37 % de las columnas del pueblo y de su talud sin dejar paredes de más de 3 (ni zanjas de más de 5 sobre el agua) que el terreno natural no tuviera; 0 saltos de 2 o más en las calles de 9 pueblos (4 356 bloques de eje); trozo de pueblo de 8,7 ms de mediana (el 29: 9,6; p90 10,6); costo de los tramos de camino al caminar 3 000 bloques en seis semillas: 6 054 → 6 568 ms en total (+8,5 %) y 4 044 → 4 207 ms la peor llamada (+4 %). Capturas en `docs/revisiones/capturas_1350/` (pueblo aterrazado en ladera y pueblo junto al agua). Prueba en red con dos pestañas: 182 trozos alrededor de un pueblo y sus caminos dan el mismo hash en anfitrión e invitado.',
+      'Queda para la 13.5.1 (generador 31): túneles R4 solo donde no haya otra salida, zigzag R3 en laderas fuertes, caminos que rodeen obras ajenas con un chequeo barato, y la flora propia.',
+    ],
+  },
   {
     version: '13.4.4',
     date: '2026-11-15',

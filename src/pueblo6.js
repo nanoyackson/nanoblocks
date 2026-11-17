@@ -25,6 +25,8 @@ export function planVillage6(gen, x, z, y, r) {
   const pool = reg && reg.towns.length ? reg.towns : TOWNS;
   const name = pool[Math.floor(rnd() * pool.length)];
   const v = { id: `${x},${z}`, x, z, y, buildings: [], npcs: [], streets: [], R: L + 34, L, city, name };
+  const v30 = gen.version >= 30;
+  if (v30) { perfil(gen, v); y = gradeH(gen, v, x, z, gen.column(x, z)); v.y = y; } // v30: el pueblo se asienta en la superficie aplanada
   const add = (kind, dx, dz, w, d, face, extra = {}) => { const b = { kind, x: x + dx, z: z + dz, w, d, face, ...extra }; v.buildings.push(b); return v.buildings.length - 1; };
   // calles en forma de numeral (#) alrededor del parque, de 7 de ancho con acera
   v.streets.push({ x: x - L, z: z - 16, w: 2 * L + 1, d: 7, axis: 'x' }, { x: x - L, z: z + 10, w: 2 * L + 1, d: 7, axis: 'x' });
@@ -93,11 +95,14 @@ export function planVillage6(gen, x, z, y, r) {
   }
   // altura de cada edificio; los que caen en agua o en una loma muy alta no se construyen
   v.buildings = v.buildings.filter((b) => {
-    if (b.kind === 'parque' || b.kind === 'parada' || b.kind === 'plaza') { b.y = y; return true; }
-    if (['cafetal', 'potrero', 'bananal', 'milpa'].includes(b.kind)) { const h = gen.column(b.x + 10, b.z + 10).h; b.y = h; return h >= SEA && Math.abs(h - y) <= 14; }
-    const h = gen.column(b.x + (b.w >> 1), b.z + (b.d >> 1)).h;
-    b.y = Math.max(SEA + 1, h);
-    return h >= SEA && Math.abs(h - y) <= 10;
+    const parque = b.kind === 'parque' || b.kind === 'parada' || b.kind === 'plaza', campo = !parque && ['cafetal', 'potrero', 'bananal', 'milpa'].includes(b.kind);
+    const cx = campo ? b.x + 10 : b.x + (b.w >> 1), cz = campo ? b.z + 10 : b.z + (b.d >> 1);
+    if (parque && !v30) { b.y = y; return true; }
+    const col = gen.column(cx, cz), h = col.h, g = v30 ? gradeH(gen, v, cx, cz, col) : h;
+    if (parque) { b.y = g; return true; }
+    if (campo) { b.y = g; return h >= SEA && (v30 || Math.abs(h - y) <= 14); }
+    b.y = Math.max(SEA + 1, g);
+    return h >= SEA && (v30 || Math.abs(h - y) <= 10);
   });
   const iglesia = v.buildings.find((b) => b.kind === 'iglesia6');
   if (iglesia) v.bell = { x: iglesia.x + 1, y: iglesia.y + 15, z: iglesia.z + iglesia.d - 2 };
@@ -126,7 +131,37 @@ export function planVillage6(gen, x, z, y, r) {
 }
 
 // ---------- calles ----------
+// v13.5.0 (generador 30): superficie del pueblo. Un plano ajustado al terreno (la pendiente se mide con 12 columnas, 3 a cada lado a 28 del centro) con la mitad de la pendiente: el pueblo
+// se aplana en vez de seguir la ladera (el terreno se corta y se rellena a esta superficie, ver gradeH). Todas las calles leen el mismo plano (se cruzan a la misma altura) y su pendiente nunca
+// pasa de 0,5, así que entre un bloque y el siguiente sube o baja como máximo 1. (Son pocas columnas a propósito: villageAt arma muchos pueblos que nadie visita.)
+const PERFILES = new WeakMap();
+function perfil(gen, v) {
+  let P = PERFILES.get(v);
+  if (P) return P;
+  const m = (dx, dz) => Math.max(gen.column(v.x + dx, v.z + dz).h, SEA);
+  const gx = (m(28, -14) + m(28, 0) + m(28, 14) - m(-28, -14) - m(-28, 0) - m(-28, 14)) / 168, gz = (m(-14, 28) + m(0, 28) + m(14, 28) - m(-14, -28) - m(0, -28) - m(14, -28)) / 168;
+  const sx = Math.max(-0.5, Math.min(0.5, gx * 0.5)), sz = Math.max(-0.5, Math.min(0.5, gz * 0.5));
+  P = { at(x, z) { return Math.max(SEA + 1, Math.round(v.y + sx * (x - v.x) + sz * (z - v.z))); } };
+  PERFILES.set(v, P);
+  return P;
+}
+
+// v13.5.0 (generador 30): altura final de una columna del pueblo. Dentro del cuadro del pueblo (L + 2 de lado) es la superficie aplanada del perfil; hasta 48 más afuera el terreno
+// se une con talud 1:1 (nunca pared); el agua no se toca y cerca de un río o de la costa el aplanado se desvanece poco a poco (peso w según qué tan lejos está del valle del río y qué tan alto sobre el mar), para que la orilla no quede en una
+// pared. `col` es la columna natural (column(x, z)).
+export function gradeH(gen, v, x, z, col) {
+  const h = col.h;
+  if (h < SEA) return h;
+  const Rg = v.L + 2, dx = Math.max(Math.abs(x - v.x) - Rg, 0), dz = Math.max(Math.abs(z - v.z) - Rg, 0), d = Math.max(dx, dz);
+  if (d > 48) return h;
+  const P = perfil(gen, v), Sb = P.at(Math.max(v.x - Rg, Math.min(v.x + Rg, x)), Math.max(v.z - Rg, Math.min(v.z + Rg, z)));
+  let t = d === 0 ? Sb : h > Sb ? Math.min(h, Sb + d) : Math.max(h, Sb - d);
+  const w = Math.max(0, Math.min(1, (col.rio / 0.1 - 1) / 1.5, (h - SEA - 1) / 16));
+  return Math.max(Math.round(h + (t - h) * w), SEA);
+}
+
 export function buildStreets(c, v) {
+  const v30 = c.gen.version >= 30, P = v30 ? perfil(c.gen, v) : null;
   for (const s of v.streets) {
     for (let z = s.z; z < s.z + s.d; z++) for (let x = s.x; x < s.x + s.w; x++) {
       if (!c.inChunk(x, z)) continue;
@@ -136,14 +171,15 @@ export function buildStreets(c, v) {
         if (c.gen.version >= 24 && h >= SEA - 12) {
           const ac = s.axis === 'x' ? z - s.z : x - s.x;
           for (let yy = SEA + 1; yy < SEA + 6; yy++) c.set(x, yy, z, 0);
-          c.set(x, SEA, z, K.concreto);
+          c.set(x, SEA, z, v30 ? K.planks : K.concreto); // v30: puente de madera sobre el río
           if (ac === 0 || ac === 6) c.set(x, SEA + 1, z, K.cerca);
         }
         continue;
       }
       const across = s.axis === 'x' ? z - s.z : x - s.x, along = s.axis === 'x' ? x : z;
-      const y = Math.max(h, SEA);
-      for (let yy = y + 1; yy < y + 8; yy++) c.set(x, yy, z, 0);
+      const y = v30 ? P.at(x, z) : Math.max(h, SEA);
+      for (let yy = y + 1; yy < y + 8 || (v30 && yy <= h + 1); yy++) c.set(x, yy, z, 0);
+      if (v30) for (let yy = Math.max(h, SEA - 1) + 1; yy < y - 1; yy++) c.set(x, yy, z, K.dirt); // terraplén bajo la calle
       c.set(x, y - 1, z, K.dirt);
       let id = across === 0 || across === 6 ? K.acera : across === 3 && ((along % 6) + 6) % 6 < 3 ? K.asfalto_linea : K.asfalto;
       // algún hueco y algún parche (esto es Costa Rica)
@@ -151,6 +187,8 @@ export function buildStreets(c, v) {
       if (id === K.asfalto && hh < 6) { c.set(x, y - 1, z, K.dirt); id = hh < 3 ? K.water : 0; }
       else if (id === K.asfalto && hh < 30) id = K.cobble;
       c.set(x, y, z, id);
+      // v30: media losa donde la calle sube un bloque (se camina sin saltar)
+      if (v30 && id) { const nx = s.axis === 'x' ? 1 : 0, nz = 1 - nx; if (P.at(x + nx, z + nz) === y + 1 || P.at(x - nx, z - nz) === y + 1) c.set(x, y + 1, z, K.losa_asfalto); }
       // postes cada 9 sobre la acera, con cable de uno al otro
       if (across === 0 && ((along % 9) + 9) % 9 === 0) for (let yy = y + 1; yy <= y + 7; yy++) c.set(x, yy, z, K.poste);
       else if (across === 0) c.set(x, y + 7, z, s.axis === 'x' ? K.cable : K.cable_z);
