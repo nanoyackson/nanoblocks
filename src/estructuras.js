@@ -26,6 +26,7 @@ import { buildCahuita, buildTenorio, buildMonteverde, buildPaloVerde, placeIslaC
 import { buildMarinoBallena, buildCorcovado, buildManuelAntonio, buildTortuguero } from './parques.js';
 import { buildSanatorio, buildMetalico, buildCorreos, buildMuseoNinos, buildGrecia, buildCoronado, buildUjarras, buildSantaRosa, buildEsferas, buildAduana } from './historicos.js';
 import { buildOasis, buildPozo, buildCarretaSeca } from './desierto.js';
+import { buildMirador, buildMuelle, buildCairn, buildBotanico, buildHaciendaVieja } from './tipicas.js';
 import { buildEstadioNacional, buildEstadioObra, buildEstacion, buildMonumentoNacional, buildTemploMusica } from './estadios.js';
 // v12.4.9: los bloques de forma que tienen versión girada (solo el postigo: los demás quedan como siempre para no cambiar mundos viejos)
 const GIRA = { [K.postigo]: K.postigo_z, [K.postigo_z]: K.postigo, [K.postigo_abierto]: K.postigo_z_abierto, [K.postigo_z_abierto]: K.postigo_abierto };
@@ -86,6 +87,20 @@ class Ctx {
       for (let y = Math.min(g, 0); y < 0; y++) this.set(x, y, z, mat);
       if (floor !== null) this.set(x, 0, z, floor);
       for (let y = 1; y <= clear; y++) this.set(x, y, z, 0);
+    }
+    if (this.gen.version >= 29) this.talud(ax, az, bx, bz);
+  }
+  // v13.4.2 (I3, generador 29): en vez de una pared al borde de la huella, el terreno baja (o se corta) en talud 1:1 hasta 6 bloques afuera
+  talud(ax, az, bx, bz) {
+    const K6 = 6;
+    for (let z = az - K6; z <= bz + K6; z++) for (let x = ax - K6; x <= bx + K6; x++) {
+      const ex = Math.max(ax - x, 0, x - bx), ez = Math.max(az - z, 0, z - bz), d = Math.max(ex, ez) + Math.min(ex, ez) * 0.5;
+      if (d <= 0 || d > K6) continue;
+      const [wx, wz] = this.w(x, z);
+      if (!this.inChunk(wx, wz)) continue;
+      const g = this.ground(x, z), nivel = Math.ceil(d); // altura que debe tener el talud a esta distancia (sube con 1:1 hacia el terreno)
+      if (g < -nivel) { for (let y = g + 1; y <= -nivel; y++) this.set(x, y, z, y === -nivel ? K.grass : K.dirt); }
+      else if (g > nivel) { for (let y = nivel + 1; y <= g + 1; y++) { const i = this.idx(wx - this.x0, this.oy + y, wz - this.z0); if (!TREE.has(this.blocks[i]) && this.blocks[i] !== 0) this.set(x, y, z, 0); } }
     }
   }
   // despejar árboles alrededor (troncos, hojas y bejucos que quedarían flotando)
@@ -928,6 +943,12 @@ const TYPES = [
   { key: 'oasis_ruina', minV: 27, cell: 2000, chance: 0.9, R: 11, clearR: 12, salt: 8181, tries: 90, fits: land(9, 3, ['desert']), build: buildOasis },
   { key: 'pozo_arriero', minV: 27, cell: 1700, chance: 0.8, R: 7, clearR: 8, salt: 8282, tries: 90, fits: land(6, 2, ['desert']), build: buildPozo },
   { key: 'carreta_seca', minV: 27, cell: 2200, chance: 0.7, R: 8, clearR: 8, salt: 8383, tries: 90, fits: land(6, 2, ['desert']), build: buildCarretaSeca },
+  // v13.4.2 (generador 29, B3): el lugar típico de los biomas con identidad que no tenían uno
+  { key: 'mirador_neblina', minV: 29, cell: 1500, chance: 0.85, R: 9, clearR: 9, salt: 8484, tries: 90, fits: land(6, 4, ['nuboso']), build: buildMirador },
+  { key: 'muelle_pianguero', minV: 29, cell: 1600, chance: 0.85, R: 16, clearR: 8, salt: 8585, tries: 120, fits: (gen, x, z, c) => (c.biome === 'manglar' && c.h >= SEA - 3 && c.h <= SEA + 1 ? {} : null), build: buildMuelle },
+  { key: 'cairn_antiguos', minV: 29, cell: 1500, chance: 0.85, R: 8, clearR: 8, salt: 8686, tries: 90, fits: (gen, x, z, c) => (c.biome === 'paramo' && c.h < 125 && flat(gen, x, z, c.h, 5, 4) ? {} : null), build: buildCairn },
+  { key: 'campamento_botanico', minV: 29, cell: 1500, chance: 0.85, R: 9, clearR: 9, salt: 8787, tries: 90, fits: land(5, 3, ['jungle']), build: buildBotanico },
+  { key: 'hacienda_vieja', minV: 29, cell: 1700, chance: 0.8, R: 13, clearR: 12, salt: 8888, tries: 90, fits: land(10, 3, ['bosque_seco']), build: buildHaciendaVieja },
   { key: 'fuente', cell: 640, chance: 0.45, R: 9, salt: 707, fits: land(8, 2, ['plains', 'bosque_seco', 'forest']), build: buildFuente },
   // v12.4.7; v12.4.9: al final, para que ceda ante todos los demás (no le quita lugar a nadie)
   { key: 'casita_bahareque', minV: 18, cell: 520, chance: 0.6, R: 7, salt: 7171, tries: 50, fits: land(6, 2, ['plains', 'forest']), build: buildCasitaBahareque }, // v12.4.7
@@ -1113,7 +1134,8 @@ export const STRUCT_NAMES = { faro: 'Faro', churchill: 'Puesto de Churchill', ca
   feria_pueblo: 'Feria del agricultor', cementerio_pueblo: 'Cementerio del pueblo', canopy: 'Canopy Pura Adrenalina', sitio_arqueologico: 'Sitio arqueológico', caverna_rey: 'La Caverna del Rey', templo_hundido: 'El templo hundido', catarata_escondida: 'La catarata escondida', amistad_parque: 'Parque Internacional La Amistad', rincon_parque: 'Rincón de la Vieja (Las Pailas)',
   braulio: 'Parque Nacional Braulio Carrillo', juan_castro: 'Parque Nacional Juan Castro Blanco', carara: 'Parque Nacional Carara',
   cacaotal: 'Cacaotal bribri', lecheria: 'Lechería La Vaquita', termales: 'Aguas termales', cueva_barra_honda: 'Cueva de Barra Honda', cueva_venado: 'Cueva de Venado', geoda_mayor: 'Geoda mayor',
-  oasis_ruina: 'Oasis con ruina', pozo_arriero: 'Pozo del Arriero', carreta_seca: 'Carreta de la sequía' };
+  oasis_ruina: 'Oasis con ruina', pozo_arriero: 'Pozo del Arriero', carreta_seca: 'Carreta de la sequía',
+  mirador_neblina: 'Mirador de la Neblina', muelle_pianguero: 'Muelle del Piangüero', cairn_antiguos: 'Cairn de los Antiguos', campamento_botanico: 'Campamento del botánico', hacienda_vieja: 'Hacienda vieja' };
 // rareza y logro al descubrir cada lugar
 export const STRUCT_RARE = { faro: 'rara', churchill: 'común', caldera: 'poco común', fortin: 'legendaria', carreta: 'común', estatua: 'común', fuente: 'poco común', capital: 'legendaria',
   mirador_poas: 'rara', mirador_arenal: 'rara', cumbre: 'legendaria', refugio: 'rara', basilica: 'legendaria', ruinas: 'legendaria', orosi: 'rara', tarcoles: 'rara', guanacaste: 'legendaria',
@@ -1127,7 +1149,7 @@ export const STRUCT_RARE = { faro: 'rara', churchill: 'común', caldera: 'poco c
   zapote: 'rara', aeropuerto: 'legendaria', zurqui: 'rara',
   cerro_muerte: 'rara', conchal: 'rara', turrialba: 'legendaria', san_lucas: 'rara',
   braulio: 'rara', juan_castro: 'rara', carara: 'rara', feria_pueblo: 'común', cementerio_pueblo: 'común', canopy: 'poco común', sitio_arqueologico: 'rara', caverna_rey: 'épica', templo_hundido: 'legendaria', catarata_escondida: 'rara', amistad_parque: 'legendaria', rincon_parque: 'rara',
-  cacaotal: 'poco común', lecheria: 'poco común', termales: 'poco común', cueva_barra_honda: 'rara', cueva_venado: 'rara', geoda_mayor: 'legendaria', oasis_ruina: 'rara', pozo_arriero: 'poco común', carreta_seca: 'común' };
+  cacaotal: 'poco común', lecheria: 'poco común', termales: 'poco común', cueva_barra_honda: 'rara', cueva_venado: 'rara', geoda_mayor: 'legendaria', oasis_ruina: 'rara', pozo_arriero: 'poco común', carreta_seca: 'común', mirador_neblina: 'rara', muelle_pianguero: 'poco común', cairn_antiguos: 'rara', campamento_botanico: 'poco común', hacienda_vieja: 'poco común' };
 export const STRUCT_ACH = { fortin: ['fortin', 'De Heredia para el mundo'], guanacaste: ['guanacaste_eterno', 'Guanacaste eterno'], ruinas: ['ruinas', 'La iglesia que nunca se terminó'],
   basilica: ['basilica', 'Romero de corazón'], faro: ['faro', 'Luz del Pacífico'], cumbre: ['chirripo', 'En el techo de Costa Rica'], mirador_poas: ['poas', 'Cráter del Poás'], mirador_arenal: ['arenal', 'Frente al Arenal'],
   estadio_nacional: ['sabana', 'La Sabana se llenó'], estadio_obra: ['sigue_construccion', 'Sigue en construcción'], estacion: ['tren', 'Pasajero del tren'], templo_musica: ['retreta', 'Domingo de retreta'], playa_lujo: ['gentrificacion', 'Bienvenidos al paraíso (en dólares)'], refineria: ['refinamiento', 'Visité la refinería que no refina'],

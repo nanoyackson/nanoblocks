@@ -7,9 +7,9 @@
 import { Generator } from '../src/worldgen.js';
 import { BLOCK_BY_KEY as K } from '../src/blocks.js';
 import { cercaDeObra, structuresNear } from '../src/estructuras.js';
-import { GEN_SIMAS, GEN_CARACTER } from '../src/worldgen2.js';
+import { GEN_SIMAS, GEN_RUTAS } from '../src/worldgen2.js';
 
-const VER = +(process.argv[2] || GEN_CARACTER);
+const VER = +(process.argv[2] || GEN_RUTAS);
 const SEMILLAS = [101, 202, 303, 404, 505, 606];
 const ST = 8, N = 300, CH = 16; // ventana de 2 400 bloques con una columna cada 8
 let fallas = 0, deudas = 0;

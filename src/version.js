@@ -4,8 +4,8 @@
 export const GAME_NAME = 'NanoBlocks';
 // v13.1.0: la versión de generador de terreno MÁS NUEVA que este juego sabe hacer (la de los mundos nuevos). Si el anfitrión de una sala manda
 // una mayor, este cliente generaría un terreno distinto al suyo (cuevas flotando): se rechaza la entrada (red/sesion.js).
-export const GEN_MAX = 28; // v13.4.1: 28 = carácter de los salones, minerales por zona, lugares de cueva (GEN_CARACTER en worldgen2.js) · v13.4.0: 27 = reparto de biomas, bordes suaves, montaña real y construcciones del desierto (GEN_SUPERFICIE en worldgen2.js) · v13.3.3: 26 = simas, bocas gigantes, hitos (GEN_SIMAS en worldgen2.js) · v13.3.2: 25 = la Red Honda y los Salones (GEN_RED en worldgen2.js) · v13.3.0: 24 = obras integradas al terreno (GEN_INTEGRACION en worldgen2.js) · v13.2.0: 23 = lava más abajo (GEN_PROF en worldgen2.js)
-export const GAME_VERSION = '13.4.1';
+export const GEN_MAX = 29; // v13.4.2: 29 = caminos guiados con talud, taludes de obras y lugares típicos por bioma (GEN_RUTAS en worldgen2.js) · v13.4.1: 28 = carácter de los salones, minerales por zona, lugares de cueva (GEN_CARACTER en worldgen2.js) · v13.4.0: 27 = reparto de biomas, bordes suaves, montaña real y construcciones del desierto (GEN_SUPERFICIE en worldgen2.js) · v13.3.3: 26 = simas, bocas gigantes, hitos (GEN_SIMAS en worldgen2.js) · v13.3.2: 25 = la Red Honda y los Salones (GEN_RED en worldgen2.js) · v13.3.0: 24 = obras integradas al terreno (GEN_INTEGRACION en worldgen2.js) · v13.2.0: 23 = lava más abajo (GEN_PROF en worldgen2.js)
+export const GAME_VERSION = '13.4.2';
 // v12.4.6: la versión MÁS VIEJA del juego que puede abrir lo que esta versión guarda. Se sube cuando un mundo guardado trae algo que un
 // juego anterior no entiende y lo rompería: bloques nuevos (ids que el mallador no conoce), un SAVE_FORMAT nuevo o un campo que cambia
 // de forma. Se guarda en meta.minVersion y el menú no abre un mundo cuyo minVersion sea más nuevo que este juego (12.4.0: los bloques 656–662).
@@ -26,6 +26,17 @@ export const CREDITS = [
 ];
 
 export const CHANGELOG = [
+  {
+    version: '13.4.2',
+    date: '2026-11-15',
+    title: 'Resto de la superficie (generador 29)',
+    items: [
+      'Generador 29 (resto de la superficie, `GEN_RUTAS` en worldgen2.js; `GEN_MAX` 29; los mundos creados antes salen idénticos, huella 21-28 en `tools/huella-mundos.mjs`; un mundo 29 pide la 13.4.2). I4 + I10 (R1, R2), caminos educados: cada tramo prueba nueve curvas laterales (una muestra cada ~14 bloques, solo `column()`) y se queda con la de menor costo (desnivel, cumbres y mar); el perfil sube o baja como máximo 1 por bloque, hacia delante y hacia atrás (saltos de 2 o más entre un bloque y el siguiente: 45 → 0) y el corte o el relleno se abre en talud 1:1 hasta 5 bloques a cada lado en vez de una pared. Que el camino rodee las obras ajenas queda pendiente: buscarlas con `structuresNear` costaba 4,6 s al entrar al mundo (la regla es ≤ 12 ms por trozo) y se quitó. Costo de los tramos al caminar 3 000 bloques (`tools/medir-tramo.mjs`, semilla 202): 907 ms en el 28 y 910 ms en el 29.',
+      'I3, taludes de las obras: los cimientos de toda estructura que nivela su huella (`Ctx.foundation`) bajan o se cortan en talud 1:1 hasta 6 bloques afuera, sin la pared al borde. No entra todavía el mejor sitio para los pueblos, la media losa de las calles ni los túneles con portal (R4) ni los zigzags (R3): quedan anotados en la cola.',
+      'B3, el lugar típico de los cinco biomas que no tenían uno (archivo nuevo `src/tipicas.js`, todos con cofre, placa y botín propio): Mirador de la Neblina (plataforma de tablas entre las copas del bosque nuboso con escalera de caracol), Muelle del Piangüero (muelle y palafito con techo de zinc en el manglar), Cairn de los Antiguos (pirámide de piedra apilada en el páramo, con banco), Campamento del botánico (carpa, mesa con libros, fogata y cofre con muestras en la selva) y Hacienda vieja con trapiche (casa de adobe caída y un trapiche que aún muele en el bosque seco). Aparecen 26 a 41 en 3 semillas (±2 000 bloques) y todos caen en su bioma; con nombre en el mapa y rareza.',
+      'Pruebas: `tools/revisar-rutas.mjs` (en `npm run revisar`: el perfil no salta, los tramos cuestan lo mismo que en el 28, no se alargan de más, los trozos con camino se generan sin fallas y los cinco lugares típicos existen, caen en su bioma, traen cofre y placa y se generan en ≈ 6 ms de mediana); `tools/medir-rutas.mjs` compara los caminos del 28 y el 29; `tools/revisar-contenido.mjs` mide el 29 y sigue sin deudas; la huella vigila ahora también el 28.',
+    ],
+  },
   {
     version: '13.4.1',
     date: '2026-11-15',

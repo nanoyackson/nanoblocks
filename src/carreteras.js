@@ -31,7 +31,9 @@ function makeSegment(gen, A, B) {
   if (len < 20 || len > 900) return null;
   const s = gen.seed, hid = hash3(s, ax, 7070, bz);
   // un poco de curva para que no sea una regla
-  const off = (hash3(s, ax, 7071, az) - 0.5) * 0.5 * len;
+  let off = (hash3(s, ax, 7071, az) - 0.5) * 0.5 * len;
+  // v13.4.2 (I4 + I10 R1, generador 29): se prueban nueve curvas laterales y se queda la de menor costo (subidas, cumbres, mar y obras que no son su destino)
+  if (gen.version >= 29) off = mejorCurva(gen, ax, az, bx, bz, len, off);
   const mx = (ax + bx) / 2 + (-(bz - az) / len) * off, mz = (az + bz) / 2 + ((bx - ax) / len) * off;
   const N = Math.ceil(len * 1.3);
   const xs = [], zs = [];
@@ -57,6 +59,11 @@ function makeSegment(gen, A, B) {
     for (let k = Math.max(0, i - 5); k <= Math.min(n - 1, i + 5); k++) if (!water[k]) { sum += Math.max(h[k], SEA + 1); c++; }
     return Math.max(SEA + 1, Math.round(sum / c));
   });
+  // v13.4.2 (I4, generador 29): el perfil sube o baja como máximo 1 por bloque (hacia delante y hacia atrás), sin bajar del puente
+  if (gen.version >= 29) {
+    for (let i = 1; i < n; i++) if (!water[i]) ys[i] = Math.max(SEA + 1, Math.min(ys[i - 1] + 1, Math.max(ys[i - 1] - 1, ys[i])));
+    for (let i = n - 2; i >= 0; i--) if (!water[i]) ys[i] = Math.max(SEA + 1, Math.min(ys[i + 1] + 1, Math.max(ys[i + 1] - 1, ys[i])));
+  }
   const kind = A.city && B.city ? 'nacional' : !A.streets || !B.streets ? (hid < 0.6 ? 'lastre' : 'cantonal') : hid < 0.45 ? 'nacional' : 'cantonal';
   const seg = { id: `ruta@${ax},${az}`, xs, zs, ys, water, n, kind, w: kind === 'nacional' ? 5 : kind === 'cantonal' ? 4 : 3, A, B, feats: [] };
   seg.x0 = Math.min(...xs) - 8; seg.x1 = Math.max(...xs) + 8; seg.z0 = Math.min(...zs) - 8; seg.z1 = Math.max(...zs) + 8;
@@ -74,6 +81,28 @@ function makeSegment(gen, A, B) {
   // puente de un carril: un rótulo antes del agua
   for (let i = 1; i < n; i++) if (water[i] && !water[i - 1] && i > 6) { seg.feats.push({ type: 'rotulo', i: i - 4, text: ['Puente de un carril', 'Ceda el paso al que viene. Si los dos se quedan esperando, gana el más necio.'] }); break; }
   return seg;
+}
+
+// v13.4.2 (generador 29): costo de una curva lateral = 3 por cada bloque de largo + 9 por cada bloque de desnivel entre muestras + 6 por muestra sobre 90 de alto + 400 si cruza más de 46 de mar.
+// Se mide cada ~14 bloques (len / 14 muestras por curva, 9 curvas): una vez por tramo y sin buscar obras (structuresNear costaba 4 s la primera vez; las obras ajenas se
+// respetan al dibujar, ver buildRoadsInChunk). Todo sale de column(), igual en anfitrión e invitado.
+function mejorCurva(gen, ax, az, bx, bz, len, off0) {
+  const nx = -(bz - az) / len, nz = (bx - ax) / len, M = Math.max(8, Math.ceil(len / 14));
+  let mejor = off0, costeMejor = Infinity;
+  for (let k = -4; k <= 4; k++) {
+    const off = k === 0 ? off0 : (k / 4) * 0.35 * len, mx = (ax + bx) / 2 + nx * off, mz = (az + bz) / 2 + nz * off;
+    let cost = 0, px = ax, pz = az, ph = null, mar = 0, run = 0;
+    for (let i = 0; i <= M; i++) {
+      const t = i / M, u = 1 - t, x = u * u * ax + 2 * u * t * mx + t * t * bx, z = u * u * az + 2 * u * t * mz + t * t * bz;
+      const h = gen.column(Math.round(x), Math.round(z)).h;
+      cost += 3 * Math.hypot(x - px, z - pz) + (ph === null ? 0 : 9 * Math.abs(h - ph)) + (h > 90 ? 6 : 0);
+      run = h < SEA - 3 ? run + 1 : 0; mar = Math.max(mar, run);
+      px = x; pz = z; ph = h;
+    }
+    if (mar * len / M > 46) cost += 400;
+    if (cost < costeMejor - 1e-6) { costeMejor = cost; mejor = off; }
+  }
+  return mejor;
 }
 
 // tramos que pueden pasar por una zona: cada pueblo se une con sus dos vecinos más cercanos (hasta 3 celdas)
@@ -140,6 +169,7 @@ export function roadsNear(gen, x, z, r) {
   return segs.filter((s) => s.x1 >= x - r && s.x0 <= x + r && s.z1 >= z - r && s.z0 <= z + r);
 }
 
+const TREE_ROAD = new Set([K.log, K.leaves, K.birch_log, K.birch_leaves, K.jungle_log, K.jungle_leaves, K.vine, K.tronco_musgoso]);
 const hcol = (s, x, z, k) => (Math.abs((x * 73856093) ^ (z * 19349663) ^ (s * 83492791) ^ (k * 2654435761)) % 100000) / 100000;
 
 export function buildRoadsInChunk(gen, cx, cz, blocks, idx, out) {
@@ -149,14 +179,14 @@ export function buildRoadsInChunk(gen, cx, cz, blocks, idx, out) {
   const set = (x, y, z, id) => { if (inChunk(x, z) && y > 0 && y < 127) blocks[idx(x - x0, y, z - z0)] = id; };
   const get = (x, y, z) => (inChunk(x, z) && y > 0 && y < 127 ? blocks[idx(x - x0, y, z - z0)] : -1);
   for (const seg of roadsNear(gen, x0 + 8, z0 + 8, 12)) {
-    const half = (seg.w - 1) / 2;
+    const half = (seg.w - 1) / 2, TAL = gen.version >= 29 ? 5 : 0; // v13.4.2 (I10 R2): el talud 1:1 a cada lado
     const cols = new Map();
     for (let i = 0; i < seg.n; i++) {
       const px = seg.xs[i], pz = seg.zs[i];
-      if (px < x0 - 4 || px > x0 + CH + 3 || pz < z0 - 4 || pz > z0 + CH + 3) continue;
-      for (let dz = -3; dz <= 3; dz++) for (let dx = -3; dx <= 3; dx++) {
+      if (px < x0 - 4 - TAL || px > x0 + CH + 3 + TAL || pz < z0 - 4 - TAL || pz > z0 + CH + 3 + TAL) continue;
+      for (let dz = -3 - TAL; dz <= 3 + TAL; dz++) for (let dx = -3 - TAL; dx <= 3 + TAL; dx++) {
         const d = Math.hypot(dx, dz);
-        if (d > half + 0.5 || !inChunk(px + dx, pz + dz)) continue;
+        if (d > half + 0.5 + TAL || !inChunk(px + dx, pz + dz)) continue;
         const k = px + dx + (pz + dz) * 100000;
         const cur = cols.get(k);
         if (!cur || d < cur.d) cols.set(k, { x: px + dx, z: pz + dz, d, i });
@@ -165,6 +195,13 @@ export function buildRoadsInChunk(gen, cx, cz, blocks, idx, out) {
     for (const c of cols.values()) {
       if (insideTown(seg.A, c.x, c.z) || insideTown(seg.B, c.x, c.z)) continue;
       const y = seg.ys[c.i], h = gen.column(c.x, c.z).h;
+      if (TAL && c.d > half + 0.5) { // talud: corte o terraplén que se abre 1:1 en vez de la pared
+        if (seg.water[c.i]) continue;
+        const tc = Math.ceil(c.d - half - 0.5);
+        if (h > y + tc) { for (let yy = y + tc + 1; yy <= h + 1; yy++) if (get(c.x, yy, c.z) > 0 && !TREE_ROAD.has(get(c.x, yy, c.z))) set(c.x, yy, c.z, 0); }
+        else if (h < y - tc && h > SEA) { for (let yy = h + 1; yy <= y - tc; yy++) set(c.x, yy, c.z, yy === y - tc ? K.grass : K.dirt); }
+        continue;
+      }
       if (seg.water[c.i]) {
         // puente de un carril: losa de concreto, baranda y pilares
         if (c.d > 2.5) continue;
