@@ -15,6 +15,8 @@ export const JEFES_BALANCE = {
   centinela_cristal: { vida: 95, dano: 1.1, alias: ['Centinela'] },
   madre_esporal: { vida: 85, dano: 1.8, alias: ['Madre Esporal'] },
   reina_agujas: { vida: 110, dano: 1, alias: ['Reina de las Agujas'] },
+  // v13.6.0: Anguila Mayor del plan (§4). El bot no nada, así que se calibró a mano contra la Madre Esporal (bot-pelea, equipo «media», perfil promedio, 3 duelos: gana 1 de 3, 10,5 s para matarla y 14 de daño recibido): la Anguila tiene 90 de vida (≈ 11 s con el mismo equipo, el charco de 1 de hondo la deja al alcance), muerde 4 × 0,9 cada 2,4 s y descarga 3 × 0,9 cada 7 s: ≈ 15 de daño recibido en 11 s, parejo con la Madre. Sin duelo real en el agua: si resulta dura, bajar `dano`.
+  anguila_mayor: { vida: 90, dano: 0.9, alias: ['Anguila Mayor'] },
   llorona: { vida: 50, dano: 3 },
   segua: { vida: 70, dano: 2.95 },
   mona: { vida: 135, dano: 1.65 },

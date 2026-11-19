@@ -759,6 +759,7 @@ const simpleItems = [
   // v13.3.4 (CC1, cuevacosas.js): el botín de las cuevas (arte provisional con íconos teñidos)
   { id: 1192, key: 'esquirla_cristal', name: 'Esquirla de cristal (salta de los racimos: farol, eco y lente)', icono: 'azufre', tinte: '#8fe0ff' },
   { id: 1193, key: 'cristal_eco', name: 'Cristal de eco (clic derecho bajo tierra: marca salones y hitos cercanos 20 s; 12 usos)', icono: 'azufre', tinte: '#c9a8ff', stack: 1, dur: 12 },
+  { id: 1201, key: 'escama_azul', name: 'Escama azul (de la Anguila Mayor: dura y brillante, se vende bien)', icono: 'brick', tinte: '#3a8fe0' },
   { id: 1200, key: 'brasa_viva', name: 'Brasa viva (del Guardián de la Colada: en el horno quema 8 ítems)', icono: 'brick', tinte: '#ff6a20' },
   { id: 1195, key: 'sopa_hongo', name: 'Sopa de hongo (comida buena y vista nocturna 2 minutos)', icono: 'caldo_hongo', tinte: '#e8c888', food: 7, sip: true },
   // v13.3.5 (BI0, identidad.js): lo propio de cada bioma (arte provisional con íconos teñidos)

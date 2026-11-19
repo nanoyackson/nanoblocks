@@ -22,6 +22,7 @@ export const USO = {
   bote: 'Bote de remos: se pone en el agua para navegar',
   botiquin: 'Primeros auxilios; el hueso quebrado pide tablilla',
   brasa_viva: 'Del Guardián de la Colada: en el horno quema 8 ítems',
+  escama_azul: 'De la Anguila Mayor: dura y brillante; se vende bien en el pueblo',
   bucket: 'Balde vacío: recoge agua o lava',
   cacho_toro: 'Clic derecho: lo sopla y espanta a las criaturas',
   cajuela: 'Canasto para coger café: con ella en la mano, el café maduro cae adentro',

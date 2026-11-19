@@ -37,6 +37,7 @@ import { identidadSpawn } from './identidad.js'; // v13.3.5 (BI0)
 import { HONGOS, hongosSpawn } from './hongos.js';
 import { CUEVA_FAUNA, cuevaFaunaSpawn } from './cuevavida.js';
 import { DUENOS } from './duenos.js';
+import { SALON_MOBS } from './salonfauna.js';
 import { armarSombra } from './modelos-sombra.js';
 import { armarDanta } from './modelos-finca.js';
 import { armarLapa } from './modelos-aves.js';
@@ -193,7 +194,7 @@ const VAMPIRO = {
 };
 
 const SOMBRAS2 = variantesSombra(SOMBRA);
-export const MOB_TYPES = { danta: DANTA, sombra: SOMBRA, ...SOMBRAS2, ...BRAVOS, ...ALMAS, ...ANIMA, ...BAILARIN, ...PLAYA2, ...BICHOS, ...BICHOS2, ...BICHOS3, ...JEFES2, ...JEFES3, ...FINAL, ...ENJAMBRE, ...MUNECOS, ...HONGOS, ...CUEVA_FAUNA, ...DUENOS, ...GOLETA, ...MINA_ORO, ...CHOMPIPE, ...GLOBO, ...FAUNA4, ...TORO, sombra_capitana: capitana(SOMBRA), sombra_madre: sombraMadre(SOMBRA), el_olvido: elOlvido(SOMBRA), jefa_ventanilla: jefaVentanilla(SOMBRA), lapa: LAPA, mono: MONO, murcielago: MURCIELAGO, vampiro: VAMPIRO, ...FAUNA, ...FINCA, vecino: VECINO, ...MAR, ...LEYENDAS, tulevieja: TULEVIEJA, arpia: ARPIA, carro: CARRO, bus: BUS, zancudo: ZANCUDO, bola: BOLA, ...MINIJEFES, ...FAUNA2, ...MAR2, mono_congo_gigante: MONO_CONGO_GIGANTE, sapo: SAPO, mapache: MAPACHE, bruja_zarate: BRUJA_ZARATE, avioneta: AVIONETA, tortuga_lora: TORTUGA_LORA, fragata: FRAGATA, patito: PATITO, carreta: CARRETA_BUEYES, rana_vidrio: RANA_VIDRIO, ...DOS_RUEDAS, rey_murcielago: REY, loro: LORO, sirena: SIRENA, ...INFRA_MOBS };
+export const MOB_TYPES = { danta: DANTA, sombra: SOMBRA, ...SOMBRAS2, ...BRAVOS, ...ALMAS, ...ANIMA, ...BAILARIN, ...PLAYA2, ...BICHOS, ...BICHOS2, ...BICHOS3, ...JEFES2, ...JEFES3, ...FINAL, ...ENJAMBRE, ...MUNECOS, ...HONGOS, ...CUEVA_FAUNA, ...DUENOS, ...SALON_MOBS, ...GOLETA, ...MINA_ORO, ...CHOMPIPE, ...GLOBO, ...FAUNA4, ...TORO, sombra_capitana: capitana(SOMBRA), sombra_madre: sombraMadre(SOMBRA), el_olvido: elOlvido(SOMBRA), jefa_ventanilla: jefaVentanilla(SOMBRA), lapa: LAPA, mono: MONO, murcielago: MURCIELAGO, vampiro: VAMPIRO, ...FAUNA, ...FINCA, vecino: VECINO, ...MAR, ...LEYENDAS, tulevieja: TULEVIEJA, arpia: ARPIA, carro: CARRO, bus: BUS, zancudo: ZANCUDO, bola: BOLA, ...MINIJEFES, ...FAUNA2, ...MAR2, mono_congo_gigante: MONO_CONGO_GIGANTE, sapo: SAPO, mapache: MAPACHE, bruja_zarate: BRUJA_ZARATE, avioneta: AVIONETA, tortuga_lora: TORTUGA_LORA, fragata: FRAGATA, patito: PATITO, carreta: CARRETA_BUEYES, rana_vidrio: RANA_VIDRIO, ...DOS_RUEDAS, rey_murcielago: REY, loro: LORO, sirena: SIRENA, ...INFRA_MOBS };
 // v12.4.9: la vida de los jefes sale de la tabla calibrada con el bot (jefes-balance.js)
 for (const [t, J] of Object.entries(JEFES_BALANCE)) if (MOB_TYPES[t] && J.vida) MOB_TYPES[t].health = J.vida;
 
@@ -485,7 +486,7 @@ class Mob {
     this.walkAmt += (Math.max(Math.min(1, spd / 2), pasito) - this.walkAmt) * Math.min(1, dt * 8);
     if (b.pos.y < -10) this.dead = true;
     this.lavaT = Math.max(0, (this.lavaT || 0) - dt);
-    if (b.inLava && this.lavaT <= 0) { this.lavaT = 0.5; this.hurt(4, b.pos.x, b.pos.z); }
+    if (b.inLava && this.lavaT <= 0 && !this.kind.lavaOk) { this.lavaT = 0.5; this.hurt(4, b.pos.x, b.pos.z); }
 
     this.idleT -= dt;
     if (this.idleT <= 0) {

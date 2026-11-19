@@ -12,6 +12,7 @@ import { Pieza, huevo, bandas } from './lowpoly.js';
 import { zonaSegura } from './historia.js';
 import { regionAt } from './regiones.js';
 import { anotar } from './diario.js';
+import { lavaCerca } from './salonlugar.js';
 
 const G = () => new THREE.Group();
 const pivotePata = (x, y, z, giroY, malla) => { const p = G(); p.position.set(x, y, z); p.rotation.y = giroY; p.add(malla); return p; };
@@ -162,7 +163,7 @@ export function especieDelSitio(w, x, y, z) {
 }
 export function cuevaFaunaSpawn(E, g) {
   if (g.dim !== 'tierra' || g.meta.invitado || !g.env || g.env.cave < 0.6 || Math.random() > 0.5) return false;
-  const vivos = E.mobs.filter((m) => !m.dead && CUEVA_FAUNA[m.type]);
+  const vivos = E.mobs.filter((m) => !m.dead && (CUEVA_FAUNA[m.type] || m.type === 'culebron_brasa'));
   if (vivos.length >= TOPE_TOTAL) return false;
   const w = g.world, pl = g.player.body.pos;
   for (let tries = 0; tries < 8; tries++) {
@@ -173,7 +174,9 @@ export function cuevaFaunaSpawn(E, g) {
     if (y === null || y > 56 || FLUID[w.getBlock(x, y - 1, z)]) continue;
     const zona = vivos.filter((m) => Math.hypot(m.body.pos.x - x, m.body.pos.z - z) < RADIO_ZONA && Math.abs(m.body.pos.y - y) < 12);
     if (zona.length >= TOPE_ZONA) continue;
-    const t = especieDelSitio(w, x, y, z);
+    // v13.6.0: en un salón Caldera, a menos de 10 de la lava, 6 de cada 10 veces sale el Culebrón de brasa (a lo más 2 por zona)
+    const sn = salonAqui(w.gen, { x, y, z }, 1.5); // el piso con lava queda en el borde de abajo del salón: se mira con holgura
+    const t = sn && sn.tipo === 'caldera' && Math.random() < 0.6 && lavaCerca(w, x, y, z, 10) ? 'culebron_brasa' : especieDelSitio(w, x, y, z);
     if (zona.filter((m) => m.type === t).length >= TOPE_ESPECIE) continue;
     return !!E.spawnMob(t, x + 0.5, y + 0.05, z + 0.5);
   }
@@ -224,14 +227,14 @@ export function colorBrillo(tipo, bioma, region) {
 }
 
 // v13.3.3: el salón de la Red Honda donde está el jugador (null si no hay o el generador es viejo)
-function salonAqui(gen, p) {
+function salonAqui(gen, p, lim = 0.7) {
   if (!gen || gen.version < 26 || !gen.v2 || !gen.v2.cmNodo) return null;
   const gx = Math.floor(p.x / 96), gz = Math.floor(p.z / 96);
   for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) {
     const n = gen.v2.cmNodo(gx + dx, gz + dz);
     if (!n.salon) continue;
     const a = (p.x - n.x) / n.rx, b = (p.y - n.y) / n.ry, c = (p.z - n.z) / n.rz;
-    if (a * a + b * b + c * c < 0.7) return n;
+    if (a * a + b * b + c * c < lim) return n;
   }
   return null;
 }

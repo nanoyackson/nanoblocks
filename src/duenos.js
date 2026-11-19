@@ -6,6 +6,7 @@ import { CUEVA_FAUNA } from './cuevavida.js';
 import { atacar, avisoCaida } from './golpes.js';
 import { BLOCK_BY_KEY as K } from './blocks.js';
 import { hash3 } from './noise.js';
+import { aguaDelSalon } from './salonlugar.js';
 
 function grande(base, escala, extra) {
   return {
@@ -96,8 +97,8 @@ export const DUENOS = {
     },
   }),
 };
-export const NOMBRES_DUENO = { centinela_cristal: 'Vencí al Centinela de Cristal', madre_esporal: 'Vencí a la Madre Esporal', reina_agujas: 'Vencí a la Reina de las Agujas' };
-const DUENO_DE = { candil: 'centinela_cristal', hongueada: 'madre_esporal', agujas: 'reina_agujas' };
+export const NOMBRES_DUENO = { centinela_cristal: 'Vencí al Centinela de Cristal', madre_esporal: 'Vencí a la Madre Esporal', reina_agujas: 'Vencí a la Reina de las Agujas', anguila_mayor: 'Vencí a la Anguila Mayor' };
+const DUENO_DE = { candil: 'centinela_cristal', hongueada: 'madre_esporal', agujas: 'reina_agujas', laguna: 'anguila_mayor' }; // v13.6.0: la Laguna Honda también tiene dueña
 
 // ¿qué dueño tiene este nodo de la Red Honda (o null)? Solo con lugar, zona 2 o 3 (la Reina solo en la 3), piso hondo y la mitad de ellos (hash)
 export function duenoDe(gen, n) {
@@ -121,7 +122,10 @@ export function tickDuenos(g) {
       if (!tipo || V[key]) continue;
       const L = n.lugar;
       if (Math.hypot(L.x - p.x, L.z - p.z) > 30 || Math.abs(L.y - p.y) > 14) continue;
-      const m = g.entities.spawnMob(tipo, L.x + 0.5, L.y + 1.5, L.z + 4.5);
+      // la Anguila Mayor nace en el agua de la laguna (no en la isla); si no se halla agua honda cerca del lugar, hoy no sale
+      const agua = tipo === 'anguila_mayor' ? aguaDelSalon(g.world, n.x, L.y, n.z) : null;
+      if (tipo === 'anguila_mayor' && !agua) continue;
+      const m = agua ? g.entities.spawnMob(tipo, agua.x, agua.y, agua.z) : g.entities.spawnMob(tipo, L.x + 0.5, L.y + 1.5, L.z + 4.5);
       if (!m) return;
       m.data.dueno = tipo; m.data.salon = key; m.data.angry = true;
       if (tipo === 'centinela_cristal') {
