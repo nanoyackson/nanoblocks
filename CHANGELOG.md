@@ -1,5 +1,10 @@
 # Registro de versiones
 
+## 13.5.3 — 2026-11-18 · Armadura en red
+
+- Las demás personas de la sala se ven con su armadura puesta (casco, peto, pantalón, botas y el brazo o escudo, con el detalle de piezas de la 13.3.5), y al cambiarla se actualiza en vivo. El estado que ya viajaba (`pos`: posición, golpe, arma en mano) suma un campo opcional `arm` con los cinco ids de lo que lleva puesto (0 = nada): se arma en `miPos` (pantallas.js), lo valida `validar.js` (cinco enteros de 0 a 65535; sin el campo queda en ceros, así un mensaje sin `arm` sigue valiendo) y el anfitrión lo copia en la lista de personas que difunde. `Remotos.update` lo pasa a `inventory.armor` del avatar remoto solo si el ítem existe y es de esa casilla (`armorSlot`), y el avatar rearma las piezas cuando cambia (la misma firma de siempre).
+- No toca el guardado ni los ids (sin SAVE_FORMAT ni MIN_VERSION nuevos; el anfitrión y el invitado ya deben tener la misma versión para entrar) ni el generador (huella 21 a 31 idéntica). Prueba nueva en `tools/revisar-red.mjs` (campo opcional, tamaño, rango y campo ajeno). Prueba en red real con dos pestañas: cada una con otra armadura (jade y diamante con escudo) ve a la otra con la suya, y al quitarle el casco y las botas a una, la otra lo ve al instante. Capturas en `docs/revisiones/capturas_1353/`.
+
 ## 13.5.2 — 2026-11-15 · Rendimiento: volcanes y cerros por celda y obras solo cerca de un pueblo
 
 - Rendimiento, sin generador nuevo y sin cambiar ningún bloque (mundos de cualquier versión salen idénticos). Basado en la investigación `docs/revisiones/COSTO_TRAMOS.md`: casi todo el costo de `roadsNear` era buscar los lugares con camino (`ROAD_TO`) y llamar a `column()`. A: los volcanes y cerros del vecindario se guardan por celda (`volcanesCerca` y `cerroVec` en worldgen2.js, mismo orden y mismos valores) en vez de preguntar 9 + 9 veces por columna con claves de texto; gana todo `column()` y la generación de trozos. B: un camino a un lugar sale de un pueblo a 450 o menos, así que `segmentsIn` solo busca lugares en las celdas a 450 o menos de un pueblo cercano a la zona (`structuresNear` con `cellOk`).

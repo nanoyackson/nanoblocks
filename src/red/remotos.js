@@ -2,6 +2,7 @@
 // posiciones que llegan (10 por segundo). No importa Avatar ni game: se los pasa quien lo crea (así el trozo «red» no se cuelga
 // del núcleo y no hay ciclos). Lo único que se toma de la red son números ya validados (validar.js).
 import * as THREE from 'three';
+import { ITEMS } from '../blocks.js';
 
 const SUAVE = 12; // qué tan rápido alcanza la posición que llegó (1/s)
 const FLAGS = { agacha: 1, corre: 2, vuela: 4, suelo: 8, agua: 16, golpe: 32 }; // golpe (v13.3.1): está golpeando; se anima solo mientras el bit siga puesto
@@ -102,6 +103,7 @@ export class Remotos {
       p.sneaking = !!(f & FLAGS.agacha); p.sprinting = !!(f & FLAGS.corre); p.flying = !!(f & FLAGS.vuela);
       p.body.onGround = !!(f & FLAGS.suelo); p.body.inWater = !!(f & FLAGS.agua);
       if (e.arma !== r.arma) { r.arma = e.arma; r.paso = -1; r.g.inventory.held = e.arma ? { id: e.arma, count: 1 } : null; }
+      if (e.arm !== r.armRef) { r.armRef = e.arm; const A = r.g.inventory.armor, a = e.arm || []; for (let i = 0; i < 5; i++) { const it = a[i] && ITEMS[a[i]]; A[i] = it && it.armorSlot === i ? { id: a[i], count: 1 } : null; } } // v13.5.3: su armadura (solo ítems que de verdad van en ese lugar); el avatar rearma las piezas cuando cambia
       this.golpear(r, !!(f & FLAGS.golpe), dt);
       r.g.clock = this.game.clock;
       r.avatar.update(dt, r.g, true);

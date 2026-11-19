@@ -211,4 +211,16 @@ ok(!alcanceOk({ x: 0, y: 70, z: 0 }, 40, 70, 0), 'alcance: bloque lejano se rech
   ok(BLOCKS[antorcha] ? apoyoOk(antorcha, piedra) && !apoyoOk(antorcha, 0) : true, 'la antorcha pide algo sólido debajo');
 }
 
+// v13.5.3: la armadura puesta viaja en «pos» y en la lista (campo opcional `arm`: cinco ids)
+{
+  const pos = { seq: 1, x: 0, y: 64, z: 0, yaw: 0, pitch: 0, flags: 0, arma: 0, dim: 0 };
+  ok(JSON.stringify(acepta('pos', pos, 'pos sin armadura (versión anterior)').msg.arm) === '[0,0,0,0,0]', 'sin «arm» queda en cinco ceros');
+  ok(JSON.stringify(acepta('pos', { ...pos, arm: [1, 2, 0, 4, 0] }, 'pos con armadura').msg.arm) === '[1,2,0,4,0]', 'con «arm» se copia tal cual');
+  rechaza('pos', { ...pos, arm: [1, 2, 3] }, 'numero', 'arm de 3 casillas');
+  rechaza('pos', { ...pos, arm: [1, 2, 3, 4, -1] }, 'numero', 'arm con un id negativo');
+  rechaza('pos', { ...pos, arm: [1, 2, 3, 4, 70000] }, 'numero', 'arm con un id enorme');
+  rechaza('pos', { ...pos, arm: 'x' }, 'numero', 'arm que no es lista');
+  rechaza('pos', { ...pos, otro: 1 }, 'esquema', 'campo ajeno sigue rechazado');
+}
+
 if (fallas) { console.log(`\n${fallas} fallas`); process.exitCode = 1; } else console.log('\nTodas las costuras del multijugador pasan.');

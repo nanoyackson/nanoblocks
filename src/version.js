@@ -5,7 +5,7 @@ export const GAME_NAME = 'NanoBlocks';
 // v13.1.0: la versión de generador de terreno MÁS NUEVA que este juego sabe hacer (la de los mundos nuevos). Si el anfitrión de una sala manda
 // una mayor, este cliente generaría un terreno distinto al suyo (cuevas flotando): se rechaza la entrada (red/sesion.js).
 export const GEN_MAX = 31; // v13.5.1: 31 = caminos con zigzag, túnel y rodeo de lo ajeno, y flora propia de los lugares típicos (GEN_CAMINOS en worldgen2.js) · v13.5.0 (b): v13.5.0: 30 = pueblos en sitio llano sin río y calles con perfil suave y media losa (GEN_PUEBLOS en worldgen2.js) · v13.4.2: 29 = caminos guiados con talud, taludes de obras y lugares típicos por bioma (GEN_RUTAS en worldgen2.js) · v13.4.1: 28 = carácter de los salones, minerales por zona, lugares de cueva (GEN_CARACTER en worldgen2.js) · v13.4.0: 27 = reparto de biomas, bordes suaves, montaña real y construcciones del desierto (GEN_SUPERFICIE en worldgen2.js) · v13.3.3: 26 = simas, bocas gigantes, hitos (GEN_SIMAS en worldgen2.js) · v13.3.2: 25 = la Red Honda y los Salones (GEN_RED en worldgen2.js) · v13.3.0: 24 = obras integradas al terreno (GEN_INTEGRACION en worldgen2.js) · v13.2.0: 23 = lava más abajo (GEN_PROF en worldgen2.js)
-export const GAME_VERSION = '13.5.2';
+export const GAME_VERSION = '13.5.3';
 // v12.4.6: la versión MÁS VIEJA del juego que puede abrir lo que esta versión guarda. Se sube cuando un mundo guardado trae algo que un
 // juego anterior no entiende y lo rompería: bloques nuevos (ids que el mallador no conoce), un SAVE_FORMAT nuevo o un campo que cambia
 // de forma. Se guarda en meta.minVersion y el menú no abre un mundo cuyo minVersion sea más nuevo que este juego (12.4.0: los bloques 656–662).
@@ -26,6 +26,15 @@ export const CREDITS = [
 ];
 
 export const CHANGELOG = [
+  {
+    version: '13.5.3',
+    date: '2026-11-18',
+    title: 'Armadura en red',
+    items: [
+      'Las demás personas de la sala se ven con su armadura puesta (casco, peto, pantalón, botas y el brazo o escudo, con el detalle de piezas de la 13.3.5), y al cambiarla se actualiza en vivo. El estado que ya viajaba (`pos`: posición, golpe, arma en mano) suma un campo opcional `arm` con los cinco ids de lo que lleva puesto (0 = nada): se arma en `miPos` (pantallas.js), lo valida `validar.js` (cinco enteros de 0 a 65535; sin el campo queda en ceros, así un mensaje sin `arm` sigue valiendo) y el anfitrión lo copia en la lista de personas que difunde. `Remotos.update` lo pasa a `inventory.armor` del avatar remoto solo si el ítem existe y es de esa casilla (`armorSlot`), y el avatar rearma las piezas cuando cambia (la misma firma de siempre).',
+      'No toca el guardado ni los ids (sin SAVE_FORMAT ni MIN_VERSION nuevos; el anfitrión y el invitado ya deben tener la misma versión para entrar) ni el generador (huella 21 a 31 idéntica). Prueba nueva en `tools/revisar-red.mjs` (campo opcional, tamaño, rango y campo ajeno). Prueba en red real con dos pestañas: cada una con otra armadura (jade y diamante con escudo) ve a la otra con la suya, y al quitarle el casco y las botas a una, la otra lo ve al instante. Capturas en `docs/revisiones/capturas_1353/`.',
+    ],
+  },
   {
     version: '13.5.2',
     date: '2026-11-17',

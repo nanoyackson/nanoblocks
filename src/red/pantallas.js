@@ -39,7 +39,7 @@ function crearEnv() {
     miPos() {
       const p = g().player, b = p.body.pos, f = (p.sneaking ? 1 : 0) | (p.sprinting ? 2 : 0) | (p.flying ? 4 : 0) | (p.body.onGround ? 8 : 0) | (p.body.inWater ? 16 : 0) | (g().swing > 0 ? 32 : 0); // v13.3.1: 32 = está golpeando (picando, talando, pegando)
       const h = g().inventory && g().inventory.held;
-      return { x: enRango(b.x, -3e7, 3e7), y: enRango(b.y, -20, 600), z: enRango(b.z, -3e7, 3e7), yaw: Number.isFinite(p.yaw) ? p.yaw : 0, pitch: Number.isFinite(p.pitch) ? p.pitch : 0, flags: f, arma: h && Number.isInteger(h.id) && h.id > 0 && h.id < 65536 ? h.id : 0, dim: 0 };
+      return { x: enRango(b.x, -3e7, 3e7), y: enRango(b.y, -20, 600), z: enRango(b.z, -3e7, 3e7), yaw: Number.isFinite(p.yaw) ? p.yaw : 0, pitch: Number.isFinite(p.pitch) ? p.pitch : 0, flags: f, arma: h && Number.isInteger(h.id) && h.id > 0 && h.id < 65536 ? h.id : 0, dim: 0, arm: [0, 1, 2, 3, 4].map((i) => { const a = g().inventory && g().inventory.armor && g().inventory.armor[i]; return a && Number.isInteger(a.id) && a.id > 0 && a.id < 65536 ? a.id : 0; }) };
     },
     mundo() {
       const G = g(), m = G.meta, b = G.player.body.pos;

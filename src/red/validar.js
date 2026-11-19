@@ -72,11 +72,13 @@ function limpiaVital(v) {
   return { vida: v.vida, hambre: v.hambre, agua: v.agua, aire: v.aire, volando: v.volando };
 }
 // un jugador dentro de «jugadores» / «acepta»: id de sala, nombre, cuerpo y lo mismo que lleva «pos»
+// v13.5.3: la armadura puesta (casco, peto, piernas, botas, brazo): cinco ids de ítem (0 = nada); opcional, sin ella es «sin armadura»
+const armaduraOk = (a) => Array.isArray(a) && a.length === 5 && a.every((n) => ent(n, 0, 65535));
 function entradaJugador(e) {
-  if (!esObj(e) || !claves(e, ['pid', 'nombre', 'cuerpo', 'x', 'y', 'z', 'yaw', 'pitch', 'flags', 'arma', 'dim']) || !ent(e.pid, 0, 5)) return null;
+  if (!esObj(e) || !claves(e, ['pid', 'nombre', 'cuerpo', 'x', 'y', 'z', 'yaw', 'pitch', 'flags', 'arma', 'dim', 'arm'], ['pid', 'nombre', 'cuerpo', 'x', 'y', 'z', 'yaw', 'pitch', 'flags', 'arma', 'dim']) || !ent(e.pid, 0, 5)) return null;
   const nombre = textoLimpio(e.nombre, 16), c = e.cuerpo;
   if (!nombre || !esObj(c) || !claves(c, ['camisa', 'piel', 'pelo']) || !ent(c.camisa, 0, 31) || !ent(c.piel, 0, 31) || !ent(c.pelo, 0, 31)) return null;
-  const p = VALIDADORES.pos({ seq: 0, x: e.x, y: e.y, z: e.z, yaw: e.yaw, pitch: e.pitch, flags: e.flags, arma: e.arma, dim: e.dim });
+  const p = VALIDADORES.pos({ seq: 0, x: e.x, y: e.y, z: e.z, yaw: e.yaw, pitch: e.pitch, flags: e.flags, arma: e.arma, dim: e.dim, ...(e.arm === undefined ? {} : { arm: e.arm }) });
   if (!p.ok) return null;
   const { seq, ...resto } = p.msg; // eslint-disable-line no-unused-vars
   return { pid: e.pid, nombre, cuerpo: { camisa: c.camisa, piel: c.piel, pelo: c.pelo }, ...resto };
@@ -107,11 +109,12 @@ export const VALIDADORES = {
   },
   // movimiento: finito y dentro del mundo; la velocidad la comprueba velocidadOk (necesita la última posición válida)
   pos(m) {
-    if (!esObj(m) || !claves(m, ['seq', 'x', 'y', 'z', 'yaw', 'pitch', 'flags', 'arma', 'dim'])) return mal('esquema');
+    if (!esObj(m) || !claves(m, ['seq', 'x', 'y', 'z', 'yaw', 'pitch', 'flags', 'arma', 'dim', 'arm'], ['seq', 'x', 'y', 'z', 'yaw', 'pitch', 'flags', 'arma', 'dim'])) return mal('esquema');
+    if (m.arm !== undefined && !armaduraOk(m.arm)) return mal('numero');
     if (!ent(m.seq, 0, 65535) || !fin(m.x) || !fin(m.y) || !fin(m.z) || !fin(m.yaw) || !fin(m.pitch)) return mal('numero');
     if (Math.abs(m.x) > 3e7 || Math.abs(m.z) > 3e7 || m.y < -20 || m.y > 600) return mal('fuera-del-mundo');
     if (!ent(m.flags, 0, 255) || !ent(m.arma, 0, 65535) || !ent(m.dim, 0, 3)) return mal('numero');
-    return { ok: true, msg: { seq: m.seq, x: m.x, y: m.y, z: m.z, yaw: m.yaw, pitch: m.pitch, flags: m.flags, arma: m.arma, dim: m.dim } };
+    return { ok: true, msg: { seq: m.seq, x: m.x, y: m.y, z: m.z, yaw: m.yaw, pitch: m.pitch, flags: m.flags, arma: m.arma, dim: m.dim, arm: m.arm ? m.arm.slice() : [0, 0, 0, 0, 0] } };
   },
   chunks_pide(m) {
     if (!esObj(m) || !claves(m, ['c']) || !Array.isArray(m.c) || m.c.length > 16) return mal('esquema');
