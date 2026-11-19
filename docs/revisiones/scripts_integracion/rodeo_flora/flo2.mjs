@@ -1,5 +1,7 @@
 import fs from 'fs';
-const R = 'C:/Users/isaac/Claude/Projects/1. Clientes/nanoyackson youtube/NanoBlocks - juego desde cero/src/';
+import { fileURLToPath } from 'url';
+// ruta relativa al script: docs/revisiones/scripts_integracion/rodeo_flora/ -> src/ de la raíz del repo
+const R = fileURLToPath(new URL('../../../../src/', import.meta.url));
 const tipos = JSON.parse(fs.readFileSync('tipos.json', 'utf8'));
 const cache = {};
 const src = (f) => (cache[f] ??= fs.readFileSync(R + f, 'utf8').split('\r').join(''));

@@ -298,7 +298,7 @@ Al recargar con el mundo abierto y sin gesto previo, Chrome registra «Blocked a
 **PU-34 · P3 · Tarjeta del mundo a 375: la fecha sigue cortada.**
 «Supervivencia · v13.5.9 · día …» (la versión ya se ve; la fecha no). Una segunda línea o menos texto lo arregla.
 
-**PU-35 · P3 · Cartel de región a 375: tapa el panel del objetivo y del capítulo.**
+**PU-35 ✔ (v13.8.1) · P3 · Cartel de región a 375: tapa el panel del objetivo y del capítulo.**
 En capturas_1361, a 375 px el letrero («Valle Central») queda encima del panel del objetivo y del capítulo. A ese ancho conviene bajarlo, achicarlo o centrarlo más abajo. (Pedido por la orquestadora, para el próximo pulido, después de La Hondura.)
 
 ### Lo que revisé sin hallar fallas
@@ -312,3 +312,45 @@ En capturas_1361, a 375 px el letrero («Valle Central») queda encima del panel
 ### Pendiente de una persona con ratón y teclado
 
 PU-22, 23, 24 y 25 (oír y ver), la pose de nadar y trepar en F5, la pelea con jefe y el cartel de región (PU-26), y repetir PU-02 haciendo clic durante el prólogo.
+
+
+---
+
+## Tanda 2 (v13.8.1) — 19-nov · PARCIAL
+
+**Qué se auditó y con qué.** La versión **publicada** (https://nanoyackson.github.io/nanoblocks/) estaba en la **v13.7.1** a las 18:30 UTC del 19-nov (commit del 19-nov 18:11): la 13.8.0 y la 13.8.1 (generador 33) **no estaban publicadas**. Por eso se auditó la **v13.8.1 del commit `36a0ec5`** servida con Vite desde una copia fuera del repo (puerto 5399, mundo «Tanda 2 13.8.1», semilla `202`, supervivencia, generador 33) en el navegador integrado, más las pruebas del repo (`revisar-rodeo`, `revisar-hondura`) y un script nuevo de tiempos (`scripts_integracion/tanda2_v1381/trozos.mjs`). Solo lectura: no se cambió `src/` ni `tools/`.
+
+**Por qué es parcial.** A mitad de la auditoría la ventana de la app dejó de estar abierta para esta sesión: el panel del navegador quedó oculto, `requestAnimationFrame` dejó de correr y el mundo no volvió a cargar (se quedó en «Generando mundo…» con 0 trozos). Lo hecho antes de eso está abajo; **lo que falta** (para repetir con el panel visible, semilla 202, coordenadas de la tabla): Culebrón y Anguila Mayor, Tizón Mayor, salamandra mordiendo, calor y aire malo en cámara, armadura en red (necesita dos jugadores), flora de los lugares a la vista, 10 minutos de consola, rendimiento al caminar (tirones) y 375 px.
+
+### Lo que se comprobó sin hallar fallas
+
+- **Pueblos aplanados (generador 30):** el pueblo de (-606, 111) visto desde 45 bloques de altura: calles y plaza a nivel, sin escalones ni agua adentro.
+- **Rodeo y flora (gen 33):** `revisar-rodeo` pasa: cruces con lugares 17 → 3 (−82 %), paso más largo de `calentarObras` 8 ms en Node, plantas dentro de los lugares 225 → 437.
+- **La Hondura (gen 32):** `revisar-hondura` pasa (cámaras unidas por garganta, lava sin fugas, vetas, tiempo por trozo igual al 31, mundos 31 sin cámaras). En el mundo de prueba, una cámara de fragua (abajo) se ve con piso plano, columnas, hongos, cristal rosa y plantas; la salamandra aparece en el bestiario («Salamandra de brasa») al verla. Sin luz propia queda casi negra (es lo esperado con 6 antorchas).
+- **Teletransporte (/tp):** reinicia la altura de caída y vuelve a la pantalla de carga (game.js:2423), así que no hay tirón visible; las dos muertes «por caída» de esta sesión fueron de mi propio teletransporte por API (sin reiniciar la caída), no del juego.
+- **Tiempo por trozo, Node, frío** (`trozos.mjs`, semilla 202, 121 trozos por zona): el 33 no es más lento que el 31 ni el 32 (inicio 45,8 ms de media contra 47,2; Hondura fragua 11,9 contra 12,8; geoda 11,4 contra 19,1). Ningún trozo de cámara pasa de 60 ms.
+- **Textos nuevos** (bestiario, dueños, avisos): sin tuteo ni erratas en lo leído (`salamandra`, `Tizón Mayor`, `Anguila Mayor`, `Culebrón`, «⚠ … despertó en la cámara»).
+
+### Dónde mirar (semilla 202, generador 33; inicio en (8, 0))
+
+| Qué | Coordenadas | Notas |
+|---|---|---|
+| Pueblos | (-606, 111), (593, 497), (122, 994), (240, 1268) | |
+| Camino con zigzag | `ruta@135,1051`, de (135, 1051) a (227, 1211); punto medio (158, 1122) | nacional, 227 puntos |
+| Camino con túnel | `ruta@-1008,3546`, boca en (-953, 3405), 26 bloques | solo hay 1 túnel en ±3 200 |
+| Fragua con lugar y Tizón | cámara (-261, -326), piso y = 12, lugar (-255, -327) | otras: (153, 428), (478, 56), (271, -424) |
+| Fragua sin lugar | (320, 41), piso 12 a 19 | la más cercana al inicio (314) |
+| Geoda con nido | (264, -243), lugar (263, -235) | |
+| Azufre / ceniza | (143, 322) / (-40, 342) | |
+
+### Hallazgos
+
+**Graves: ninguno.** En lo recorrido no se cayó nada, no se trabó, no se perdió la partida ni se rompió la red (la red no se probó).
+
+**Menores, para después:** PU-36 (P2: el service worker deja la versión vieja hasta la segunda carga; propuesta: `skipWaiting` + aviso de versión nueva), PU-37 (P3: el zigzag tuerce un puente de madera sobre agua en `ruta@135,1051`, cerca de (158, 1122); no aplicarlo con `water[i]`), PU-38 (P3, decisión de Isaac: el primer pueblo paga ₡10 000).
+
+**Cortada por pedido:** la tanda se cerró aquí para sacar una versión estable.
+
+### Pendiente (repetir con el panel del navegador visible)
+
+Todo lo de «Por qué es parcial» arriba. El script `scripts_integracion/tanda2_v1381/trozos.mjs` se puede correr con `node trozos.mjs [raíz] [semilla]` (ruta relativa al script por omisión).

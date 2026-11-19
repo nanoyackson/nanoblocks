@@ -1,0 +1,15 @@
+{
+  "_": "v13.8.2: duelos reales de tools/bot-pelea.js en un mundo NUEVO de generador 33 (el primer lote de cada mundo; en el mismo mundo los siguientes salen más fáciles). Equipo: Anguila = «media» (hierro y cuero) en una laguna de 3 de hondo; Tizón = «jefeHierro» (hierro mejorado, coraza). Vida de jugador: 20. gana = duelos ganados de n; ttk = segundos para matarlo (promedio); recibido y vidaMin = promedio de daño recibido y de vida mínima.",
+  "anguila_mayor": {
+    "equipo": "media", "vida": 90, "dano": 0.9,
+    "torpe": { "n": 4, "gana": 4, "ttk": 16.1, "recibido": 11.8, "vidaMin": 11.3 },
+    "promedio": { "n": 4, "gana": 4, "ttk": 13.5, "recibido": 12.1, "vidaMin": 9.4 },
+    "habil": { "n": 4, "gana": 4, "ttk": 12.2, "recibido": 12.0, "vidaMin": 9.8 }
+  },
+  "tizon_mayor": {
+    "equipo": "jefeHierro", "vida": 130, "dano": 1.0,
+    "torpe": { "n": 5, "gana": 0, "ttk": 20.0, "recibido": 23.4, "vidaMin": 0 },
+    "promedio": { "n": 5, "gana": 5, "ttk": 16.6, "recibido": 10.5, "vidaMin": 11.3 },
+    "habil": { "n": 5, "gana": 5, "ttk": 13.4, "recibido": 3.6, "vidaMin": 17.0 }
+  }
+}

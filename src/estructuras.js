@@ -1188,6 +1188,31 @@ export const STRUCT_ACH = { fortin: ['fortin', 'De Heredia para el mundo'], guan
 // radio para contar como descubierto
 export function structRadius(gen, type) { const T = typesFor(gen).find((t) => t.key === type); return T ? T.R : 8; }
 
+// v13.8.0 (generador 33, docs/revisiones/RODEO_FLORA.md §5): los lugares con gente que quedaban con el claro pelado reciben flora propia sobre el terreno natural, dentro de su radio R, después de construirse (solo donde hay suelo firme y aire encima, como flora() de tipicas.js).
+// Cada uno: [radio, intentos, plantas]. Las cantidades son de partida (afinadas a ojo con 2-3 lugares en pantalla).
+const plantasDe = (...ks) => ks.map((k) => K[k]);
+const FLORA33 = {
+  feria: [19, 60, plantasDe('flower_yellow', 'flower_red', 'pajon')], lecheria: [22, 70, plantasDe('flower_yellow', 'flower_red', 'pajon')], santa_rosa: [23, 70, plantasDe('pajon', 'flower_yellow')],
+  termales: [14, 40, plantasDe('helecho', 'bromelia')], correos: [15, 45, plantasDe('flower_red', 'flower_yellow', 'pajon')], metalico: [17, 50, plantasDe('pajon', 'flower_yellow')],
+  museo_ninos: [19, 55, plantasDe('flower_red', 'flower_yellow')], aduana: [23, 60, plantasDe('pajon', 'flower_yellow')], esferas: [15, 45, plantasDe('helecho', 'pajon', 'flower_yellow')],
+  catarata: [21, 60, plantasDe('helecho', 'bromelia', 'musgo')], barra_honda: [13, 40, plantasDe('pajon', 'flower_yellow')], templo_musica: [12, 35, plantasDe('flower_red', 'flower_yellow')],
+  mirador_arenal: [5, 20, plantasDe('pajon', 'flower_yellow')], refugio: [7, 25, plantasDe('pajon', 'flower_yellow')], tenorio: [26, 70, plantasDe('helecho', 'bromelia')],
+  corcovado: [18, 60, plantasDe('helecho', 'bromelia')], cerro_muerte: [15, 40, plantasDe('pajon')], juan_castro: [19, 60, plantasDe('pajon', 'flower_yellow', 'helecho')],
+  rincon_parque: [24, 60, plantasDe('pajon', 'flower_yellow', 'helecho')],
+  // los que tienen camino y quedaban pelados, con más intentos
+  hacienda: [13, 70, plantasDe('flower_yellow', 'flower_red', 'pajon')], beneficio: [16, 60, plantasDe('flower_yellow', 'pajon', 'cane')], sanatorio: [16, 60, plantasDe('flower_yellow', 'flower_red', 'pajon')],
+  basilica: [14, 60, plantasDe('flower_yellow', 'flower_red', 'pajon')], capital: [20, 80, plantasDe('flower_yellow', 'flower_red')], grecia: [18, 70, plantasDe('flower_yellow', 'flower_red', 'pajon')],
+  zapote: [16, 60, plantasDe('flower_yellow', 'pajon')], estacion: [14, 50, plantasDe('pajon', 'flower_yellow')],
+};
+function flora33(c, R, n, plantas) {
+  for (let k = 0; k < n; k++) {
+    const dx = Math.floor(c.rnd() * (2 * R + 1)) - R, dz = Math.floor(c.rnd() * (2 * R + 1)) - R, p = plantas[Math.floor(c.rnd() * plantas.length)];
+    if (Math.hypot(dx, dz) > R) continue;
+    const g = c.ground(dx, dz);
+    if (g + c.oy <= SEA || c.getMaybe(dx, g, dz) || !c.getMaybe(dx, g + 1, dz)) continue;
+    c.set(dx, g + 1, dz, p);
+  }
+}
 export function buildStructuresInChunk(gen, cx, cz, blocks, idx) {
   const out = [];
   const toc = gen.version >= 24 ? new Int16Array(256).fill(32767) : null; // v13.3.0 (I1)
@@ -1203,6 +1228,7 @@ export function buildStructuresInChunk(gen, cx, cz, blocks, idx) {
       // v13.3.0 (I5): en el generador 24 el despeje de árboles no tiene el tope de 14 y llega 6 más allá del radio (copas sueltas del borde)
       ctx.clearTrees(T.clearR || (gen.version >= 24 ? T.R + 6 : Math.min(T.R + 3, 14)));
       T.build(ctx, P);
+      if (gen.version >= 33 && FLORA33[T.key]) flora33(ctx, ...FLORA33[T.key]);
     }
   }
   if (toc) rellenarBajoObras(blocks, idx, toc);

@@ -16,8 +16,8 @@ export const JEFES_BALANCE = {
   madre_esporal: { vida: 85, dano: 1.8, alias: ['Madre Esporal'] },
   reina_agujas: { vida: 110, dano: 1, alias: ['Reina de las Agujas'] },
   // v13.6.0: Anguila Mayor del plan (§4). El bot no nada, así que se calibró a mano contra la Madre Esporal (bot-pelea, equipo «media», perfil promedio, 3 duelos: gana 1 de 3, 10,5 s para matarla y 14 de daño recibido): la Anguila tiene 90 de vida (≈ 11 s con el mismo equipo, el charco de 1 de hondo la deja al alcance), muerde 4 × 0,9 cada 2,4 s y descarga 3 × 0,9 cada 7 s: ≈ 15 de daño recibido en 11 s, parejo con la Madre. Sin duelo real en el agua: si resulta dura, bajar `dano`.
-  tizon_mayor: { vida: 130, dano: 1.3, alias: ['Tizón Mayor'] }, // v13.7.1 (La Hondura): del plan (§4.2); calibrado con bot-pelea (jefeHierro: torpe pierde en ~13 s, promedio gana recibiendo ~17 de 20)
-  anguila_mayor: { vida: 90, dano: 0.9, alias: ['Anguila Mayor'] },
+  tizon_mayor: { vida: 130, dano: 1.0, alias: ['Tizón Mayor'] }, // v13.7.1 (La Hondura): del plan (§4.2); v13.8.2: daño 1,3 → 1,0 y medido en mundo nuevo con bot-pelea (jefeHierro, 5 duelos por perfil: promedio gana 5 de 5 con 57 % de vida restante; ver tools/calibracion-hondura.json y revisar-calibracion-hondura.mjs)
+  anguila_mayor: { vida: 90, dano: 0.9, alias: ['Anguila Mayor'] }, // v13.8.2: medida en una laguna de 3 de hondo (equipo «media»): promedio gana 4 de 4 con 47 % de vida restante; sin cambio
   llorona: { vida: 50, dano: 3 },
   segua: { vida: 70, dano: 2.95 },
   mona: { vida: 135, dano: 1.65 },

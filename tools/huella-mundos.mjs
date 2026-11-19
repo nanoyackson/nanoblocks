@@ -11,7 +11,7 @@ const SEMILLAS = [424242, 777, 3, 2026];
 // lugares en trozos: el origen, lejos, y los que cruzan pueblos y estructuras (se eligieron por tener de todo en estas semillas)
 const LUGARES = [[0, 0], [-30, 40], [60, -45], [140, 110], [-120, -90], [20, 200]];
 const N = 3; // 3×3 trozos por lugar
-const VERSIONES = [21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32];
+const VERSIONES = [21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33];
 const archivo = new URL('./huella-gen.json', import.meta.url);
 
 export function huella() {

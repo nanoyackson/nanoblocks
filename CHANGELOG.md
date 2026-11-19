@@ -1,5 +1,21 @@
 # Registro de versiones
 
+## 13.8.2 — 2026-11-18 · Calibración de la Anguila y el Tizón (peligro moderado)
+
+- Calibración de La Hondura contra el peligro «moderado» de Isaac, con duelos reales de bot-pelea en mundo nuevo (el bot ahora sabe pelear en una laguna): el Tizón Mayor baja su daño de 1,3 a 1,0 (con equipo de hierro, el jugador promedio gana 5 de 5 y le queda 57 % de la vida; el torpe, que no cubre ni esquiva, sigue perdiendo); la Anguila Mayor queda igual (con equipo medio, promedio 4 de 4 con 47 % de vida restante). Sin mecánicas nuevas, sin generador.
+- Nueva prueba tools/revisar-calibracion-hondura.mjs (en npm run revisar) con los resultados guardados en tools/calibracion-hondura.json: exige que los números del juego sean los medidos, que el promedio gane al menos 4 de 5 con 30 % o más de vida restante y que matarlos tome entre 8 y 30 s.
+
+## 13.8.1 — 2026-11-18 · Cartel de región a ancho de teléfono (PU-35)
+
+- PU-35: a ancho de teléfono el cartel de la región («Valle Central») ya no se parte en varias líneas ni tapa el panel del objetivo y del capítulo: sale en una sola línea, más chico y un poco más abajo del borde (a 375 px queda entre el borde y el panel del objetivo).
+
+## 13.8.0 — 2026-11-18 · Rodeo de lugares con gente y flora propia (generador 33)
+
+- Mundos nuevos (generador 33): los caminos rodean además 27 tipos de lugares con gente que antes cruzaban (faro, Churchill, caldera, carreta, Santa Rosa, Correos, museos, trapiche, catarata, Barra Honda y otros), y el costo de desvío sube de 60 a 150. En la prueba, los cruces con esos lugares bajan más de la mitad.
+- Flora propia en 27 lugares con gente que quedaban con el claro pelado (feria, lechería, Santa Rosa, termales, Correos, metálico, museo, aduana, esferas, catarata, Barra Honda, templo de música, parques, hacienda, beneficio, capital y otros): pasto alto, flores, helechos y bromelias sobre el terreno natural, sin tocar lo construido.
+- Los caminos se calculan por pasos: calentarObras reparte en cuadros el costo de los tramos que ahora miran lugares (el paso más largo medido fue de 6 ms en Node). Los mundos de generador 21 a 32 salen idénticos.
+- Nuevo tools/revisar-rodeo.mjs (en npm run revisar): cruces, flora, tiempo y paso más largo de calentarObras, contra el generador 32 en el mismo proceso.
+
 ## 13.7.1 — 2026-11-18 · La Hondura cobra vida: salamandras, calor, aire malo y el Tizón Mayor
 
 - La Hondura cobra vida (HO3 y HO4, sin generador nuevo: vale en los mundos de generador 32, donde hay cámaras). Salamandra de brasa en las cámaras de fragua y ceniza: mansa hasta que la golpean (14 de vida, muerde a 3 con 2 s de ardor); el Culebrón de brasa también sale junto a la colada de la fragua.

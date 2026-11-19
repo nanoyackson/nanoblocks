@@ -7,6 +7,10 @@ import { BLOCK_BY_KEY as K } from './blocks.js';
 import { villageAt, CELL } from './pueblogen.js';
 import { structuresNearPasos, structRadius } from './estructuras.js';
 
+// v13.8.0 (generador 33): los lugares con gente que un camino rodea además de los pueblos (el conjunto «MEDIA» de docs/revisiones/RODEO_FLORA.md: 27 tipos de la primera parte de la lista de obras, porque el costo de pedirlos depende del último tipo de la lista)
+const GEN_RODEO = 33;
+const GENTE_MEDIA = new Set(['faro', 'churchill', 'caldera', 'carreta', 'estatua', 'guanacaste', 'tarcoles', 'metalico', 'correos', 'museo_ninos', 'coronado', 'santa_rosa', 'ujarras', 'monumento_nacional', 'templo_musica', 'mirador_poas', 'mirador_arenal', 'refugio', 'orosi', 'esferas', 'aduana', 'trapiche', 'bananera', 'catarata', 'puente_colgante', 'rincon_vieja', 'barra_honda']);
+
 // lugares a los que llega un camino desde el pueblo más cercano (los que tienen gente, no la selva virgen)
 const ROAD_TO = new Set(['capital', 'basilica', 'ruinas', 'fortin', 'estadio_nacional', 'estadio_obra', 'estacion', 'refineria', 'playa_lujo', 'sanatorio', 'hacienda', 'beneficio', 'muelle_limon', 'marino_ballena', 'monteverde', 'grecia', 'zapote', 'aeropuerto']);
 
@@ -25,7 +29,8 @@ function exitOf(v, tx, tz) {
 }
 const insideTown = (v, x, z) => (v.structR ? Math.max(Math.abs(x - v.x), Math.abs(z - v.z)) < v.structR * 0.85 : v.streets ? Math.abs(x - v.x) <= (v.L ?? v.R - 14) + 1 && Math.abs(z - v.z) <= (v.L ?? v.R - 14) + 1 : Math.hypot(x - v.x, z - v.z) < 32);
 
-function makeSegment(gen, A, B) {
+// v13.8.0: por pasos (cede después de cada celda de lugares que se calcula de verdad) para que calentarObras reparta el costo en cuadros; segmentsIn lo corre entero
+function* makeSegmentPasos(gen, A, B) {
   const [ax, az] = exitOf(A, B.x, B.z), [bx, bz] = exitOf(B, A.x, A.z);
   const len = Math.hypot(bx - ax, bz - az);
   if (len < 20 || len > 900) return null;
@@ -34,7 +39,7 @@ function makeSegment(gen, A, B) {
   let off = (hash3(s, ax, 7071, az) - 0.5) * 0.5 * len;
   // v13.4.2 (I4 + I10 R1, generador 29): se prueban nueve curvas laterales y se queda la de menor costo (subidas, cumbres, mar y obras que no son su destino)
   // v13.5.1 (generador 31): las obras ajenas a rodear (los otros pueblos y los lugares con gente de la zona) salen de villageAt y de la lista de lugares con camino, que ya se calculan (barato)
-  const obras = gen.version >= 31 ? obrasAjenas(gen, A, B, ax, az, bx, bz, len) : null;
+  const obras = gen.version >= 31 ? yield* obrasAjenasPasos(gen, A, B, ax, az, bx, bz, len) : null;
   if (gen.version >= 29) off = mejorCurva(gen, ax, az, bx, bz, len, off, obras);
   const mx = (ax + bx) / 2 + (-(bz - az) / len) * off, mz = (az + bz) / 2 + ((bx - ax) / len) * off;
   const N = Math.ceil(len * 1.3);
@@ -93,13 +98,27 @@ function makeSegment(gen, A, B) {
 
 // v13.5.1 (generador 31): lo ajeno que un camino debe rodear: los pueblos de las celdas vecinas que no son sus extremos (villageAt, cacheado: no suma trabajo). Los lugares con gente quedan fuera:
 // buscarlos con structuresNear por tramo costaba +36 % (ver tools/revisar-caminos.mjs).
-function obrasAjenas(gen, A, B, ax, az, bx, bz, len) {
+function* obrasAjenasPasos(gen, A, B, ax, az, bx, bz, len) {
   const mx = (ax + bx) / 2, mz = (az + bz) / 2, R = len / 2 + 60, res = [];
   const cx0 = Math.floor((mx - R) / CELL), cx1 = Math.floor((mx + R) / CELL), cz0 = Math.floor((mz - R) / CELL), cz1 = Math.floor((mz + R) / CELL);
   for (let gz = cz0; gz <= cz1; gz++) for (let gx = cx0; gx <= cx1; gx++) {
     const v = villageAt(gen, gx, gz);
     if (!v || v === A || v === B || (v.x === A.x && v.z === A.z) || (v.x === B.x && v.z === B.z)) continue;
     res.push({ x: v.x, z: v.z, r: (v.L ?? 46) + 4 });
+  }
+  // v13.8.0 (generador 33): también los lugares con gente del conjunto MEDIA, mirando solo las celdas que quedan cerca de la línea del tramo
+  if (gen.version >= GEN_RODEO) {
+    const dx = bx - ax, dz = bz - az, L2 = dx * dx + dz * dz || 1, marg = len * 0.3 + 30;
+    const cellOk = (T, gx, gz) => {
+      const cx = (gx + 0.5) * T.cell, cz = (gz + 0.5) * T.cell, t = Math.max(0, Math.min(1, ((cx - ax) * dx + (cz - az) * dz) / L2));
+      return Math.hypot(cx - (ax + t * dx), cz - (az + t * dz)) < marg + T.cell * 0.71 + T.R;
+    };
+    const vistos = new Set();
+    for (const P of yield* structuresNearPasos(gen, mx, mz, R, GENTE_MEDIA, cellOk)) {
+      if (vistos.has(P.id)) continue; vistos.add(P.id);
+      if (Math.hypot(P.x - A.x, P.z - A.z) < 60 || Math.hypot(P.x - B.x, P.z - B.z) < 60) continue;
+      res.push({ x: P.x, z: P.z, r: structRadius(gen, P.type) + 4 });
+    }
   }
   return res.length ? res : null;
 }
@@ -178,7 +197,7 @@ function mejorCurva(gen, ax, az, bx, bz, len, off0, obras) {
       const t = i / M, u = 1 - t, x = u * u * ax + 2 * u * t * mx + t * t * bx, z = u * u * az + 2 * u * t * mz + t * t * bz;
       const h = gen.column(Math.round(x), Math.round(z)).h;
       cost += 3 * Math.hypot(x - px, z - pz) + (ph === null ? 0 : 9 * Math.abs(h - ph)) + (h > 90 ? 6 : 0);
-      if (obras) for (const o of obras) if (Math.abs(x - o.x) < o.r && Math.abs(z - o.z) < o.r) { cost += 60; break; } // v13.5.1: rodear lo ajeno (pueblos y lugares con gente)
+      if (obras) for (const o of obras) if (Math.abs(x - o.x) < o.r && Math.abs(z - o.z) < o.r) { cost += gen.version >= GEN_RODEO ? 150 : 60; break; } // v13.5.1: rodear lo ajeno (pueblos y lugares con gente)
       run = h < SEA - 3 ? run + 1 : 0; mar = Math.max(mar, run);
       px = x; pz = z; ph = h;
     }
@@ -224,7 +243,7 @@ function* segmentsPasos(gen, gx0, gx1, gz0, gz1) {
       const key = `${p}>${q}`;
       if (seen.has(key)) continue;
       seen.add(key);
-      if (!gen.roadCache.has(key)) { gen.roadCache.set(key, makeSegment(gen, villageAt(gen, p[0], p[1]), villageAt(gen, q[0], q[1]))); yield; }
+      if (!gen.roadCache.has(key)) { gen.roadCache.set(key, yield* makeSegmentPasos(gen, villageAt(gen, p[0], p[1]), villageAt(gen, q[0], q[1]))); yield; }
       const seg = gen.roadCache.get(key);
       if (seg) res.push(seg);
     }
@@ -252,7 +271,7 @@ function* segmentsPasos(gen, gx0, gx1, gz0, gz1) {
         const d = Math.hypot(v.x - P.x, v.z - P.z);
         if (d < bd) { bd = d; best = v; }
       }
-      gen.roadCache.set(key, best && bd > 60 ? makeSegment(gen, best, { x: P.x, z: P.z, structR: structRadius(gen, P.type) + 2, streets: null, city: false }) : null);
+      gen.roadCache.set(key, best && bd > 60 ? yield* makeSegmentPasos(gen, best, { x: P.x, z: P.z, structR: structRadius(gen, P.type) + 2, streets: null, city: false }) : null);
       yield;
     }
     const seg = gen.roadCache.get(key);

@@ -58,6 +58,7 @@ export const JEFES_LISTA = [
   ['viejo_monte', 'media'], ['tulevieja', 'media', { arco: true }], ['mono_congo_gigante', 'media'], // el capitán de la goleta no se mide: fuera de su barco no pelea (sale con 0 s)
   ['reina_bananera', 'jefeHierro'], ['cascabel_rey', 'jefeHierro'], ['escarabajo_hercules', 'jefeHierro'], ['sapo_tata', 'jefeHierro'], ['cangrejo_rey', 'jefeHierro'], ['ciempies_rey', 'jefeHierro'],
   ['rey_murcielago', 'jefeHierro', { arco: true }], ['jefa_ventanilla', 'jefeHierro'], ['tizon_mayor', 'jefeHierro'], // v13.7.1: el dueño de La Hondura (armadura y arma de hierro: el rango «avanzado» del plan)
+  ['anguila_mayor', 'media', { agua: true }], // v13.8.2: la dueña de la Laguna Honda, en una laguna de 3 de hondo
   ['senor_arenal', 'jefeDiamante'], ['arpia', 'jefeDiamante', { arco: true }], ['el_olvido', 'jefeDiamante'], ['sombra_madre', 'jefeDiamante'],
   ['rey_zopilote', 'jefeJade', { arco: true, max: 400 }],
 ];
@@ -128,10 +129,16 @@ export class Bot {
       for (let y = 1; y <= 48; y++) if (w.getBlock(cx + dx, y0 + y, cz + dz)) w.setBlock(cx + dx, y0 + y, cz + dz, 0);
     }
   }
+  // v13.8.2: una laguna de 3 de hondo (y0-1 a y0+1) para medir lo que pelea en el agua (la Anguila Mayor): el bot nada en la superficie
+  piscina() {
+    const { cx, cz, y0 } = this.inicio, w = this.g.world;
+    for (let dx = -14; dx <= 14; dx++) for (let dz = -14; dz <= 14; dz++) { w.setBlock(cx + dx, y0 - 2, cz + dz, 1); for (const y of [-1, 0, 1]) w.setBlock(cx + dx, y0 + y, cz + dz, 11); }
+  }
   empezar(o) {
     const g = this.g, p = g.player, b = this.inicio, inv = g.inventory, H = g.meta.hist;
     if (!p.alive) g.respawn();
     this.cancha();
+    if (o.agua) this.piscina();
     g.entities.spawnT = 2;
     for (const m of g.entities.mobs) if (m.kind.hostile || m.kind.legend || m.kind.mini || m.kind.boss) m.dead = true; // si no, la minijefa de una prueba sigue viva en la otra
     g.meta.nidos = []; g.meta.nidoDia = 1e9; g.miniCd = 1e9; g.legendCd = 1e9; g.congoCd = 1e9; g.zarateCd = 1e9; // solo se mide la pelea: nadie que venga de visita

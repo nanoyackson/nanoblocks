@@ -337,6 +337,8 @@ body.parry #game { filter: brightness(1.5) saturate(1.3); transition: filter 0.0
 #region-banner span { display: block; font-size: 15px; color: var(--warn); }
 #region-banner b::after { content: ''; display: block; height: 3px; margin: 2px auto 4px; width: 60%; background: linear-gradient(90deg, transparent, var(--warn), transparent); }
 #region-banner.show { animation: region-in 4.6s ease both; }
+/* v13.8.1 (PU-35): a ancho de teléfono el cartel no se parte en varias líneas (quedaba de 50 % de ancho y tapaba el objetivo y el capítulo): una sola línea, más chico y más arriba */
+@media (max-width: 700px) { #region-banner { top: 9%; width: max-content; max-width: 92vw; } #region-banner b { font-size: 26px; letter-spacing: 1px; } #region-banner span { font-size: 13px; } }
 @keyframes region-in { 0% { opacity: 0; transform: translate(-50%, -12px); letter-spacing: 8px; } 14% { opacity: 1; transform: translate(-50%, 0); letter-spacing: 2px; } 78% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -6px); } }
 /* v13.2.1: el aviso fijo de versión nueva (sobre las pantallas y el hotbar; no se va solo) */
 #aviso-pwa { position: fixed; left: 50%; bottom: 92px; transform: translateX(-50%); z-index: 400; display: flex; gap: 12px; align-items: center; max-width: min(640px, 92vw); padding: 8px 14px; background: rgba(20, 24, 30, 0.94); border: 2px solid var(--accent); color: var(--text, #fff); font-size: 15px; box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5); }

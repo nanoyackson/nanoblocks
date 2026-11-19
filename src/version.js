@@ -4,8 +4,8 @@
 export const GAME_NAME = 'NanoBlocks';
 // v13.1.0: la versión de generador de terreno MÁS NUEVA que este juego sabe hacer (la de los mundos nuevos). Si el anfitrión de una sala manda
 // una mayor, este cliente generaría un terreno distinto al suyo (cuevas flotando): se rechaza la entrada (red/sesion.js).
-export const GEN_MAX = 32; // v13.7.0: 32 = La Hondura, cámaras hondas bajo la Red Honda con gargantas, colada, vetas a la vista y lugares (GEN_HONDURA en worldgen2.js) · v13.5.1: 31 = caminos con zigzag, túnel y rodeo de lo ajeno, y flora propia de los lugares típicos (GEN_CAMINOS en worldgen2.js) · v13.5.0 (b): v13.5.0: 30 = pueblos en sitio llano sin río y calles con perfil suave y media losa (GEN_PUEBLOS en worldgen2.js) · v13.4.2: 29 = caminos guiados con talud, taludes de obras y lugares típicos por bioma (GEN_RUTAS en worldgen2.js) · v13.4.1: 28 = carácter de los salones, minerales por zona, lugares de cueva (GEN_CARACTER en worldgen2.js) · v13.4.0: 27 = reparto de biomas, bordes suaves, montaña real y construcciones del desierto (GEN_SUPERFICIE en worldgen2.js) · v13.3.3: 26 = simas, bocas gigantes, hitos (GEN_SIMAS en worldgen2.js) · v13.3.2: 25 = la Red Honda y los Salones (GEN_RED en worldgen2.js) · v13.3.0: 24 = obras integradas al terreno (GEN_INTEGRACION en worldgen2.js) · v13.2.0: 23 = lava más abajo (GEN_PROF en worldgen2.js)
-export const GAME_VERSION = '13.7.1';
+export const GEN_MAX = 33; // v13.8.0: 33 = rodeo de lugares con gente y flora propia de los lugares (GEN_RODEO en carreteras.js, FLORA33 en estructuras.js) · v13.7.0: 32 = La Hondura, cámaras hondas bajo la Red Honda con gargantas, colada, vetas a la vista y lugares (GEN_HONDURA en worldgen2.js) · v13.5.1: 31 = caminos con zigzag, túnel y rodeo de lo ajeno, y flora propia de los lugares típicos (GEN_CAMINOS en worldgen2.js) · v13.5.0 (b): v13.5.0: 30 = pueblos en sitio llano sin río y calles con perfil suave y media losa (GEN_PUEBLOS en worldgen2.js) · v13.4.2: 29 = caminos guiados con talud, taludes de obras y lugares típicos por bioma (GEN_RUTAS en worldgen2.js) · v13.4.1: 28 = carácter de los salones, minerales por zona, lugares de cueva (GEN_CARACTER en worldgen2.js) · v13.4.0: 27 = reparto de biomas, bordes suaves, montaña real y construcciones del desierto (GEN_SUPERFICIE en worldgen2.js) · v13.3.3: 26 = simas, bocas gigantes, hitos (GEN_SIMAS en worldgen2.js) · v13.3.2: 25 = la Red Honda y los Salones (GEN_RED en worldgen2.js) · v13.3.0: 24 = obras integradas al terreno (GEN_INTEGRACION en worldgen2.js) · v13.2.0: 23 = lava más abajo (GEN_PROF en worldgen2.js)
+export const GAME_VERSION = '13.8.2';
 // v12.4.6: la versión MÁS VIEJA del juego que puede abrir lo que esta versión guarda. Se sube cuando un mundo guardado trae algo que un
 // juego anterior no entiende y lo rompería: bloques nuevos (ids que el mallador no conoce), un SAVE_FORMAT nuevo o un campo que cambia
 // de forma. Se guarda en meta.minVersion y el menú no abre un mundo cuyo minVersion sea más nuevo que este juego (12.4.0: los bloques 656–662).
@@ -26,6 +26,34 @@ export const CREDITS = [
 ];
 
 export const CHANGELOG = [
+  {
+    version: '13.8.2',
+    date: '2026-11-18',
+    title: 'Calibración de la Anguila y el Tizón (peligro moderado)',
+    items: [
+      'Calibración de La Hondura contra el peligro «moderado» de Isaac, con duelos reales de bot-pelea en mundo nuevo (el bot ahora sabe pelear en una laguna): el Tizón Mayor baja su daño de 1,3 a 1,0 (con equipo de hierro, el jugador promedio gana 5 de 5 y le queda 57 % de la vida; el torpe, que no cubre ni esquiva, sigue perdiendo); la Anguila Mayor queda igual (con equipo medio, promedio 4 de 4 con 47 % de vida restante). Sin mecánicas nuevas, sin generador.',
+      'Nueva prueba tools/revisar-calibracion-hondura.mjs (en npm run revisar) con los resultados guardados en tools/calibracion-hondura.json: exige que los números del juego sean los medidos, que el promedio gane al menos 4 de 5 con 30 % o más de vida restante y que matarlos tome entre 8 y 30 s.',
+    ],
+  },
+  {
+    version: '13.8.1',
+    date: '2026-11-18',
+    title: 'Cartel de región a ancho de teléfono (PU-35)',
+    items: [
+      'PU-35: a ancho de teléfono el cartel de la región («Valle Central») ya no se parte en varias líneas ni tapa el panel del objetivo y del capítulo: sale en una sola línea, más chico y un poco más abajo del borde (a 375 px queda entre el borde y el panel del objetivo).',
+    ],
+  },
+  {
+    version: '13.8.0',
+    date: '2026-11-18',
+    title: 'Rodeo de lugares con gente y flora propia (generador 33)',
+    items: [
+      'Mundos nuevos (generador 33): los caminos rodean además 27 tipos de lugares con gente que antes cruzaban (faro, Churchill, caldera, carreta, Santa Rosa, Correos, museos, trapiche, catarata, Barra Honda y otros), y el costo de desvío sube de 60 a 150. En la prueba, los cruces con esos lugares bajan más de la mitad.',
+      'Flora propia en 27 lugares con gente que quedaban con el claro pelado (feria, lechería, Santa Rosa, termales, Correos, metálico, museo, aduana, esferas, catarata, Barra Honda, templo de música, parques, hacienda, beneficio, capital y otros): pasto alto, flores, helechos y bromelias sobre el terreno natural, sin tocar lo construido.',
+      'Los caminos se calculan por pasos: calentarObras reparte en cuadros el costo de los tramos que ahora miran lugares (el paso más largo medido fue de 6 ms en Node). Los mundos de generador 21 a 32 salen idénticos.',
+      'Nuevo tools/revisar-rodeo.mjs (en npm run revisar): cruces, flora, tiempo y paso más largo de calentarObras, contra el generador 32 en el mismo proceso.',
+    ],
+  },
   {
     version: '13.7.1',
     date: '2026-11-18',
