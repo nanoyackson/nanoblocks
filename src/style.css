@@ -200,12 +200,12 @@ body.modo-foto #compass, body.modo-foto #mision-hud, body.modo-foto #effects, bo
 #torneo b { display: block; margin-bottom: 4px; color: var(--accent); }
 #torneo div { display: flex; justify-content: space-between; transition: all 0.3s; }
 #torneo div.yo { color: var(--warn); font-weight: bold; }
-#ind-meta { position: absolute; left: 8px; top: 196px; max-width: 240px; font-size: 14px; color: var(--warn); background: var(--surface); padding: 2px 7px; border-radius: var(--r-chico); pointer-events: none; text-shadow: var(--sombra-texto); }
-#ind-meta.sin-mapa { top: 40px; }
+#ind-meta { max-width: 240px; font-size: 14px; color: var(--warn); background: var(--surface); padding: 2px 7px; border-radius: var(--r-chico); pointer-events: none; text-shadow: var(--sombra-texto); }
+#lado-hud:has(#ind-meta.sin-mapa) { top: 40px; } /* v13.5.6 (PU-01): sin minimapa el bloque sube entero */
 #ind-meta.cambio { animation: metacambio 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
 @keyframes metacambio { from { transform: translateX(-12px); opacity: 0; } }
 #ind-dur { transition: color 0.4s; }
-@media (max-width: 700px) { #ind-meta { top: 146px; font-size: 14px; } }
+@media (max-width: 700px) { #ind-meta { font-size: 14px; } }
 #ind-dur { position: absolute; left: 50%; bottom: 12px; margin-left: 252px; font-size: 14px; background: var(--surface); padding: 2px 6px; pointer-events: none; text-shadow: var(--sombra-texto); white-space: nowrap; }
 #ind-dur.poco { animation: durpoco 0.9s ease-in-out infinite; }
 @keyframes durpoco { 50% { opacity: 0.35; } }
@@ -284,13 +284,13 @@ ul.etapas li.hecho { opacity: 1; color: var(--success); }
 .golpe-dir { position: absolute; top: 50%; left: 50%; width: 180px; height: 46px; margin: -23px 0 0 -90px; border-top: 7px solid var(--danger); border-radius: 50% 50% 0 0 / 100% 100% 0 0; pointer-events: none; transform: rotate(var(--a)) translateY(-30vh); animation: golpe-dir 0.8s ease-out forwards; }
 @keyframes golpe-dir { from { opacity: 1; } to { opacity: 0; } }
 #mirando.malo { color: var(--danger); }
-#lado-hud { position: absolute; left: 8px; top: 214px; max-width: 240px; display: flex; flex-direction: column; gap: 4px; align-items: flex-start; pointer-events: none; }
+#lado-hud { position: absolute; left: 8px; top: 196px; max-width: 240px; display: flex; flex-direction: column; gap: 4px; align-items: flex-start; pointer-events: none; }
 #objetivo { padding: 4px 8px; background: var(--surface); border-left: 3px solid var(--warn); color: var(--warn); font-size: 14px; line-height: 1.15; pointer-events: none; transition: opacity 0.4s; }
 #objetivo:empty { display: none; }
 #objetivo b { display: block; color: var(--warn); font-weight: normal; font-size: 14px; }
 #objetivo.nuevo { animation: objetivoNuevo 0.9s ease-out; }
 @keyframes objetivoNuevo { 0% { transform: translateX(-14px); opacity: 0; } 40% { background: var(--acento-suave); } 100% { transform: none; opacity: 1; } }
-@media (max-width: 700px) { #lado-hud { top: 150px; max-width: 170px; } #objetivo, #receta-fija { font-size: 14px; } }
+@media (max-width: 700px) { #lado-hud { top: 146px; max-width: 170px; } #lado-hud:has(#ind-meta.sin-mapa) { top: 40px; } #objetivo, #receta-fija { font-size: 14px; } }
 body.modo-foto #mirando, body.modo-foto #lado-hud, body.modo-foto #reloj { display: none; }
 #receta-fija { padding: 3px 8px; background: var(--surface); border-left: 3px solid var(--accent); color: var(--accent); font-size: 14px; line-height: 1.15; }
 #receta-fija:empty { display: none; }

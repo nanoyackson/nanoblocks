@@ -412,10 +412,10 @@ export class UI {
     for (const w of worlds) {
       const row = document.createElement('div');
       row.className = 'world';
-      const date = new Date(w.lastPlayed || w.created).toLocaleString('es-CR');
+      const date = new Date(w.lastPlayed || w.created).toLocaleString('es-CR', { day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }); // v13.5.6 (PU-07): fecha corta y sin segundos
       row.innerHTML = `<div class="info"><div class="name"></div><div class="meta"></div></div>`;
       row.querySelector('.name').textContent = w.name;
-      row.querySelector('.meta').textContent = `${w.mode === 'creative' ? 'Creativo' : 'Supervivencia'} · día ${w.day || 1} · ${date} · v${w.gameVersion || '?'}`;
+      row.querySelector('.meta').textContent = `${w.mode === 'creative' ? 'Creativo' : 'Supervivencia'} · v${w.gameVersion || '?'} · día ${w.day || 1} · ${date}`;
       const play = document.createElement('button'); play.textContent = 'Jugar';
       play.onclick = async () => {
         // v12.4.6: un mundo de una versión más nueva no se abre (o se pregunta, si es compatible)
@@ -504,6 +504,7 @@ export class UI {
     this.exitLock();
     this.game.paused = true;
     this.game.releaseAll();
+    this.limpiarAvisos(false); // v13.5.6 (PU-06): el aviso en pantalla no se queda encima del título de la pausa
     $('#pause-info').textContent = `Guardado automático cada 30 s · v${GAME_VERSION}`;
     this.show('pause');
     if (performance.now() - (this.game.lastSave || 0) > 5000) this.game.save(); // v11.13.3: 5 s, el mismo margen del aviso al cerrar la pestaña

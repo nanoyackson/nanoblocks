@@ -1,6 +1,6 @@
 {
   "name": "nanoblocks",
-  "version": "13.5.4",
+  "version": "13.5.6",
   "private": true,
   "description": "NanoBlocks: juego voxel de supervivencia y construcción hecho desde cero con IA",
   "type": "module",

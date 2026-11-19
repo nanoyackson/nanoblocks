@@ -1000,13 +1000,14 @@ export function scanStep(gen, i, x, z, radius) {
 export const cuantosTipos = (gen) => typesFor(gen).length; // v13.0.2: el mapa los revisa de a uno por vuelta (scanStep)
 
 // v6: que no se monte encima de otra estructura (se revisan solo los tipos anteriores en la lista)
-function overlaps(gen, T, x, z) {
+// v13.5.5: por pasos (antes era una función normal, `overlaps`): calcular los lugares de los tipos de antes (cada uno con sus intentos) era lo que sumaba 100-280 ms en zapote y monteverde
+function* overlapsPasos(gen, T, x, z) {
   const types = typesFor(gen);
   const me = types.findIndex((t) => t.key === T.key);
   for (let i = 0; i < me; i++) {
     const T2 = types[i], gap = T.R + T2.R + 8;
     for (let gz = Math.floor((z - gap) / T2.cell); gz <= Math.floor((z + gap) / T2.cell); gz++) for (let gx = Math.floor((x - gap) / T2.cell); gx <= Math.floor((x + gap) / T2.cell); gx++) {
-      const P2 = placeOf(gen, T2, gx, gz);
+      const P2 = yield* placeOfPasos(gen, T2, gx, gz);
       if (P2 && Math.abs(P2.x - x) < gap && Math.abs(P2.z - z) < gap) return true;
     }
   }
@@ -1017,16 +1018,25 @@ function placeOf(gen, T, gx, gz) {
   gen.structCache = gen.structCache || new Map();
   const key = `${T.key}:${gx},${gz}`;
   if (gen.structCache.has(key)) return gen.structCache.get(key);
+  const it = placeOfPasos(gen, T, gx, gz);
+  for (;;) { const r = it.next(); if (r.done) return r.value; }
+}
+// v13.5.5: la colocación de un lugar por pasos: cede (yield) antes de cada intento después del primero (las celdas grandes, como zapote o monteverde, tardaban 100-180 ms de un tirón)
+function* placeOfPasos(gen, T, gx, gz) {
+  gen.structCache = gen.structCache || new Map();
+  const key = `${T.key}:${gx},${gz}`;
+  if (gen.structCache.has(key)) return gen.structCache.get(key);
   let P = null;
   // mundo compacto: alrededor del inicio manda el anillo (un sitio fijo por tipo); la grilla no entra ahí
   const anillo = gen.compacto ? sitiosAnillo(gen) : null, A = anillo && !T.place ? anillo.get(T.key) : null;
   if (A && Math.floor(A.x / T.cell) === gx && Math.floor(A.z / T.cell) === gz) { gen.structCache.set(key, A); return A; }
   const enZona = (x, z) => anillo && Math.hypot(x - gen.inicioC.x, z - gen.inicioC.z) < gen.zonaAnillo;
   const pisaAnillo = (x, z, R) => anillo && gen.anilloPuestos.some((q) => Math.abs(q.x - x) < q.R + R + 8 && Math.abs(q.z - z) < q.R + R + 8);
-  if (T.place) { P = T.place(gen, gx, gz); if (P && gen.version >= 6 && overlaps(gen, T, P.x, P.z)) P = null; if (P && pisaAnillo(P.x, P.z, T.R)) P = null; }
+  if (T.place) { P = T.place(gen, gx, gz); if (P && gen.version >= 6 && (yield* overlapsPasos(gen, T, P.x, P.z))) P = null; if (P && pisaAnillo(P.x, P.z, T.R)) P = null; }
   else if (hash3(gen.seed, gx, T.salt, gz) < T.chance) {
     const m = Math.min(60, T.cell / 4);
     for (let k = 0; k < (T.tries || 14) && !P; k++) {
+      if (k) yield;
       const x = Math.floor(gx * T.cell + m + hash3(gen.seed, gx, T.salt + k * 13 + 1, gz) * (T.cell - 2 * m));
       const z = Math.floor(gz * T.cell + m + hash3(gen.seed, gx, T.salt + k * 13 + 2, gz) * (T.cell - 2 * m));
       if (enZona(x, z)) continue;
@@ -1036,7 +1046,7 @@ function placeOf(gen, T, gx, gz) {
       // que no caiga encima de un pueblo
       const v = villageAt(gen, Math.floor(x / VCELL), Math.floor(z / VCELL));
       if (v && Math.hypot(v.x - x, v.z - z) < 90 + (gen.version >= 6 ? T.R : 0)) continue;
-      if (gen.version >= 6 && overlaps(gen, T, x, z)) continue;
+      if (gen.version >= 6 && (yield* overlapsPasos(gen, T, x, z))) continue;
       P = { x, z, y: c.h, rot: f.rot ?? Math.floor(hash3(gen.seed, x, T.salt, z) * 4), id: `${T.key}@${x},${z}`, type: T.key };
     }
   }
@@ -1111,12 +1121,23 @@ export function sitiosAnillo(gen) {
 
 // todas las estructuras de un tipo cerca de (x, z) (para el mapa y los comandos)
 export function structuresNear(gen, x, z, radius, only = null, cellOk = null) {
+  const it = structuresNearPasos(gen, x, z, radius, only, cellOk);
+  for (;;) { const r = it.next(); if (r.done) return r.value; }
+}
+// v13.5.5: lo mismo, pero cede (yield) después de cada celda que se calculó de verdad (las que ya estaban en el caché no cuestan): así se puede repartir en cuadros (calentarObras, carreteras.js)
+export function* structuresNearPasos(gen, x, z, radius, only = null, cellOk = null) {
   const res = [];
   for (const T of typesFor(gen)) {
     if (only && !only.has(T.key)) continue;
     const g0x = Math.floor((x - radius) / T.cell), g1x = Math.floor((x + radius) / T.cell);
     const g0z = Math.floor((z - radius) / T.cell), g1z = Math.floor((z + radius) / T.cell);
-    for (let gz = g0z; gz <= g1z; gz++) for (let gx = g0x; gx <= g1x; gx++) { if (cellOk && !cellOk(T, gx, gz)) continue; const P = placeOf(gen, T, gx, gz); if (P) res.push(P); }
+    for (let gz = g0z; gz <= g1z; gz++) for (let gx = g0x; gx <= g1x; gx++) {
+      if (cellOk && !cellOk(T, gx, gz)) continue;
+      const nueva = !(gen.structCache && gen.structCache.has(`${T.key}:${gx},${gz}`));
+      const P = yield* placeOfPasos(gen, T, gx, gz);
+      if (P) res.push(P);
+      if (nueva) yield;
+    }
   }
   return res;
 }

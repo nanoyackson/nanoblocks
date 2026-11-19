@@ -6,6 +6,14 @@ const tec = (g, k) => `<kbd>${nombreTecla(tecla(g.settings, k))}</kbd>`;
 const ach = (g, k) => g.achievements && g.achievements.has(k);
 const hist = (g) => g.meta.hist || {};
 const SECCIONES = [
+  // v13.5.6 (PU-04): lo primero es cómo moverse y qué hace cada botón; el combate va después de Sobrevivir
+  ['🧭 Primeros pasos y controles', [
+    { t: 'Moverse', d: () => '<kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> caminan, <kbd>Espacio</kbd> salta (dos veces seguidas, vuela en Creativo), <kbd>Shift</kbd> agacha y <kbd>Ctrl</kbd> corre. Mueva el ratón para mirar.' },
+    { t: 'Picar y poner', d: () => 'Clic izquierdo sostenido pica o tala lo que apunta la mira; clic derecho pone el bloque de la mano (o usa el objeto: abre una puerta, un cofre, una cama). La rueda del ratón o los números <kbd>1</kbd> a <kbd>9</kbd> cambian lo que lleva en la mano.' },
+    { t: 'Inventario y fabricar', d: (g) => `${tec(g, 'inventario')} abre el inventario: ahí se guardan las cosas y se fabrican recetas con lo que lleva. ${tec(g, 'soltar')} suelta lo que tiene en la mano.` },
+    { t: 'Mapa, libreta y brújula', d: (g) => `${tec(g, 'mapa')} abre el mapa, ${tec(g, 'logros')} la libreta (logros, habilidades, bestiario, diario), ${tec(g, 'cartas')} las cartas de la abuela y ${tec(g, 'ayuda')} esta ayuda. La brújula de arriba señala el 📖 de la meta; el objetivo de la izquierda dice qué sigue.` },
+    { t: 'Comer y descansar', d: (g) => `Con comida en la mano, clic derecho sostenido come; ${tec(g, 'comer')} come rápido. De noche hay Sombras: conviene tener una casa con antorchas y una cama. <kbd>Esc</kbd> pausa y guarda.` },
+  ]],
   ['⚔ Pelear', [
     { t: 'Escudo y parry', d: () => 'Con escudo puesto (y un arma o la mano libre), clic derecho sostenido bloquea. Si lo levanta justo antes del golpe, es parry: el enemigo queda aturdido.' },
     { t: 'Golpe cargado', d: (g) => `${tec(g, 'cargado')} pega más duro y rompe el escudo de las Sombras que lo traen.` },
@@ -121,7 +129,9 @@ const SECCIONES = [
 ];
 export function ayudaHTML(g) {
   let h = '<div class="lib-scroll ayuda">';
-  for (const [tit, L] of SECCIONES) {
+  const orden = [...SECCIONES], ip = orden.findIndex((s) => s[0].includes('Pelear')), [pelear] = orden.splice(ip, 1); // v13.5.6 (PU-04): el combate después de Sobrevivir
+  orden.splice(orden.findIndex((s) => s[0].includes('Sobrevivir')) + 1, 0, pelear);
+  for (const [tit, L] of orden) {
     const vis = L.filter((e) => !e.si || e.si(g));
     if (!vis.length) continue;
     h += `<h4 class="mana-tit">${tit}</h4><dl>${vis.map((e) => `<dt>${e.t}</dt><dd>${e.d(g)}</dd>`).join('')}</dl>`;

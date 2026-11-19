@@ -104,7 +104,7 @@ export function tickBolso(g) {
 export function deathTip(g) {
   const d = difOf(g);
   if (g.seguroPago) { g.seguroPago = false; return '📄 El seguro del tío Rigo pagó: no se le cayó nada. La póliza ya se gastó.'; }
-  if (g.mode !== 'survival' || d.keep === 'todo') return 'Conserva su inventario (modo Tranquilo).';
+  if (g.mode !== 'survival' || d.keep === 'todo') return 'Se conserva su inventario (modo Tranquilo).';
   if (g.meta.bolso && g.meta.bolso.dim && g.meta.bolso.dim !== 'tierra') return `Sus cosas quedaron en un cofre allá ${g.meta.bolso.dim === 'cielo' ? 'arriba' : 'abajo'}. Vuelva por el portal (🌀 en la brújula), y allá el 🎒 le dice dónde.`;
   const otros = todosBolsos(g).length - 1;
   let mas = otros > 0 ? ` Y le ${otros > 1 ? `quedan ${otros} bolsos más` : 'queda otro bolso'} por ahí.` : '';
@@ -113,7 +113,7 @@ export function deathTip(g) {
   const B = g.meta.bolso, S = g.meta.spawn, dist = B && S ? Math.round(Math.hypot(B.x - S.x, B.z - S.z)) : 0;
   const rumbo = B && S ? ['al este', 'al sureste', 'al sur', 'al suroeste', 'al oeste', 'al noroeste', 'al norte', 'al noreste'][(Math.round(Math.atan2(B.z - S.z, B.x - S.x) / (Math.PI / 4)) + 8) % 8] : '';
   const donde = dist > 8 ? `el bolso, a ${dist} bloques ${rumbo} (🧭 y 🎒 en el mapa)` : 'el bolso, ahí mismo donde reaparece (🎒 en el mapa)';
-  return (d.keep === 'equipo' ? `Sus cosas quedaron en ${donde}. Conserva la armadura y lo que tenía en la mano.` : `Todo quedó en ${donde}, armadura incluida. ¡Apúrese!`) + mas;
+  return (d.keep === 'equipo' ? `Sus cosas quedaron en ${donde}. Se conservan la armadura y lo que tenía en la mano.` : `Todo quedó en ${donde}, armadura incluida. ¡Apúrese!`) + mas;
 }
 
 // ---------- frío: en el páramo y en las cumbres, sin abrigo ni fuego, da escalofrío y más hambre ----------
@@ -150,7 +150,7 @@ export function bolsitoInicio(g) {
 // cada consejo sale cuando toca (`si`) y se salta si ya no hace falta (`listo`); `t` es el mínimo de segundos jugados
 const conHerramienta = (g, tier) => g.inventory.slots.some((s) => { const d = s && !isBlockId(s.id) && getDef(s.id); return d && d.tool && (d.tier || 0) >= tier; });
 const CONSEJOS = [
-  { id: 'ruta', t: 14, txt: '🧭 Siga el 📖 de la brújula hasta la casa de la abuela. Si ocupa madera por el camino: clic izquierdo sostenido a un árbol' },
+  { id: 'ruta', t: 8, txt: '🧭 Siga el 📖 de la brújula (la barra de arriba, en el centro) hasta la casa de la abuela. Si ocupa madera por el camino: clic izquierdo sostenido a un árbol' },
   { id: 'tablas', t: 60, listo: (g) => conHerramienta(g, 1), txt: '🪵 Con madera se hacen tablas y una mesa de trabajo (E abre el inventario y el libro de recetas)' },
   { id: 'piedra', t: 90, listo: (g) => conHerramienta(g, 2), txt: '⛏ Herramientas de madera primero, después de piedra: el pico de piedra abre la minería' },
   { id: 'ruta2', t: 150, txt: '🧭 La tecla J abre la Ruta del aventurero: le va diciendo qué sigue' },

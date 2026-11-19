@@ -14,12 +14,11 @@ export function prologo() {
     listo = true;
     window.removeEventListener('keydown', fin, true);
     document.removeEventListener('pointerlockchange', soltar);
-    window.removeEventListener('mousedown', fin, true);
     el.classList.add('fuera');
     setTimeout(() => el.remove(), 900);
   };
   window.addEventListener('keydown', fin, true);
-  window.addEventListener('mousedown', fin, true);
+  // v13.5.6 (PU-02): sin «mousedown»: el primer clic obligatorio (capturar el ratón) cortaba el prólogo en la primera línea; sigue cortándose con una tecla, al soltar el ratón o a los 8,6 s
   document.addEventListener('pointerlockchange', soltar);
   setTimeout(fin, 8600);
 }

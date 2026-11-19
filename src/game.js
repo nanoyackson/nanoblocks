@@ -46,6 +46,7 @@ import { shieldDef, blockHand, startBlock, stopBlock, tryDodge, tryRoll, trySlid
 import { makeItemMesh, makeHeldItemMesh, makeMacheteMesh, LIGHT_TINT } from './models.js';
 import { saveWorld } from './save.js';
 import { HEIGHT, BIOMES } from './worldgen.js';
+import { calentarObras } from './carreteras.js';
 import { GAME_VERSION } from './version.js';
 import { gainSkill, mult, velocidadPicar, lv as skillLv, danoTotal, POR_ESTRELLA_DANO } from './habilidades.js';
 import { tickMision, tickCharlas, tickApagon } from './misiones.js';
@@ -421,6 +422,20 @@ export class Game {
     else {
       const s = meta.spawn;
       this.player.body.pos.x = s.x; this.player.body.pos.y = s.y; this.player.body.pos.z = s.z;
+      // v13.5.6 (PU-08): al nacer se mira hacia donde hay más tierra firme (antes, a veces solo mar abierto): la primera imagen invita a caminar
+      try {
+        const gen = this.world && this.world.gen, ok = gen && gen.column ? gen : null;
+        if (ok) {
+          let mejor = -1, yaw = 0;
+          for (let k = 0; k < 16; k++) {
+            const a = (k / 16) * Math.PI * 2, dx = -Math.sin(a), dz = -Math.cos(a);
+            let tierra = 0;
+            for (const d of [6, 12, 20, 30, 42]) if (ok.column(Math.floor(s.x + dx * d), Math.floor(s.z + dz * d)).h > 64) tierra += 1 / d;
+            if (tierra > mejor + 1e-9) { mejor = tierra; yaw = a; }
+          }
+          this.player.yaw = yaw; this.player.pitch = 0;
+        }
+      } catch { /* sin generador todavía: se queda como estaba */ }
     }
     this.inventory = new Inventory();
     this.inventory.onWear = (st) => avisarDesgaste(this, st);
@@ -2732,6 +2747,7 @@ export class Game {
     // cargar mundo alrededor
     const busyBudget = this.ready ? 6 : 30;
     this.world.update(pos.x, pos.z, busyBudget);
+    if (this.ready && this.dim === 'tierra' && this.world.gen.version >= 6 && !this.calorOff) { try { calentarObras(this.world.gen, pos.x, pos.z, 4); } catch (e) { this.calorOff = true; console.warn('[calentarObras]', e); } } // v13.5.5: solo llena cachés de tramos y lugares, unos 4 ms por cuadro
     if (!this.ready) {
       if (this.world.readyAt(pos.x, pos.z)) {
         if (this.arrival) this.finishArrival();

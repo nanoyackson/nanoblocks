@@ -189,8 +189,8 @@ input[type=checkbox] { accent-color: var(--accent); }
   backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur); color: var(--text); padding: var(--sp-4) var(--sp-5); }
 .map-panel h3, .map-panel h4 { color: var(--text); text-shadow: none; }
 /* pestañas: texto con el subrayado de acento bajo la activa, sin cajas; si no caben, se desplazan a lo ancho */
-.lib-tabs { display: flex; flex-wrap: nowrap; gap: var(--sp-4); overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--border); margin-bottom: var(--sp-3);
-  mask-image: linear-gradient(90deg, black 92%, transparent); -webkit-mask-image: linear-gradient(90deg, black 92%, transparent); }
+/* v13.5.6 (PU-03): las pestañas de la libreta se envuelven en dos filas (antes se deslizaban de lado y 5 de 11, con la activa, quedaban fuera de vista) */
+.lib-tabs { display: flex; flex-wrap: wrap; gap: 0 var(--sp-4); border-bottom: 1px solid var(--border); margin-bottom: var(--sp-3); }
 .lib-tabs::-webkit-scrollbar { display: none; }
 .lib-tabs button { flex: 0 0 auto; min-height: 36px; padding: var(--sp-2) 0; background: none; border: 0; border-radius: 0; box-shadow: none; color: var(--text-soft);
   font: 500 14px/1 var(--font); border-bottom: 2px solid transparent; white-space: nowrap; }

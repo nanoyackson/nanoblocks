@@ -6,7 +6,7 @@
 //     el trozo se genera en ≤ 12 ms de mediana.
 // Uso: node tools/revisar-rutas.mjs
 import { Generator, CHUNK, HEIGHT } from '../src/worldgen.js';
-import { roadsNear } from '../src/carreteras.js';
+import { roadsNear, calentarObras } from '../src/carreteras.js';
 import { structuresNear } from '../src/estructuras.js';
 import { medirMin as medir } from './medir-tramo.mjs'; // mínimo de 3 repeticiones
 import { GEN_RUTAS } from '../src/worldgen2.js';
@@ -89,6 +89,34 @@ ok(mediana <= 12, `trozo con lugar típico: ${mediana.toFixed(1)} ms de mediana 
   }
   ok(difCol === 0, `column() igual con la búsqueda completa de volcanes y cerros (${col} puntos, ${difCol} distintos)`);
   ok(difTramos === 0, `roadsNear igual con la búsqueda completa de obras (${cons} consultas, ${difTramos} distintas)`);
+}
+// v13.5.5 (C de COSTO_TRAMOS): calentar las obras por cuadros no cambia nada y reparte el costo.
+//  a) equivalencia: con un generador que se calienta al caminar (calentarObras cada cuadro, 4 ms de presupuesto), roadsNear da lo mismo que con uno frío (id, largo, extremos, suma de control y orden), en 3 semillas;
+//  b) reparto (solo relaciones, nunca milisegundos absolutos): caminando 3 000 bloques con 160 cuadros entre una consulta y la siguiente, la peor consulta cae por debajo de un tercio de la fría y el peor cuadro
+//     de calentamiento no pasa de un cuarto de la peor consulta fría (mínimo de 2 repeticiones de cada).
+{
+  const firma = (g, x, z) => roadsNear(g, x, z, 12).map((s) => s.id + ':' + s.n + ':' + s.xs[0] + ',' + s.zs[0] + ':' + s.xs[s.n - 1] + ',' + s.zs[s.n - 1] + ':' + s.ys.reduce((u, v) => u + v, 0)).join('|');
+  const caminar = (g, sp, calor) => { // devuelve la peor consulta y el peor cuadro de calentamiento, y las firmas
+    let peorRuta = 0, peorCuadro = 0; const f = [];
+    for (let d = 0; d <= 3000; d += 16) {
+      if (calor) for (let q = 0; q < 160; q++) { const t0 = performance.now(); calentarObras(g, sp.x + d - 16 + (q + 1) / 10, sp.z, 4); peorCuadro = Math.max(peorCuadro, performance.now() - t0); }
+      const t0 = performance.now(); f.push(firma(g, sp.x + d + 96, sp.z)); peorRuta = Math.max(peorRuta, performance.now() - t0);
+    }
+    return { peorRuta, peorCuadro, f };
+  };
+  let dif = 0, cons = 0;
+  for (const [seed, ver] of [[202, 31], [303, 30], [101, 31]]) {
+    const a = new Generator(seed, ver, 'tierra', 'normal'), b = new Generator(seed, ver, 'tierra', 'normal'), sp = a.findSpawn();
+    const ra = caminar(a, sp, true), rb = caminar(b, sp, false);
+    ra.f.forEach((s, i) => { cons++; if (s !== rb.f[i]) dif++; });
+  }
+  ok(dif === 0, `calentar las obras por cuadros no cambia ningún tramo (${cons} consultas en 3 semillas, ${dif} distintas)`);
+  let fria = Infinity, tibia = Infinity, cuadro = Infinity;
+  for (let k = 0; k < 2; k++) {
+    const a = new Generator(202, 31, 'tierra', 'normal'), b = new Generator(202, 31, 'tierra', 'normal'), sp = a.findSpawn();
+    fria = Math.min(fria, caminar(b, sp, false).peorRuta); const r = caminar(a, sp, true); tibia = Math.min(tibia, r.peorRuta); cuadro = Math.min(cuadro, r.peorCuadro);
+  }
+  ok(tibia <= fria / 3 && cuadro <= fria / 4, `reparto en cuadros (semilla 202): peor consulta ${fria.toFixed(0)} → ${tibia.toFixed(0)} ms, peor cuadro de calentamiento ${cuadro.toFixed(0)} ms (≤ 1/3 y ≤ 1/4 de la fría)`);
 }
 console.log(fallas ? `\n✘ ${fallas} falla(s)` : '\nResto de la superficie (generador 29): todo bien.');
 process.exitCode = fallas ? 1 : 0;

@@ -5,7 +5,7 @@
 import { hash3 } from './noise.js';
 import { BLOCK_BY_KEY as K } from './blocks.js';
 import { villageAt, CELL } from './pueblogen.js';
-import { structuresNear, structRadius } from './estructuras.js';
+import { structuresNearPasos, structRadius } from './estructuras.js';
 
 // lugares a los que llega un camino desde el pueblo más cercano (los que tienen gente, no la selva virgen)
 const ROAD_TO = new Set(['capital', 'basilica', 'ruinas', 'fortin', 'estadio_nacional', 'estadio_obra', 'estacion', 'refineria', 'playa_lujo', 'sanatorio', 'hacienda', 'beneficio', 'muelle_limon', 'marino_ballena', 'monteverde', 'grecia', 'zapote', 'aeropuerto']);
@@ -210,6 +210,11 @@ function linksOf(gen, gx, gz) {
 }
 
 function segmentsIn(gen, gx0, gx1, gz0, gz1) {
+  const it = segmentsPasos(gen, gx0, gx1, gz0, gz1);
+  for (;;) { const r = it.next(); if (r.done) return r.value; }
+}
+// v13.5.5: segmentsIn por pasos: cede (yield) después de cada tramo o lugar que se calculó de verdad; segmentsIn lo corre entero y calentarObras lo reparte en cuadros (el resultado es el mismo: los cachés solo guardan)
+function* segmentsPasos(gen, gx0, gx1, gz0, gz1) {
   gen.roadCache = gen.roadCache || new Map();
   const res = [], seen = new Set();
   for (let gz = gz0 - 3; gz <= gz1 + 3; gz++) for (let gx = gx0 - 3; gx <= gx1 + 3; gx++) {
@@ -219,7 +224,7 @@ function segmentsIn(gen, gx0, gx1, gz0, gz1) {
       const key = `${p}>${q}`;
       if (seen.has(key)) continue;
       seen.add(key);
-      if (!gen.roadCache.has(key)) gen.roadCache.set(key, makeSegment(gen, villageAt(gen, p[0], p[1]), villageAt(gen, q[0], q[1])));
+      if (!gen.roadCache.has(key)) { gen.roadCache.set(key, makeSegment(gen, villageAt(gen, p[0], p[1]), villageAt(gen, q[0], q[1]))); yield; }
       const seg = gen.roadCache.get(key);
       if (seg) res.push(seg);
     }
@@ -233,7 +238,8 @@ function segmentsIn(gen, gx0, gx1, gz0, gz1) {
     if (v && v.x > gx0 * CELL - REACH && v.x < (gx1 + 1) * CELL + REACH && v.z > gz0 * CELL - REACH && v.z < (gz1 + 1) * CELL + REACH) aldeas.push(v);
   }
   const cercaDeAldea = (T, gx, gz) => { const ax = gx * T.cell - 450, bx = (gx + 1) * T.cell + 450, az = gz * T.cell - 450, bz = (gz + 1) * T.cell + 450; return aldeas.some((v) => v.x > ax && v.x < bx && v.z > az && v.z < bz); };
-  for (const P of aldeas.length || gen.referencia ? structuresNear(gen, (x0 + x1) / 2, (z0 + z1) / 2, Math.max(x1 - x0, z1 - z0) / 2, ROAD_TO, gen.referencia ? null : cercaDeAldea) : []) {
+  const lugares = aldeas.length || gen.referencia ? yield* structuresNearPasos(gen, (x0 + x1) / 2, (z0 + z1) / 2, Math.max(x1 - x0, z1 - z0) / 2, ROAD_TO, gen.referencia ? null : cercaDeAldea) : [];
+  for (const P of lugares) {
     const key = `s:${P.id}`;
     if (seen.has(key)) continue;
     seen.add(key);
@@ -247,11 +253,43 @@ function segmentsIn(gen, gx0, gx1, gz0, gz1) {
         if (d < bd) { bd = d; best = v; }
       }
       gen.roadCache.set(key, best && bd > 60 ? makeSegment(gen, best, { x: P.x, z: P.z, structR: structRadius(gen, P.type) + 2, streets: null, city: false }) : null);
+      yield;
     }
     const seg = gen.roadCache.get(key);
     if (seg) res.push(seg);
   }
   return res;
+}
+
+// v13.5.5 (C de COSTO_TRAMOS): calienta los cachés de tramos y lugares de las celdas por donde el jugador va a pasar, repartido en cuadros: el juego la llama cada cuadro con unos
+// milisegundos de presupuesto y, cuando el jugador está a 150 o menos del borde de su celda de caminos (384), recorre en el orden de siempre las celdas de al lado. No cambia ningún
+// bloque (solo llena cachés que dependen de la semilla y no del orden): al cruzar, los trozos nuevos ya encuentran todo calculado. Devuelve true si todavía queda por calentar.
+const MARGEN_CALOR = 150;
+export function calentarObras(gen, x, z, presupuestoMs = 4) {
+  const gx = Math.floor(x / CELL), gz = Math.floor(z / CELL), c = (gen.calor ||= { hechas: new Set(), cola: [], it: null, clave: '' });
+  const dx = x - gx * CELL < MARGEN_CALOR ? -1 : (gx + 1) * CELL - x < MARGEN_CALOR ? 1 : 0, dz = z - gz * CELL < MARGEN_CALOR ? -1 : (gz + 1) * CELL - z < MARGEN_CALOR ? 1 : 0;
+  const clave = `${gx},${gz},${dx},${dz}`;
+  if (clave !== c.clave) { // cambió la zona: se rehace la cola (la propia celda primero, después las de al lado que se van a pisar)
+    c.clave = clave; c.it = null;
+    // las ventanas que de verdad pide roadsNear: una celda o, si el trozo está a menos de 12 del borde, el par o el cuadro de celdas (y su búsqueda de lugares sale de un cuadrado distinto)
+    const eje = (g, d) => (d ? [[g, g], [g + d, g + d], [Math.min(g, g + d), Math.max(g, g + d)]] : [[g, g]]);
+    c.cola = [];
+    for (const [z0, z1] of eje(gz, dz)) for (const [x0, x1] of eje(gx, dx)) c.cola.push([x0, x1, z0, z1]);
+    c.cola.sort((p, q) => (p[1] - p[0] + 1) * (p[3] - p[2] + 1) - (q[1] - q[0] + 1) * (q[3] - q[2] + 1)); // las celdas solas primero (el orden es estable)
+    c.cola = c.cola.filter((w) => !c.hechas.has(w.join()));
+  }
+  const t0 = performance.now();
+  while (c.cola.length) {
+    const w = c.cola[0];
+    c.it ||= segmentsPasos(gen, w[0], w[1], w[2], w[3]);
+    for (;;) {
+      const fin = c.it.next().done;
+      if (fin) break;
+      if (performance.now() - t0 >= presupuestoMs) return true; // por lo menos un paso por llamada
+    }
+    c.it = null; c.cola.shift(); c.hechas.add(w.join());
+  }
+  return false;
 }
 
 export function roadsNear(gen, x, z, r) {

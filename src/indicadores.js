@@ -4,9 +4,9 @@
 import { RUTA } from './ruta.js';
 import { ITEMS } from './blocks.js';
 
-function el(id) {
+function el(id, padre = null) {
   let e = document.getElementById(id);
-  if (!e) { e = document.createElement('div'); e.id = id; document.getElementById('hud').appendChild(e); }
+  if (!e) { e = document.createElement('div'); e.id = id; (padre || document.getElementById('hud')).appendChild(e); }
   return e;
 }
 
@@ -31,7 +31,8 @@ export function tickIndicadores(g, dt) {
   // ---- la meta de la ruta (cada segundo) ----
   if (g.indT > 0) return;
   g.indT = 1;
-  const meta = el('ind-meta');
+  const meta = el('ind-meta', document.getElementById('lado-hud')); // v13.5.6 (PU-01): dentro del lado-hud, en el flujo: el objetivo de abajo ya no se le encima
+  if (meta.parentNode.firstChild !== meta) meta.parentNode.insertBefore(meta, meta.parentNode.firstChild);
   const st = (g.meta && g.meta.ruta) || {};
   const i = RUTA.findIndex((_, j) => !st[j]);
   const hechas = RUTA.filter((_, j) => st[j]).length;

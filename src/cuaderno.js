@@ -45,7 +45,7 @@ export function tickCuaderno(g) {
     C[P.k] = g.day || 1;
     if (P.k === 'corazon') { g.meta.vidaExtra = (g.meta.vidaExtra || 0) + 2; g.player.vidaExtra = g.meta.vidaExtra; g.player.health = g.player.maxHealth; }
     g.audio.play('nivel', { ui: true, vol: 0.35 });
-    g.ui.toast(`📓 Una hoja del cuaderno de la abuela: «${P.t}». ${P.perk}. La lee con C`, 4600);
+    g.ui.toast(`📓 Una hoja del cuaderno de la abuela: «${P.t}». ${P.perk}. Léala con C`, 4600);
     g.achieve('cuaderno', 'El cuaderno de la abuela');
     anotar(g, `Encontré una hoja del cuaderno de la abuela: ${P.t}.`, '📓');
     if (PAGINAS.every((q) => C[q.k])) { g.achieve('cuaderno12', 'El cuaderno completo'); g.ui.regionBanner('El cuaderno completo', 'Ya sabe todo lo que Zenaida alcanzó a escribir'); }
