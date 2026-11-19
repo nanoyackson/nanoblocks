@@ -12,17 +12,17 @@
   <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="icon" href="./icons/favicon-32.png" sizes="32x32" />
   <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
-  <script type="module" crossorigin src="/nanoblocks/assets/index-g_se08si.js"></script>
+  <script type="module" crossorigin src="/nanoblocks/assets/index-BMvDtGsO.js"></script>
   <link rel="modulepreload" crossorigin href="/nanoblocks/assets/three-CgOGtdc0.js">
   <link rel="modulepreload" crossorigin href="/nanoblocks/assets/arte-nJimZbir.js">
-  <link rel="modulepreload" crossorigin href="/nanoblocks/assets/base-BjK1jvk0.js">
-  <link rel="modulepreload" crossorigin href="/nanoblocks/assets/mundo-eDaRWAJD.js">
-  <link rel="modulepreload" crossorigin href="/nanoblocks/assets/criaturas-kc6rKXgE.js">
-  <link rel="modulepreload" crossorigin href="/nanoblocks/assets/textos-D-nXn5Uw.js">
-  <link rel="modulepreload" crossorigin href="/nanoblocks/assets/red-BU-c1LrJ.js">
-  <link rel="modulepreload" crossorigin href="/nanoblocks/assets/graficos-DbQ8o1WP.js">
-  <link rel="modulepreload" crossorigin href="/nanoblocks/assets/trama-BqLdbQnV.js">
-  <link rel="stylesheet" crossorigin href="/nanoblocks/assets/index-CjYIv6Hv.css">
+  <link rel="modulepreload" crossorigin href="/nanoblocks/assets/base-BCoufe3L.js">
+  <link rel="modulepreload" crossorigin href="/nanoblocks/assets/mundo-D4DI2tic.js">
+  <link rel="modulepreload" crossorigin href="/nanoblocks/assets/criaturas-DIkDp3Kz.js">
+  <link rel="modulepreload" crossorigin href="/nanoblocks/assets/textos-B8E4JzWI.js">
+  <link rel="modulepreload" crossorigin href="/nanoblocks/assets/red-5k1zeVNz.js">
+  <link rel="modulepreload" crossorigin href="/nanoblocks/assets/graficos-C8dlaBEv.js">
+  <link rel="modulepreload" crossorigin href="/nanoblocks/assets/trama-juiQS___.js">
+  <link rel="stylesheet" crossorigin href="/nanoblocks/assets/index-vOnG_xJh.css">
 </head>
 <body>
   <canvas id="game"></canvas>
@@ -75,6 +75,7 @@
       <button id="btn-amistades">Jugar con amistades</button>
       <button data-go="news">Novedades</button>
       <button data-go="settings">Ajustes</button>
+      <p class="aviso-tactil hidden" id="aviso-tactil-menu"></p>
       <div class="foot" id="menu-version"></div>
     </div>
   </div>
@@ -96,6 +97,7 @@
   <div id="screen-new" class="screen bg-dirt">
     <form class="panel" id="new-form">
       <h2>Mundo nuevo</h2>
+      <p class="aviso-tactil hidden" id="aviso-tactil-nuevo"></p>
       <label>Nombre<input name="name" value="Mi mundo" maxlength="40" /></label>
       <label>Semilla (vacío = al azar)<input name="seed" placeholder="ej. pura vida" maxlength="60" /></label>
       <label>Modo
@@ -169,7 +171,7 @@
         <label class="check"><input type="checkbox" id="s-pausa-paneles" /> Pausar al abrir el mapa, la libreta y la tienda</label>
         <label class="check"><input type="checkbox" id="s-herramienta" /> Agarrar sola la herramienta adecuada al picar</label>
         <label class="check"><input type="checkbox" id="s-correr" /> Correr con un toque de Ctrl (sin mantenerlo)</label>
-        <label>Sensibilidad del mouse: <span id="v-sens"></span><input type="range" id="s-sens" min="0.2" max="3" step="0.05" /></label>
+        <label>Sensibilidad del ratón: <span id="v-sens"></span><input type="range" id="s-sens" min="0.2" max="3" step="0.05" /></label>
         <label class="check"><input type="checkbox" id="s-objetivo" /> Mostrar el objetivo en pantalla</label>
         <label class="check"><input type="checkbox" id="s-mirando" /> Mostrar lo que estoy mirando</label>
         <label class="check"><input type="checkbox" id="s-reloj" /> Mostrar el día y la hora</label>
