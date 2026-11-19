@@ -1989,7 +1989,7 @@ export class Game {
     const p = this.player;
     p.body.pos.x = s.x; p.body.pos.y = s.y; p.body.pos.z = s.z;
     p.body.vel.x = p.body.vel.y = p.body.vel.z = 0;
-    p.health = p.maxHealth; p.food = this.mode === 'survival' ? difOf(this).respawnFood : 20; p.water = 20; p.air = 10; p.alive = true; p.body.fallStart = null;
+    p.health = p.maxHealth; p.food = this.mode === 'survival' ? difOf(this).respawnFood : 20; p.water = this.mode === 'survival' && difOf(this).respawnFood < 20 ? Math.min(10, difOf(this).respawnFood) : 20; p.air = 10; p.alive = true; p.body.fallStart = null; // v13.5.8 (PU-16): al reaparecer, comida y sed a 10 (Difícil 8; Tranquilo 20)
     p.hungerT = 0; this.golpePend = null; this.golpeAnim = null; this.cuerpo = undefined; // v12.4.4: sin escalofrío heredado
     this.muerte = null; terminarPlaneo(this);
     this.ready = false;
@@ -2626,8 +2626,8 @@ export class Game {
     this.handLag = this.handLag || { x: 0, y: 0 };
     // inercia: al caer la mano sube un poquito, al saltar baja; respira en reposo; corriendo se inclina
     const vy = this.player.body.onGround ? 0 : this.player.body.vel.y;
-    const nada = this.player.body.inWater && !this.player.flying && !this.player.body.onGround ? 1 : 0; // nadando, la mano va bajita y bracea
-    this.handAire = (this.handAire || 0) + (Math.max(-0.07, Math.min(0.07, -vy * 0.006)) - nada * (0.07 + Math.sin((this.clock || 0) * 3.4) * 0.035) - (this.handAire || 0)) * Math.min(1, dt * 8);
+    const nada = this.player.body.inWater && !this.player.flying && !this.player.body.onGround ? 1 : 0; const trepa = this.player.body.enCuerda && Math.abs(this.player.body.vel.y) > 0.3 ? Math.sin((this.clock || 0) * 6) * 0.03 : 0; /* v13.5.9 (PU-24): trepando la cuerda la mano sube y baja alterna */ // nadando, la mano va bajita y bracea
+    this.handAire = (this.handAire || 0) + (Math.max(-0.07, Math.min(0.07, -vy * 0.006)) - nada * (0.07 + Math.sin((this.clock || 0) * 3.4) * 0.035) + trepa - (this.handAire || 0)) * Math.min(1, dt * 8);
     this.handAire -= (this.landDip || 0) * 0.04;
     const corre = this.player.sprinting && amp > 0.5 ? 1 : 0;
     this.handCorre = (this.handCorre || 0) + (corre - (this.handCorre || 0)) * Math.min(1, dt * 6);
@@ -2656,9 +2656,10 @@ export class Game {
     if (this.comerK > 0.003) {
       // llevar la comida a la boca y masticar, y volver con calma al terminar
       const k = this.comerK;
-      const chew = this.eating ? Math.sin(this.eating.t * 22) * 0.025 * k : 0;
+      const beb = this.eating && this.heldDef() && this.heldDef().sip; // v13.5.9 (PU-25): beber no mastica: la taza se inclina
+      const chew = this.eating && !beb ? Math.sin(this.eating.t * 22) * 0.025 * k : 0;
       root.position.set(pose.p[0] + (0.08 - pose.p[0]) * k, pose.p[1] + (-0.3 - pose.p[1]) * k + chew, pose.p[2] + (-0.42 - pose.p[2]) * k);
-      root.rotation.set(pose.r[0] + 0.5 * k, pose.r[1] - 0.6 * k, pose.r[2] + 0.2 * k);
+      root.rotation.set(pose.r[0] + (beb ? 1.1 : 0.5) * k, pose.r[1] - 0.6 * k, pose.r[2] + 0.2 * k);
     }
     this.handLag.x *= Math.pow(0.002, dt); this.handLag.y *= Math.pow(0.002, dt);
     this.tintHand(root, light);

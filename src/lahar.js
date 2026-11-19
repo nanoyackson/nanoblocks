@@ -40,7 +40,7 @@ export function tickLahar(g) {
     const y = g.world.gen.column(Math.floor(x), Math.floor(z)).h + 1 + Math.random() * 1.5;
     g.particles.spawn(x, y, z, Math.random() < 0.7 ? [0.36, 0.28, 0.2] : [0.5, 0.5, 0.5], -L.ux * 4, 1 + Math.random(), -L.uz * 4, 1.2, 10);
   }
-  if (L.t === 1) g.audio.play('derrumbe', { ui: true, vol: 1 });
+  if (L.t === 1) g.audio.play('derrumbe', { ui: true, vol: 1, sub: true });
   if (L.t > 0) return;
   // pasó: si uno sigue en la franja, se lo lleva
   const dx = p.x - L.x, dz = p.z - L.z, lateral = Math.abs(-dx * L.uz + dz * L.ux), abajo = -(dx * L.ux + dz * L.uz);

@@ -5,7 +5,7 @@ export const GAME_NAME = 'NanoBlocks';
 // v13.1.0: la versión de generador de terreno MÁS NUEVA que este juego sabe hacer (la de los mundos nuevos). Si el anfitrión de una sala manda
 // una mayor, este cliente generaría un terreno distinto al suyo (cuevas flotando): se rechaza la entrada (red/sesion.js).
 export const GEN_MAX = 31; // v13.5.1: 31 = caminos con zigzag, túnel y rodeo de lo ajeno, y flora propia de los lugares típicos (GEN_CAMINOS en worldgen2.js) · v13.5.0 (b): v13.5.0: 30 = pueblos en sitio llano sin río y calles con perfil suave y media losa (GEN_PUEBLOS en worldgen2.js) · v13.4.2: 29 = caminos guiados con talud, taludes de obras y lugares típicos por bioma (GEN_RUTAS en worldgen2.js) · v13.4.1: 28 = carácter de los salones, minerales por zona, lugares de cueva (GEN_CARACTER en worldgen2.js) · v13.4.0: 27 = reparto de biomas, bordes suaves, montaña real y construcciones del desierto (GEN_SUPERFICIE en worldgen2.js) · v13.3.3: 26 = simas, bocas gigantes, hitos (GEN_SIMAS en worldgen2.js) · v13.3.2: 25 = la Red Honda y los Salones (GEN_RED en worldgen2.js) · v13.3.0: 24 = obras integradas al terreno (GEN_INTEGRACION en worldgen2.js) · v13.2.0: 23 = lava más abajo (GEN_PROF en worldgen2.js)
-export const GAME_VERSION = '13.5.6';
+export const GAME_VERSION = '13.5.9';
 // v12.4.6: la versión MÁS VIEJA del juego que puede abrir lo que esta versión guarda. Se sube cuando un mundo guardado trae algo que un
 // juego anterior no entiende y lo rompería: bloques nuevos (ids que el mallador no conoce), un SAVE_FORMAT nuevo o un campo que cambia
 // de forma. Se guarda en meta.minVersion y el menú no abre un mundo cuyo minVersion sea más nuevo que este juego (12.4.0: los bloques 656–662).
@@ -26,6 +26,33 @@ export const CREDITS = [
 ];
 
 export const CHANGELOG = [
+  {
+    version: '13.5.9',
+    date: '2026-11-18',
+    title: 'Pulido, Tanda 4: subtitulos de peligro, sonidos de cuerda y poses',
+    items: [
+      'Pulido, Tanda 4 de `docs/revisiones/PULIDO_LISTA.md` (PU-18 a PU-26), sonido, subtítulos y poses; no toca guardado, ids ni generador. PU-18/19/20: los avisos de peligro (derrumbe del techo, silbido de bomba, resoplido, cadenas, saínos, danta, gato y perro que gruñen) y los sonidos del mundo que no tenían subtítulo ya salen en el recuadro, las claves con punto y guion bajo calzan con las que toca el código (el gruñido del perro salía mudo) y el derrumbe de la lava y de la goleta se subtitula aunque venga sin posición. Nueva prueba `tools/revisar-subtitulos.mjs` (en `npm run revisar`) que cruza cada `play(...)` contra el diccionario.',
+      'PU-21: el metal y la madera que se caen en las defensas y el monte suenan (usaban una acción que no existía). PU-22: trepar la cuerda tiene roce al subir/bajar y un toque al agarrarse. PU-23: los pasos agachado suenan a 45 % del volumen. PU-24: en 3.ª persona nadar tiene brazada y patada, y trepar tiene manos alternas; en 1.ª persona la mano sube y baja al trepar. PU-25: beber ya no mastica: se inclina el vaso y la cabeza hacia atrás. PU-26: con un jefe a la vista el cartel de región baja a 17 % para no pisar su barra.',
+    ],
+  },
+  {
+    version: '13.5.8',
+    date: '2026-11-18',
+    title: 'Pulido, tanda 3',
+    items: [
+      'Pulido, Tanda 3 (decisiones de Isaac sobre PU-12, PU-16 y PU-17). PU-16, hambre y sed más suaves al empezar: el día 1 de un mundo de supervivencia bajan a la mitad de rápido (medido: la misma espera da exactamente la mitad de acumulación en el día 1 que en el 2), y desde el día 2 todo queda como antes; al reaparecer, comida y sed vuelven a 10 en Normal (en Difícil, 8; en Tranquilo, 20 como siempre). PU-12, solo aviso: en pantallas táctiles sin ratón (`(hover: none) and (pointer: coarse)`) el menú y «Mundo nuevo» muestran «NanoBlocks se juega con teclado y ratón…»; el juego no se bloquea.',
+      'PU-17, para qué sirve cada ítem: la ficha (`fichaItem`) pone justo debajo del nombre una línea «ℹ …» con el uso. Sale de `src/usoitems.js` (146 ítems escritos a mano, verificados contra el código donde se pudo: dinero, balde, llaves, planos, vehículos, objetos de las historias y las leyendas, etc.) o, si el ítem es ingrediente, de las recetas (`src/usoauto.js`: «Ingrediente: sirve para fabricar …»); los que ya muestran daño, herramienta, protección, comida o durabilidad no cambian. Prueba nueva `tools/revisar-fichas.mjs` (en `npm run revisar`): ninguno de los 400 ítems se queda sin decir nada, las líneas escritas a mano son de ítems que existen, miden entre 12 y 90 caracteres y no llevan «mouse» ni tuteo. No toca guardado, ids ni generador.',
+    ],
+  },
+  {
+    version: '13.5.7',
+    date: '2026-11-18',
+    title: 'Pulido, tanda 2',
+    items: [
+      'Pulido, Tanda 2 de `docs/revisiones/PULIDO_LISTA.md` sin PU-12 (los controles táctiles quedan esperando decisión de Isaac), solo interfaz y textos; no toca guardado, ids ni generador. PU-09: el botón «Listo» de Ajustes deja de pintarse encima de los últimos campos (margen y sombra de panel) y la barra de scroll del panel usa el estilo del juego. PU-10: los filtros del recetario van en una sola fila que se desliza y, a 768 de alto o menos, el muñeco del inventario baja a 196 px: la lista de recetas pasa de 1,5 a 4-5 recetas visibles, y el alto de las dos secciones no cambia con el filtro (la regla de `CLAUDE.md`). PU-11: el inventario a 375 px cabe (casillas que se ajustan al ancho, 9 columnas) y Recetas queda debajo en la misma columna, con scroll, en vez de caer fuera de pantalla a la derecha.',
+      'PU-13: en teléfono la billetera sube sobre las filas de vida, hambre, aire y sed (antes tapaba las burbujas). PU-14: «ratón» en vez de «mouse» en el texto visible (Ajustes y el aviso de la avioneta). PU-15: todos los lienzos 2D de `textures.js` y `models.js` se crean con `willReadFrequently: true` (los íconos se leen píxel a píxel), así desaparece el aviso de `getImageData` de la consola. Capturas «después» en `docs/revisiones/capturas_1357/`.',
+    ],
+  },
   {
     version: '13.5.6',
     date: '2026-11-18',

@@ -328,3 +328,31 @@ label { font-family: var(--font); }
   #screen-inventory.station .inv-wrap { height: calc((100vh - 40px) / var(--zoom-ui, 1)); align-items: stretch; }
   #screen-inventory.station .main-panel { align-self: center; }
 }
+
+/* v13.5.6 (PU-09): «Listo» de Ajustes fijo abajo, pero sobre un fondo del panel (antes se pintaba encima de los últimos campos) y con la barra de scroll del juego */
+#screen-settings .panel { scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
+#screen-settings .panel::-webkit-scrollbar { width: 8px; }
+#screen-settings .panel::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
+#btn-settings-back { margin-top: var(--sp-3); box-shadow: 0 -14px 12px -2px var(--panel, #14181f); }
+#screen-settings .panel { padding-bottom: 0; }
+
+/* v13.5.6 (PU-10): los filtros de recetas van en una sola fila que se desliza (antes ocupaban 4 filas y la lista quedaba en 1,5 recetas a 768 de alto) */
+#craft-chips { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: thin; padding-bottom: 4px; }
+#craft-chips .chip { flex: none; white-space: nowrap; }
+@media (max-height: 800px) and (min-width: 761px) { .doll { height: 196px; } } /* v13.5.6 (PU-10): a 768 de alto el muñeco cede espacio a la lista de recetas */
+
+/* v13.5.6 (PU-11): inventario en teléfono. En columna sin envolver (antes el panel de recetas caía a una segunda columna fuera de pantalla a 375 de ancho) y con casillas que caben en 9 columnas */
+@media (max-width: 839px) {
+  #screen-inventory:not(.station) .inv-wrap { flex-wrap: nowrap; justify-content: flex-start; }
+  #screen-inventory:not(.station) .inv-wrap > * { flex: none; max-width: 100%; box-sizing: border-box; }
+}
+@media (max-width: 480px) { #screen-inventory { --s: calc((100vw - 90px) / 9); } }
+
+/* v13.5.6 (PU-13): en teléfono la billetera sube sobre las filas de vida, hambre, aire y sed (antes se pintaba encima de las burbujas) */
+@media (max-width: 700px) { #billetera-hud { bottom: 112px; } }
+
+/* v13.5.8 (PU-12): aviso de «se juega con teclado y ratón» en pantallas táctiles */
+.aviso-tactil { margin: 6px 0; padding: 8px 12px; font-size: 14px; line-height: 1.3; color: var(--warn); background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--r-chico, 6px); text-align: left; }
+
+/* v13.5.9 (PU-26): con jefe a la vista, el cartel de región baja para no pisar la barra del jefe */
+body:has(#bossbar:not(.hidden)) #region-banner { top: 17%; }

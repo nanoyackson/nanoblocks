@@ -38,7 +38,7 @@ export class Skin {
   texture() {
     const c = document.createElement('canvas');
     c.width = this.w; c.height = this.h;
-    c.getContext('2d').putImageData(new ImageData(this.data, this.w, this.h), 0, 0);
+    c.getContext('2d', { willReadFrequently: true }).putImageData(new ImageData(this.data, this.w, this.h), 0, 0);
     const t = new THREE.CanvasTexture(c);
     t.magFilter = THREE.NearestFilter; t.minFilter = THREE.NearestFilter; t.generateMipmaps = false;
     return t;
@@ -169,7 +169,7 @@ export function makeMacheteMesh(dark = false) {
 // Mide `size` de lado; está en el plano XY mirando a +Z, igual que la lámina vieja, así que las poses de la mano sirven igual.
 export function makeHeldItemMesh(id, size) {
   const cv = isBlockId(id) ? tileCanvas(BLOCKS[id].tex.side) : itemCanvas(id), W = cv.width, H = cv.height;
-  const d = cv.getContext('2d').getImageData(0, 0, W, H).data;
+  const d = cv.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, W, H).data;
   const op = (x, y) => x >= 0 && y >= 0 && x < W && y < H && d[(y * W + x) * 4 + 3] > 110;
   const px = size / Math.max(W, H), th = Math.max(px * 1.4, size * 0.045);
   const pos = [], col = [], idx = [];

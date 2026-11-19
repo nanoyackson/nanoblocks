@@ -22,7 +22,7 @@ export function tickSed(g, dt) {
   const sol = col && ['bosque_seco', 'beach', 'desert', 'guanacaste'].includes(col.biome) ? exposicionSol(g) : 0;
   const calor = (g.dim === 'inframundo' ? 2 : 1 + 0.6 * sol) * (g.sequia && col && col.biome === 'bosque_seco' && sol > 0 ? 1.3 : 1) * (p.effects.calor ? 1.4 : 1); // v12.3.0: con calor, la sed ×1.4
   const moving = Math.hypot(p.body.vel.x, p.body.vel.z) > 0.5;
-  p.thirstT = (p.thirstT || 0) + dt * (p.sprinting ? 2.4 : moving ? 1.0 : 0.7) * calor * (dif.hunger * 0.9) * mult.gasto(g) * ventaja.sed(g);
+  p.thirstT = (p.thirstT || 0) + dt * (p.sprinting ? 2.4 : moving ? 1.0 : 0.7) * calor * (dif.hunger * 0.9) * mult.gasto(g) * ventaja.sed(g) * (g.day <= 1 ? 0.5 : 1); // v13.5.8 (PU-16): el primer día, sed a la mitad
   if (p.thirstT >= 38) { p.thirstT = 0; p.water = Math.max(0, p.water - 1); }
   if (p.water <= 4 && !g.toldSed) { g.toldSed = true; g.ui.toast('💧 Tiene sed: tome agua (un río, una pipa, la cantimplora)', 2600); }
   if (p.water > 8) g.toldSed = false;

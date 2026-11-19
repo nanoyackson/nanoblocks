@@ -221,7 +221,7 @@ function hundir(g) {
   G.fase = 'hunde';
   for (const m of G.mobs) if (!m.dead) { m.data.despedido = true; m.dead = true; }
   for (const [id, n] of BOTIN) g.giveItem(id, n);
-  g.audio.play('derrumbe', { ui: true, vol: 0.9, pitch: 0.7 });
+  g.audio.play('derrumbe', { ui: true, vol: 0.9, pitch: 0.7, sub: true });
   g.audio.play('aplausos', { ui: true, vol: 0.3 });
   g.ui.toast('🏴 ¡La goleta se hunde! Quedó flotando el cofre del capitán: ₡120, oro y perlas', 5200);
   g.achieve('goleta', 'Hundí la goleta fantasma');

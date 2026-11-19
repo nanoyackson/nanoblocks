@@ -84,7 +84,7 @@ function tickEstacas(g) {
     m.hurt(4, x + 0.5, z + 0.5);
     g.particles.burst(x + 0.5, y + 0.5, z + 0.5, [[0.45, 0.32, 0.2], [0.7, 0.1, 0.1]], 8, 1.4);
     g.achieve('estacas', 'Que venga el que quiera');
-    if (Math.random() < 0.2) { w.setBlock(x, y, z, AIR); g.audio.material('wood', 'dig', { x: x + 0.5, y: y + 0.5, z: z + 0.5 }); }
+    if (Math.random() < 0.2) { w.setBlock(x, y, z, AIR); g.audio.material('wood', 'break', { x: x + 0.5, y: y + 0.5, z: z + 0.5 }); }
   }
 }
 

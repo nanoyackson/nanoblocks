@@ -141,7 +141,7 @@ export class Audio {
   play(name, opts = {}) {
     if (!this.ctx) return null;
     // subtítulos: avisa qué sonó en el mundo y dónde (los de la interfaz no)
-    if (this.onCaption && opts.pos && !opts.ui) this.onCaption(name, opts.pos);
+    if (this.onCaption && ((opts.pos && !opts.ui) || opts.sub)) this.onCaption(name, opts.pos || null); // v13.5.9 (PU-18): sub: true = subtitular aunque sea de interfaz o sin posición
     const buf = this.buffer(name);
     if (!buf) { this.synth(name, opts); return null; }
     const sp = this.spatial(opts.pos, opts.range);
@@ -167,11 +167,11 @@ export class Audio {
     return src;
   }
 
-  material(kind, action, pos) {
+  material(kind, action, pos, vol = 1) { // v13.5.9 (PU-23): vol multiplica cada capa (pasos agachado más bajitos)
     const fam = FAMILY[kind] || FAMILY.stone;
     const layers = fam[action];
     if (!layers) return;
-    for (const [bank, vol, pitch] of layers) this.play(bank, { vol, pitch, pos });
+    for (const [bank, v, pitch] of layers) this.play(bank, { vol: v * vol, pitch, pos });
   }
 
   // comer: varias mordidas seguidas, como masticando

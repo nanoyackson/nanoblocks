@@ -6,7 +6,7 @@ import { VALOR, desglose, fmtColones } from './plata.js';
 
 export const DIF = {
   tranquilo: { name: 'Tranquilo', hostiles: false, dmg: 0.6, hunger: 0.7, regenCost: 4, starveKills: false, keep: 'todo', respawnFood: 20, sombras: 0 },
-  normal: { name: 'Normal', hostiles: true, dmg: 1, hunger: 1, regenCost: 10, starveKills: false, keep: 'equipo', respawnFood: 12, sombras: 8 },
+  normal: { name: 'Normal', hostiles: true, dmg: 1, hunger: 1, regenCost: 10, starveKills: false, keep: 'equipo', respawnFood: 10, sombras: 8 },
   dificil: { name: 'Difícil', hostiles: true, dmg: 1.4, hunger: 1.3, regenCost: 16, starveKills: true, keep: 'nada', respawnFood: 8, sombras: 12 },
 };
 export const difOf = (g) => DIF[(g.meta && g.meta.dificultad) || 'normal'] || DIF.normal;

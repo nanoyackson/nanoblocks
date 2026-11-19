@@ -93,7 +93,7 @@ export const FAUNA2 = {
 
   // ===== Coyote: en manada, de noche en lo seco; aúlla y ataca (le tiene miedo al fuego) =====
   coyote: {
-    name: 'Coyote', w: 0.5, h: 0.65, health: 12, speed: 3.2, hostile: false, hurtSound: 'perro_gruñido', idleSound: 'coyote', idleEvery: [20, 45],
+    name: 'Coyote', w: 0.5, h: 0.65, health: 12, speed: 3.2, hostile: false, hurtSound: 'perro.gruñido', idleSound: 'coyote', idleEvery: [20, 45],
     particle: [[0.7, 0.6, 0.45]], drops: [[271, 0, 1]],
     build() { return armarCoyote(); },
     brain(m, dt, c) {

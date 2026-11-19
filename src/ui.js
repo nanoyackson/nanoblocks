@@ -111,12 +111,17 @@ const CAPTIONS = {
   susurro: 'Susurros', pito: 'Pito', 'carro.arranque': 'Carro arrancando', hueco: 'Golpe seco', llanta: 'Llanta revienta', 'bus.freno': 'Frenos del bus', 'bus.puerta': 'Puerta del bus',
   arpia: 'Chillido de la Arpía', rafaga: 'Ráfaga de viento', explode: 'Explosión', fuse: 'Mecha encendida', 'door.open': 'Puerta se abre', 'door.close': 'Puerta se cierra', creak: 'Rechinido',
   'loop.comparsa': 'Tambores de comparsa', 'loop.sirena': 'Canto de la sirena', coyote: 'Coyotes aúllan', ardilla: 'Ardilla chilla', zorro_pelon: 'Zorro pelón sisea', guatusa: 'Guatusa chilla', arena: 'Arena (cavando)',
-  vaca: 'Vaca muge', caballo: 'Caballo', relincho: 'Relincho', gallo: 'Gallo canta', gallina: 'Gallina', perro: 'Perro ladra', 'perro_gruñido': 'Perro gruñe', mono: 'Mono congo aúlla', titi: 'Monos tití',
+  vaca: 'Vaca muge', caballo: 'Caballo', relincho: 'Relincho', gallo: 'Gallo canta', gallina: 'Gallina', perro: 'Perro ladra', mono: 'Mono congo aúlla', titi: 'Monos tití',
   cara_blanca: 'Mono cara blanca', tepezcuintle: 'Tepezcuintle', serpiente: 'Serpiente sisea', cocodrilo: 'Cocodrilo', danta: 'Danta', tren: 'Tren', gol: '¡Gol!', campana: 'Campanas',
   aplausos: 'Aplausos', splash: 'Chapuzón', hurt: 'Golpe', tajo: 'Tajo', swish: 'Zumbido', lapa: 'Lapa', tucan: 'Tucán', quetzal: 'Quetzal', colibri: 'Colibrí', rumble: 'Retumbo',
-  portal: 'Portal', 'cofre.abrir': 'Cofre se abre', 'cofre.cerrar': 'Cofre se cierra', chest_open: 'Cofre se abre', bombeta: 'Bombeta', flecha: 'Flecha', arco: 'Arco', ballena: 'Ballena',
+  portal: 'Portal', 'cofre.abrir': 'Cofre se abre', 'cofre.cerrar': 'Cofre se cierra', bombeta: 'Bombeta', flecha: 'Flecha', arco: 'Arco', ballena: 'Ballena',
   gota: 'Gotea agua', agua_corre: 'Agua corriendo', grillo_cueva: 'Grillo de cueva', cangrejo_ciego: 'Cangrejo chasquea',
   delfin: 'Delfín', gaviota: 'Gaviota', rana: 'Rana', murcielago: 'Murciélagos', pizote: 'Pizote', perezoso: 'Perezoso', lanzar: 'Algo lanzado', monedas: 'Monedas', ignite: 'Fuego',
+  // v13.5.9 (PU-18, 19, 20): los de peligro primero, las claves con punto como las toca el código, y los que faltaban (tools/revisar-subtitulos.mjs los cruza)
+  derrumbe: '¡Cae el techo!', silbido: 'Silbido de bomba', resoplido: 'Resoplido', chancho: 'Saínos gruñen', 'chancho.chillido': 'Saínos chillan', 'danta.hurt': 'Danta se queja', cadenas: 'Cadenas arrastradas',
+  'gato.bufido': 'Gato bufa', 'perro.gruñido': 'Perro gruñe', 'chest.open': 'Cofre se abre', 'chest.close': 'Cofre se cierra', cristal_canta: 'Cristal canta', hongo_burbuja: 'Hongo burbujea', magma_burbujea: 'Magma burbujea',
+  lechuza: 'Lechuza', oropendola: 'Oropéndola', yiguirro: 'Yigüirro canta', cencerro: 'Cencerro', galope: 'Galope', montura: 'Montura', pez: 'Pez salta', gato: 'Gato maúlla', 'gato.ronroneo': 'Gato ronronea',
+  aleteo: 'Aleteo', yunque: 'Yunque', balde: 'Balde', 'puerta.golpe': 'Golpe en la puerta', 'chancleta.golpe': 'Chancletazo', balon: 'Balón', freir: 'Algo se fríe', remo: 'Remo', carrete: 'Carrete de caña',
 };
 const captionText = (name) => CAPTIONS[name] || null;
 
@@ -237,6 +242,11 @@ export class UI {
     this.bindSettings();
     $('#version-tag').textContent = `NanoBlocks v${GAME_VERSION}`;
     $('#menu-version').textContent = `v${GAME_VERSION} · hecho desde cero con IA para el canal nanoyackson`;
+    // v13.5.8 (PU-12): en una pantalla táctil sin ratón, un aviso amable (el juego no se bloquea: con teclado y ratón conectados se juega igual)
+    try {
+      const tactil = window.matchMedia && window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+      for (const id of ['aviso-tactil-menu', 'aviso-tactil-nuevo']) { const e = document.getElementById(id); if (e) { e.textContent = '📱 NanoBlocks se juega con teclado y ratón. En el teléfono todavía no se puede caminar ni picar; si tiene una computadora, ahí sí.'; e.classList.toggle('hidden', !tactil); } }
+    } catch { /* sin matchMedia: sin aviso */ }
     // fondo de tierra pixelado para los menús
     const dirt = tileCanvas('dirt');
     if (dirt) document.documentElement.style.setProperty('--dirt', `url(${dirt.toDataURL()})`);
@@ -1112,7 +1122,7 @@ export class UI {
     const text = captionText(name);
     if (!text || !player) return;
     const p = player.body.pos;
-    const dx = pos.x - p.x, dz = pos.z - p.z, d = Math.hypot(dx, dz);
+    const dx = pos ? pos.x - p.x : 0, dz = pos ? pos.z - p.z : 0, d = Math.hypot(dx, dz); // sin posición: de todos lados, sin flecha
     if (d > 36) return;
     const side = dx * Math.cos(player.yaw) - dz * Math.sin(player.yaw);
     const label = `${side < -1.5 ? '◀ ' : ''}${text}${side > 1.5 ? ' ▶' : ''}`;

@@ -69,7 +69,7 @@ function tickAlambre(g) {
     m.hurt(2, x + 0.5, z + 0.5);
     if (m.dying) g.killedMob(m);
     g.particles.burst(x + 0.5, y + 0.5, z + 0.5, [[0.5, 0.5, 0.55], [0.7, 0.1, 0.1]], 5, 1);
-    if (Math.random() < 0.08) { w.setBlock(x, y, z, AIR); g.audio.material('metal', 'dig', { x: x + 0.5, y: y + 0.5, z: z + 0.5 }); }
+    if (Math.random() < 0.08) { w.setBlock(x, y, z, AIR); g.audio.material('metal', 'break', { x: x + 0.5, y: y + 0.5, z: z + 0.5 }); }
     g.achieve('alambre', 'Propiedad privada');
   }
 }

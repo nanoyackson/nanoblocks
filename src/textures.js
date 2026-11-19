@@ -15,7 +15,7 @@ const tileData = {}; // nombre -> Uint8ClampedArray (para partículas)
 function tileToCanvas(tile) {
   const c = document.createElement('canvas');
   c.width = T; c.height = T;
-  c.getContext('2d').putImageData(new ImageData(tile.data, T, T), 0, 0);
+  c.getContext('2d', { willReadFrequently: true }).putImageData(new ImageData(tile.data, T, T), 0, 0);
   return c;
 }
 
@@ -120,7 +120,7 @@ function loadImage(src) {
 function paintFlat(item) {
   const c = document.createElement('canvas');
   c.width = ICON; c.height = ICON;
-  const g = c.getContext('2d');
+  const g = c.getContext('2d', { willReadFrequently: true });
   g.lineCap = 'round'; g.lineJoin = 'round';
   if (item.key === 'stick') {
     g.strokeStyle = '#8a5a2b'; g.lineWidth = 9;
@@ -828,7 +828,7 @@ function paintFlat(item) {
 }
 // ¿quedó el lienzo sin un solo píxel? (se mira de a 4 píxeles: basta para saber si se pintó algo)
 function vacio(c) {
-  const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data;
+  const d = c.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, c.width, c.height).data;
   for (let i = 3; i < d.length; i += 16) if (d[i] > 20) return false;
   return true;
 }
@@ -851,7 +851,7 @@ function shadeHex(h, f) {
 function jadeTint(canvas) {
   const c = document.createElement('canvas');
   c.width = ICON; c.height = ICON;
-  const g = c.getContext('2d');
+  const g = c.getContext('2d', { willReadFrequently: true });
   g.drawImage(canvas, 0, 0);
   const d = g.getImageData(0, 0, ICON, ICON);
   for (let i = 0; i < d.data.length; i += 4) {
@@ -867,7 +867,7 @@ function jadeTint(canvas) {
 function cooked(canvas) {
   const c = document.createElement('canvas');
   c.width = ICON; c.height = ICON;
-  const g = c.getContext('2d');
+  const g = c.getContext('2d', { willReadFrequently: true });
   g.drawImage(canvas, 0, 0, ICON, ICON);
   g.globalCompositeOperation = 'source-atop';
   g.fillStyle = 'rgba(120, 60, 20, 0.62)';
@@ -893,7 +893,7 @@ export async function loadSprites() {
         if (img) {
           const c = document.createElement('canvas');
           c.width = ICON; c.height = ICON;
-          const g = c.getContext('2d');
+          const g = c.getContext('2d', { willReadFrequently: true });
           g.imageSmoothingQuality = 'high';
           g.drawImage(img, 0, 0, ICON, ICON);
           spriteCanvases.set(it.id, c);
@@ -904,7 +904,7 @@ export async function loadSprites() {
         if (!alt) { spriteCanvases.set(it.id, paintFlat(it)); return; }
         const c = document.createElement('canvas');
         c.width = ICON; c.height = ICON;
-        const g = c.getContext('2d');
+        const g = c.getContext('2d', { willReadFrequently: true });
         g.imageSmoothingEnabled = !nuevoURL[it.icono || it.key];
         g.drawImage(alt, 0, 0, ICON, ICON);
         spriteCanvases.set(it.id, c);
@@ -913,7 +913,7 @@ export async function loadSprites() {
       jobs.push(loadImage(nuevoURL[it.icono || it.key]).then((img) => {
         const c = document.createElement('canvas');
         c.width = ICON; c.height = ICON;
-        const g = c.getContext('2d');
+        const g = c.getContext('2d', { willReadFrequently: true });
         g.imageSmoothingEnabled = false; // pixel art nítido al agrandar
         if (img) g.drawImage(img, 0, 0, ICON, ICON);
         if (img && it.tinte) { g.globalCompositeOperation = 'source-atop'; g.globalAlpha = 0.5; g.fillStyle = it.tinte; g.fillRect(0, 0, ICON, ICON); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over'; } // v12.7.0: otra especie con el mismo dibujo
@@ -923,7 +923,7 @@ export async function loadSprites() {
       jobs.push(loadImage(`./sprites/${it.sprite}.png`).then((img) => {
         const c = document.createElement('canvas');
         c.width = ICON; c.height = ICON;
-        const g = c.getContext('2d');
+        const g = c.getContext('2d', { willReadFrequently: true });
         g.imageSmoothingQuality = 'high';
         if (img) g.drawImage(img, 0, 0, ICON, ICON);
         spriteCanvases.set(it.id, img ? (it.tintJade ? jadeTint(c) : c) : paintFlat(it));
@@ -945,7 +945,7 @@ const iconCache = new Map();
 function shadedTile(name, f) {
   const c = document.createElement('canvas');
   c.width = T; c.height = T;
-  const ctx = c.getContext('2d');
+  const ctx = c.getContext('2d', { willReadFrequently: true });
   ctx.drawImage(tileImages[name], 0, 0);
   ctx.globalCompositeOperation = 'source-atop';
   ctx.fillStyle = `rgba(0,0,0,${f})`;
@@ -956,7 +956,7 @@ function shadedTile(name, f) {
 function blockIcon(b) {
   const c = document.createElement('canvas');
   c.width = BICON; c.height = BICON;
-  const ctx = c.getContext('2d');
+  const ctx = c.getContext('2d', { willReadFrequently: true });
   if (arteBloque.has(b.id)) { ctx.imageSmoothingQuality = 'high'; ctx.drawImage(arteBloque.get(b.id), 0, 0, BICON, BICON); return c.toDataURL(); }
   ctx.imageSmoothingEnabled = false;
   if (b.render === 'cross' || b.render === 'torch') {

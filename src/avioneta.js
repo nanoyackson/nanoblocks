@@ -46,7 +46,7 @@ export const AVIONETA = {
     m.data.fuel ??= 60;
     g.player.yaw = m.yaw + Math.PI; g.player.pitch = 0;
     g.audio.play('carro.arranque', { pos: m.soundPos(), vol: 0.7, pitch: 0.8 });
-    g.ui.toast(`✈ W acelera · S baja el motor · el mouse apunta (arriba/abajo y doblar) · despega a buena velocidad · Shift se baja · ⛽ ${Math.round(m.data.fuel)} %`, 4200);
+    g.ui.toast(`✈ W acelera · S baja el motor · el ratón apunta (arriba/abajo y doblar) · despega a buena velocidad · Shift se baja · ⛽ ${Math.round(m.data.fuel)} %`, 4200);
     g.achieve('avioneta', 'Piloto de avioneta');
     return true;
   },

@@ -10,6 +10,7 @@ import { origenLineas } from './origen.js';
 import { topeDe } from './yunque.js';
 import { fichaArma, debilidadTexto } from './armas3.js';
 import { fichaConjunto } from './conjuntos.js';
+import { usoLinea } from './usoauto.js';
 
 // ---------- reparar: la pieza gastada + una unidad de su material (o dos gastadas iguales) ----------
 const MATERIAL = { wood: 9, stone: 4, iron: 258, gold: 259, diamond: 260, jade: 274, leather: 271, pluma: 551, cuerno: 537, seda: 536, concha: 540 };
@@ -74,6 +75,7 @@ export function fichaItem(stack, g) {
   else if (def.durability && g && g.mode === 'survival' && materialDe(def)) lineas.push('🔨 Se puede mejorar en el yunque');
   if (stack.filo) lineas.push(`🗡 Con aceite: 30 % más de daño, ${stack.filo} golpes`);
   if (def.tier && def.isBlock !== false && def.tool === 'pickaxe') lineas.push(`Pide ${NIVEL[def.tier] || 'un buen pico'}`);
+  { const uso = usoLinea(def); if (uso) lineas.splice(1, 0, `ℹ ${uso}`); } // v13.5.8 (PU-17): para qué sirve, justo debajo del nombre
   if (g && g.mode === 'survival') lineas.push(...origenLineas(id, g));
   return lineas.join('\n');
 }

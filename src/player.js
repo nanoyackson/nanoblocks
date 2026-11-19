@@ -146,6 +146,13 @@ export class Player {
     // v13.4.3 (CC4): la cuerda de espeleólogo se trepa: salto sube, agacharse baja, y quieto se sostiene
     b.enCuerda = !this.flying && !b.inWater && (game.world.getBlock(Math.floor(b.pos.x), Math.floor(b.pos.y + 0.4), Math.floor(b.pos.z)) === BLOCK_BY_KEY.cuerda || game.world.getBlock(Math.floor(b.pos.x), Math.floor(b.pos.y + 1.2), Math.floor(b.pos.z)) === BLOCK_BY_KEY.cuerda);
     if (b.enCuerda) v.y = input.jump ? 3.2 : input.sneak ? -3.2 : 0;
+    // v13.5.9 (PU-22): al trepar la cuerda suena el roce cada ~0,45 s y un toque al agarrarse
+    if (b.enCuerda && !this.enCuerdaAntes && game.ready) game.audio.play('dig.cloth', { vol: 0.35, pitch: 0.8, pos: { x: b.pos.x, y: b.pos.y + 1, z: b.pos.z } });
+    this.enCuerdaAntes = b.enCuerda;
+    if (b.enCuerda && v.y !== 0) {
+      this.cuerdaT = (this.cuerdaT || 0) - dt;
+      if (this.cuerdaT <= 0) { this.cuerdaT = 0.45; game.audio.play('dig.cloth', { vol: 0.25, pitch: 0.8, vary: 0.1, pos: { x: b.pos.x, y: b.pos.y + 1, z: b.pos.z } }); }
+    }
     const wasAir = !b.onGround, wasWater = b.inWater;
     const vyBefore = v.y;
     const res = b.step(game.world, dt, { flying: this.flying, sneak: this.sneaking });
@@ -177,7 +184,7 @@ export class Player {
         this.stepDist = 0;
         const underId = b.blockUnderFeet(game.world);
         const blk = BLOCKS[underId];
-        if (blk && blk.sound) game.audio.material(blk.sound, 'step', { x: b.pos.x, y: b.pos.y, z: b.pos.z });
+        if (blk && blk.sound) game.audio.material(blk.sound, 'step', { x: b.pos.x, y: b.pos.y, z: b.pos.z }, this.sneaking ? 0.45 : 1);
         if (this.sprinting) game.particles.dust(b.pos.x, b.pos.y, b.pos.z, underId, 3);
       }
     }
@@ -197,7 +204,7 @@ export class Player {
     // hambre
     // con Calma (abrazo de perezoso) el hambre baja mucho más lento
     const dif = difOf(game);
-    this.hungerT += dt * (this.sprinting ? (this.effects.calor ? 3.75 : 3) : moving ? 1.2 : 0.8) * (this.effects.calma ? 0.35 : 1) * (this.effects.panza ? 2 : 1) * dif.hunger * mult.gasto(game);
+    this.hungerT += dt * (this.sprinting ? (this.effects.calor ? 3.75 : 3) : moving ? 1.2 : 0.8) * (this.effects.calma ? 0.35 : 1) * (this.effects.panza ? 2 : 1) * dif.hunger * mult.gasto(game) * (game.day <= 1 && game.mode === 'survival' ? 0.5 : 1); // v13.5.8 (PU-16): el primer día, hambre a la mitad
     if (this.hungerT >= 45) { this.hungerT = 0; this.food = Math.max(0, this.food - 1); }
     // regeneración y hambre extrema
     // curarse pide estar bien comido y con agua (antes se podía sanar muriéndose de sed)

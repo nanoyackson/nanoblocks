@@ -226,6 +226,21 @@ export class Avatar {
       P.armR.rotation.x = sw * 0.9 - (g.blocking ? 1.1 : 0) - cae * 2.2;
       P.armR.rotation.z = k(P.armR.rotation.z, 0.05 + respira + this.aire * 0.25, 12);
     }
+    // v13.5.9 (PU-24): nadar (brazada alterna y patada) y trepar la cuerda (manos alternas arriba) tienen pose propia en 3.ª persona
+    const nadando = p.body.inWater && !p.flying && !p.body.onGround && !riding && !surf && !colgado && !g.saco && sp > 0.4;
+    const trepando = !!p.body.enCuerda && !riding && !colgado && !surf;
+    if (nadando || trepando) {
+      const ph = nadando ? t * 5 : t * 6 * (Math.abs(p.body.vel.y) > 0.3 ? 1 : 0), sa = Math.sin(ph);
+      if (nadando) {
+        P.armL.rotation.x = k(P.armL.rotation.x, -2.3 + sa * 0.9, 14); P.armR.rotation.x = -2.3 - sa * 0.9;
+        P.armL.rotation.z = k(P.armL.rotation.z, -0.2, 10); P.armR.rotation.z = k(P.armR.rotation.z, 0.2, 10);
+        P.legL.rotation.x = k(P.legL.rotation.x, Math.sin(ph * 1.6) * 0.5, 18); P.legR.rotation.x = k(P.legR.rotation.x, -Math.sin(ph * 1.6) * 0.5, 18);
+      } else {
+        P.armL.rotation.x = k(P.armL.rotation.x, -2.6 + sa * 0.5, 14); P.armR.rotation.x = -2.6 - sa * 0.5;
+        P.armL.rotation.z = k(P.armL.rotation.z, -0.1, 10); P.armR.rotation.z = k(P.armR.rotation.z, 0.1, 10);
+        P.legL.rotation.x = k(P.legL.rotation.x, -0.5 - sa * 0.5, 18); P.legR.rotation.x = k(P.legR.rotation.x, -0.5 + sa * 0.5, 18);
+      }
+    }
     // los codos: libres si no agarra nada; el izquierdo lleva el escudo y el derecho lo que tenga en la mano
     doblarCodo(P.armL, dt, !g.inventory.armor[4] && !colgado && !surf);
     doblarCodo(P.armR, dt, !colgado && !surf);
@@ -256,7 +271,7 @@ export class Avatar {
     if ((g.parryT || 0) > 0) P.armL.rotation.z -= g.parryT * 1.5;
     // tocar algo: la mano se estira; comer: a la boca
     if ((g.manoT || 0) > 0) { const k3 = Math.sin((1 - g.manoT / 0.3) * Math.PI); P.armR.rotation.x += (-1.45 - P.armR.rotation.x) * k3; if (P.armR.junta) P.armR.junta.rotation.x += (-0.2 - P.armR.junta.rotation.x) * k3; }
-    if (g.eating) { const mast = Math.sin(t * 16) * 0.08; P.armR.rotation.x = -2 + mast; P.armR.rotation.z = -0.45; if (P.armR.junta) P.armR.junta.rotation.x = -1.8; }
+    if (g.eating) { const beb = BLOCKS[g.eating.id] && BLOCKS[g.eating.id].sip; const mast = beb ? 0 : Math.sin(t * 16) * 0.08; if (beb) P.head.rotation.x = -0.45; /* v13.5.9 (PU-25): beber = trago con la cabeza hacia atrás, sin masticar */ P.armR.rotation.x = -2 + mast; P.armR.rotation.z = -0.45; if (P.armR.junta) P.armR.junta.rotation.x = -1.8; }
     // la cabeza mira hacia donde uno mira; agachado se inclina el cuerpo; corriendo se va hacia adelante
     P.head.rotation.x = -pitch * 0.8; P.head.rotation.y = 0;
     // lo que lleva en la mano no se ve mientras vuela, surfea o maneja
