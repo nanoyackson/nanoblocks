@@ -97,7 +97,7 @@ export const DUENOS = {
     },
   }),
 };
-export const NOMBRES_DUENO = { centinela_cristal: 'Vencí al Centinela de Cristal', madre_esporal: 'Vencí a la Madre Esporal', reina_agujas: 'Vencí a la Reina de las Agujas', anguila_mayor: 'Vencí a la Anguila Mayor' };
+export const NOMBRES_DUENO = { centinela_cristal: 'Vencí al Centinela de Cristal', madre_esporal: 'Vencí a la Madre Esporal', reina_agujas: 'Vencí a la Reina de las Agujas', anguila_mayor: 'Vencí a la Anguila Mayor', tizon_mayor: 'Vencí al Tizón Mayor' };
 const DUENO_DE = { candil: 'centinela_cristal', hongueada: 'madre_esporal', agujas: 'reina_agujas', laguna: 'anguila_mayor' }; // v13.6.0: la Laguna Honda también tiene dueña
 
 // ¿qué dueño tiene este nodo de la Red Honda (o null)? Solo con lugar, zona 2 o 3 (la Reina solo en la 3), piso hondo y la mitad de ellos (hash)
@@ -106,6 +106,12 @@ export function duenoDe(gen, n) {
   const tipo = DUENO_DE[n.tipo];
   if (!tipo || n.lugar.zona < 2 || (n.lugar.zona === 2 && tipo === 'reina_agujas')) return null;
   return hash3(gen.seed, n.gx, 9500, n.gz) < 0.5 ? tipo : null;
+}
+
+// v13.7.1 (La Hondura): el Tizón Mayor vive en la fragua con lugar (La Fragua de los Antiguos); ~0,65 por cada 1 000 trozos en la zona 2 y ~1,2 en la 3 (con el 0,7 de fraguas que traen lugar); una vez por mundo y no regresa
+export function duenoHondo(gen, n) {
+  if (!n.cam || n.tipo !== 'fragua' || !n.lugar) return null;
+  return hash3(gen.seed, n.gx, 9501, n.gz) < (n.lugar.zona === 2 ? 0.45 : 0.8) ? 'tizon_mayor' : null;
 }
 
 // cada segundo (tickZones): si alguien está a 30 del lugar de un salón con dueño no vencido, y no hay otro dueño vivo, el anfitrión lo hace aparecer
@@ -135,6 +141,21 @@ export function tickDuenos(g) {
         }
       }
       g.ui.toast(`⚠ ${m.kind.name} despertó en el salón`, 3000);
+      g.shake = Math.max(g.shake || 0, 0.5);
+      return;
+    }
+    // las cámaras hondas (generador >= 32)
+    if (gen.version < 32) continue;
+    const RH = 192;
+    for (let gz = Math.floor(p.z / RH) - 1; gz <= Math.floor(p.z / RH) + 1; gz++) for (let gx = Math.floor(p.x / RH) - 1; gx <= Math.floor(p.x / RH) + 1; gx++) {
+      const n = gen.v2.hondoNodo(gx, gz), tipo = duenoHondo(gen, n), key = `h${gx},${gz}`;
+      if (!tipo || V[key]) continue;
+      const L = n.lugar;
+      if (Math.hypot(L.x - p.x, L.z - p.z) > 30 || Math.abs(L.y - p.y) > 14) continue;
+      const m = g.entities.spawnMob(tipo, L.x + 0.5, L.y + 1.5, L.z + 4.5);
+      if (!m) return;
+      m.data.dueno = tipo; m.data.salon = key; m.data.angry = true;
+      g.ui.toast(`⚠ ${m.kind.name} despertó en la cámara`, 3000);
       g.shake = Math.max(g.shake || 0, 0.5);
       return;
     }

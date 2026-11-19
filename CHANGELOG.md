@@ -1,5 +1,19 @@
 # Registro de versiones
 
+## 13.7.1 — 2026-11-18 · La Hondura cobra vida: salamandras, calor, aire malo y el Tizón Mayor
+
+- La Hondura cobra vida (HO3 y HO4, sin generador nuevo: vale en los mundos de generador 32, donde hay cámaras). Salamandra de brasa en las cámaras de fragua y ceniza: mansa hasta que la golpean (14 de vida, muerde a 3 con 2 s de ardor); el Culebrón de brasa también sale junto a la colada de la fragua.
+- El Tizón Mayor, dueño de La Fragua de los Antiguos: un gigante de brasas de 130 de vida; golpe de 4 y una ola de brasa cada 9 s (anillo rojo 1,2 s antes, 3 de daño y ardor a menos de 4,5). Paga como minijefe (7 a 9 unidades el primero del día), suelta brasa viva y 2 a 3 diamantes; uno por cámara con lugar y no regresa una vez vencido. Calibrado con bot-pelea (equipo de hierro: el bot torpe cae en 13 s y el promedio gana con 3 a 8 de vida).
+- Calor de horno en las cámaras de fragua y ceniza (el efecto «calor»: más hambre y más sed; se va al salir) y aire malo en toda cámara de azufre (la mascarilla protege y picar un hueco ventila, como en cualquier bolsa).
+- Cristal ahumado (bloque 702, decorativo: 2 por 2 vidrios y un carbón) y receta para el basalto columnar que ya existía en el Inframundo (2 por 2 de basalto). Bloque nuevo: sube la versión mínima. Fichas en el bestiario.
+
+## 13.7.0 — 2026-11-18 · La Hondura: cámaras bajo la Red Honda
+
+- La Hondura (mundos nuevos, generador 32): bajo la Red Honda hay cámaras hondas, de piso plano y techo en cúpula, a las que se llega por una garganta desde un salón. Hay de cuatro tipos: fragua (colada de lava en una zanja con puentes de basalto), geoda (cristal y calcita), azufre y ceniza.
+- Cada cámara trae de 1 a 3 vetas a la vista en la pared (diamante, jade u oro) y, en fraguas y geodas, a veces un lugar propio: «La Fragua de los Antiguos» y «El Nido de Cristal», con cofre y placa.
+- Nadie nace cerca: ninguna a menos de 300 bloques del inicio, unas 6 por cada 1 000 trozos. Los mundos viejos (generador 21 a 31) salen idénticos.
+- Nuevo tools/revisar-hondura.mjs (en npm run revisar): cantidad, distancia, unión por la garganta, lava sin fugas, vetas, tiempo por trozo y mundos viejos sin cambios.
+
 ## 13.6.1 — 2026-11-18 · Pulido de la regresion de la 13.5.9
 
 - Pulido de la regresión de la 13.5.9 (`docs/revisiones/PULIDO_LISTA.md`: PU-09 y PU-13, que quedaron a medias, y PU-27 a PU-34); solo interfaz y un guardado, sin generador ni ids. PU-09: «Listo» de Ajustes lleva fondo sólido del color del panel (antes casi transparente: los campos se veían por debajo). PU-13: a 375 px la brújula se corre a la izquierda y se angosta (8 a 241) para no quedar bajo el reloj (254 a 365). PU-27: el aviso de logro baja a 44 px, debajo del reloj. PU-28: a 375 px los selects de Ajustes caben en el panel (0 controles fuera; antes 5 salían por la derecha). PU-31: en teléfono, con una pantalla abierta, se esconden la billetera, las barras y la barra de acceso (asomaban por el vidrio).

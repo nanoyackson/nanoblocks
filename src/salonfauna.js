@@ -57,7 +57,100 @@ export function armarAnguila() {
   return g;
 }
 
+// ---------- v13.7.1 (La Hondura, HO3): la salamandra de brasa, mansa hasta que la golpean: baja, de piel negra con manchas de brasa y cola larga ----------
+export function armarSalamandra() {
+  const g = G(), segs = [];
+  const cuerpo = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.16, 0.62), mat(0x2b2521)); cuerpo.position.y = 0.14; g.add(cuerpo);
+  for (let i = 0; i < 4; i++) { const m = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.03, 0.09), brasa(i % 2 ? 0xff8a1c : 0xffc040)); m.position.set((i % 2 ? 1 : -1) * 0.07, 0.23, -0.2 + i * 0.13); m.userData.glow = true; g.add(m); }
+  const cab = G(); cab.position.set(0, 0.15, 0.36); g.add(cab);
+  const cr = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.13, 0.26), mat(0x332b26)); cab.add(cr);
+  for (const s of [-1, 1]) { const ojo = new THREE.Mesh(new THREE.SphereGeometry(0.03, 5, 4), brasa(0xffe060)); ojo.position.set(s * 0.1, 0.07, 0.1); ojo.userData.glow = true; cab.add(ojo); }
+  for (let i = 0; i < 4; i++) { const s = G(), r = 0.08 - i * 0.015; const c = new THREE.Mesh(new THREE.BoxGeometry(r * 2, r * 1.4, 0.2), mat(i % 2 ? 0x2b2521 : 0x3a2f28)); c.position.z = -0.1; s.add(c); s.position.set(0, 0.1, -0.3 - i * 0.2); g.add(s); segs.push(s); }
+  const patas = [];
+  for (const [sx, sz] of [[-1, 1], [1, 1], [-1, -1], [1, -1]]) { const p = G(); p.position.set(sx * 0.2, 0.1, sz * 0.2); const pm = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.1, 0.1), mat(0x241e1b)); pm.position.y = -0.04; p.add(pm); g.add(p); patas.push(p); }
+  g.userData = { segs, cab, patas };
+  return g;
+}
+
+// ---------- el Tizón Mayor: un montón de brasas con forma de gigante (dueño de la Fragua) ----------
+export function armarTizon() {
+  const g = G(), roca = (w, h, d, c) => new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat(c));
+  const torso = roca(1.1, 1.2, 0.7, 0x2a2420); torso.position.y = 1.7; g.add(torso);
+  const pecho = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.55, 0.05), brasa(0xff7a1c)); pecho.position.set(0, 1.75, 0.37); pecho.userData.glow = true; g.add(pecho);
+  for (const [x, y] of [[-0.3, 2.1], [0.32, 1.45], [-0.2, 1.3]]) { const v = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.34, 0.05), brasa(0xffb03a)); v.position.set(x, y, 0.37); v.userData.glow = true; g.add(v); }
+  const cab = G(); cab.position.set(0, 2.62, 0.05); g.add(cab);
+  const cr = roca(0.55, 0.5, 0.5, 0x332b26); cab.add(cr);
+  for (const s of [-1, 1]) { const ojo = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.07, 0.04), brasa(0xffe060)); ojo.position.set(s * 0.14, 0.04, 0.26); ojo.userData.glow = true; cab.add(ojo); }
+  const boca = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.05, 0.04), brasa(0xff5a10)); boca.position.set(0, -0.12, 0.26); boca.userData.glow = true; cab.add(boca);
+  const brazos = [], piernas = [];
+  for (const s of [-1, 1]) {
+    const br = G(); br.position.set(s * 0.8, 2.2, 0); const bm = roca(0.4, 1.3, 0.4, 0x3a302a); bm.position.y = -0.55; br.add(bm);
+    const pu = roca(0.5, 0.45, 0.5, 0x241e1b); pu.position.y = -1.3; br.add(pu); const bb = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.1, 0.3), brasa(0xff8a1c)); bb.position.y = -1.05; bb.userData.glow = true; br.add(bb);
+    g.add(br); brazos.push(br);
+    const pi = G(); pi.position.set(s * 0.3, 1.1, 0); const pm = roca(0.45, 1.1, 0.45, 0x2f2723); pm.position.y = -0.5; pi.add(pm); g.add(pi); piernas.push(pi);
+  }
+  g.userData = { cab, brazos, piernas };
+  return g;
+}
+
 export const SALON_MOBS = {
+  salamandra_brasa: {
+    name: 'Salamandra de brasa', w: 0.45, h: 0.35, health: 14, speed: 2.6, hostile: false, attack: 3, lavaOk: true, hurtSound: 'gato.bufido', idleSound: 'magma_burbujea', idleEvery: [8, 16],
+    particle: [[1, 0.5, 0.1], [0.2, 0.15, 0.1]], drops: [[1200, 0, 1]], xp: 6, grupo: 'caparazon',
+    build() { return armarSalamandra(); },
+    // mansa hasta que la golpean; entonces persigue a la persona más cercana y muerde a 3 (con 2 s de ardor para quien la golpeó)
+    onHurt(m) { m.data.angry = true; m.data.rabia = 12; return true; },
+    brain(m, dt, c) {
+      const { g } = c, D = m.data, b = m.body.pos;
+      if (!D.angry) return false;
+      D.rabia -= dt; if (D.rabia <= 0) { D.angry = false; return false; }
+      const T = g.mode === 'survival' ? masCerca(personas(g), b.x, b.z) : null;
+      if (!T || T.d > 20) { D.angry = false; return false; }
+      m.goTo(T.pos.x, T.pos.z, T.d > 4 ? 1.4 : 1);
+      if (T.d < 1.8 && m.attackCd <= 0 && Math.abs(T.pos.y - b.y) < 1.5) {
+        atacar(m, g, { tipo: 'mordida', prep: 0.4, dano: m.kind.attack, causa: 'Mordida de la salamandra de brasa', alcance: 1.8, cd: 1.8, alGolpe: (llego) => { if (llego && !T.obj) g.addEffect('ardor', 2); } });
+      }
+      return true;
+    },
+    animate(m, dt, u) {
+      const ola = m.walk * 2.4;
+      u.segs.forEach((s, i) => { s.position.x = Math.sin(ola - i * 0.9) * 0.07 * (0.4 + m.walkAmt); });
+      u.patas.forEach((p, i) => { p.rotation.x = Math.sin(ola * 1.5 + (i % 2 ? 3.1 : 0)) * 0.5 * m.walkAmt; });
+      u.cab.rotation.y = Math.sin(ola) * 0.18 * m.walkAmt;
+    },
+  },
+  tizon_mayor: {
+    name: 'El Tizón Mayor', w: 1.2, h: 3.2, health: 130, speed: 2.4, hostile: true, boss: true, mini: true, lavaOk: true, hurtSound: 'gato.bufido', idleSound: 'magma_burbujea', idleEvery: [5, 10],
+    particle: [[1, 0.5, 0.1], [0.25, 0.18, 0.12]], drops: [[1200, 1, 2], [260, 2, 3]], xp: 60, grupo: 'caparazon',
+    build() { return armarTizon(); },
+    brain(m, dt, c) {
+      const { g } = c, D = m.data, b = m.body.pos;
+      const gente = g.mode === 'survival' ? personas(g) : [], T = masCerca(gente, b.x, b.z);
+      if (!T || T.d > 26) { D.angry = false; return false; }
+      D.angry = true;
+      m.targetYaw = Math.atan2(T.pos.x - b.x, T.pos.z - b.z); m.moving = T.d > 2.8; m.speedMul = 1;
+      // la ola de brasa: cada 9 s, el anillo rojo avisa 1,2 s y quema (3 de daño y ardor) a quien esté a menos de 4,5
+      D.ola = (D.ola ?? 5) - dt;
+      if (!D.carga && D.ola <= 0 && T.d < 16) { D.ola = 9; D.carga = { t: 1.2 }; avisoCaida(g, b.x, b.y, b.z, 4.5, 1.2, m); g.audio.play('ignite', { pos: m.soundPos(), vol: 0.4, pitch: 0.6 }); }
+      if (D.carga) {
+        D.carga.t -= dt;
+        if (D.carga.t <= 0) {
+          D.carga = null;
+          g.particles.burst(b.x, b.y + 0.4, b.z, [[1, 0.55, 0.15], [1, 0.85, 0.3]], 30, 3.2);
+          g.audio.play('ignite', { pos: m.soundPos(), vol: 0.55, pitch: 0.8 });
+          for (const e of gente) if (Math.hypot(e.pos.x - b.x, e.pos.z - b.z) < 4.5 && Math.abs(e.pos.y - b.y) < 3) { g.atacante = m; g.damagePlayer(3, b.x, b.z, 'La ola de brasa del Tizón Mayor', true, false, e.obj); g.atacante = null; if (!e.obj) g.addEffect('ardor', 3); }
+        }
+      }
+      if (T.d < 3.2 && m.attackCd <= 0 && Math.abs(T.pos.y - b.y) < 2.5) atacar(m, g, { tipo: 'mazazo', prep: 0.7, dano: 4, causa: 'El Tizón Mayor lo aplastó', alcance: 3.2, cd: 2 });
+      return true;
+    },
+    animate(m, dt, u) {
+      const ola = m.walk * 1.6, a = m.walkAmt;
+      u.piernas[0].rotation.x = Math.sin(ola) * 0.5 * a; u.piernas[1].rotation.x = -Math.sin(ola) * 0.5 * a;
+      u.brazos[0].rotation.x = -Math.sin(ola) * 0.4 * a; u.brazos[1].rotation.x = Math.sin(ola) * 0.4 * a;
+      u.cab.rotation.y = Math.sin(m.t * 1.3) * 0.15;
+    },
+  },
   culebron_brasa: {
     name: 'Culebrón de brasa', w: 0.5, h: 0.5, health: 24, speed: 3.2, hostile: true, attack: 4, lavaOk: true, hurtSound: 'gato.bufido', idleSound: 'magma_burbujea', idleEvery: [5, 11],
     particle: [[1, 0.5, 0.1], [0.2, 0.15, 0.1]], drops: [[1200, 0, 2]], xp: 14, grupo: 'caparazon',

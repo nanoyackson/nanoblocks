@@ -17,3 +17,16 @@ export function aguaDelSalon(w, cx, cy, cz, rMax = 34) {
   }
   return null;
 }
+
+// v13.7.1 (La Hondura): ¿en qué cámara honda está ese punto (o null)? Solo con generador >= 32; la cámara es la elipse del piso hasta el techo de la cúpula.
+export function hondoAqui(gen, x, y, z) {
+  if (!gen || gen.version < 32 || !gen.v2) return null;
+  const RC = 192, gx0 = Math.floor(x / RC), gz0 = Math.floor(z / RC);
+  for (let gz = gz0 - 1; gz <= gz0 + 1; gz++) for (let gx = gx0 - 1; gx <= gx0 + 1; gx++) {
+    const n = gen.v2.hondoNodo(gx, gz);
+    if (!n.cam || y < n.piso - 1 || y > n.piso + n.alto) continue;
+    const dx = (x - n.x) / n.rx, dz = (z - n.z) / n.rz;
+    if (dx * dx + dz * dz < 0.9) return n;
+  }
+  return null;
+}

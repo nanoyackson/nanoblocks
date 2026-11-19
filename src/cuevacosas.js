@@ -10,6 +10,7 @@ import { AIR, BLOCK_BY_KEY as K } from './blocks.js';
 import { hash3 } from './noise.js';
 import { difOf } from './supervivencia.js';
 import { anotar } from './diario.js';
+import { hondoAqui } from './salonlugar.js';
 
 export const ESQUIRLA = 1192, ECO = 1193, LENTE = 1194, SOPA = 1195;
 const MASCARILLA = 525;
@@ -20,6 +21,11 @@ export function bolsaDeAire(seed, x, y, z) {
   if (y >= Y_AIRE || y < 4) return null;
   const cx = Math.floor(x / CELDA), cy = Math.floor(y / ALTO), cz = Math.floor(z / CELDA);
   return hash3(seed ^ 0x5a17, cx, cy * 17 + 3, cz) < PROB_AIRE ? `${cx},${cy},${cz}` : null;
+}
+// v13.7.1 (La Hondura): toda cámara de azufre es una bolsa de aire malo (la mascarilla protege y picar un hueco ventila, como en cualquier bolsa)
+export function bolsaAqui(gen, x, y, z) {
+  const hn = hondoAqui(gen, x, y, z);
+  return hn && hn.tipo === 'azufre' ? `h${hn.gx},${hn.gz}` : bolsaDeAire(gen.seed, x, y, z);
 }
 const FUENTES_LUZ = () => [K.farol_cristal];
 function llevaProteccion(g) {
@@ -59,7 +65,13 @@ export function tickCuevaCosas(g, dt) {
   }
   // --- el aire malo ---
   if (!peligro || !g.env || g.env.cave < 0.6) { S.aire = Math.max(0, S.aire - dt * 2); return; }
-  const bolsa = bolsaDeAire(g.world.gen.seed, p.x, p.y, p.z);
+  // v13.7.1: el calor de horno en las cámaras de fragua y ceniza: efecto «calor» (más hambre y sed); se va al salir
+  const hc = hondoAqui(g.world.gen, p.x, p.y, p.z);
+  if (hc && (hc.tipo === 'fragua' || hc.tipo === 'ceniza')) {
+    S.calorT = (S.calorT || 0) - dt;
+    if (S.calorT <= 0) { S.calorT = 1; g.addEffect('calor', 3); if (!S.calorAviso) { S.calorAviso = 1; g.ui.toast('🔥 Hace un calor de horno: da más hambre y más sed. Salga o refresque con agua', 3200); } }
+  } else S.calorAviso = 0;
+  const bolsa = bolsaAqui(g.world.gen, p.x, p.y, p.z);
   const ventil = bolsa ? S.ventilados.get(bolsa) : 0;
   if (!bolsa || (ventil && ventil > (g.clock || 0)) || llevaProteccion(g)) { S.aire = Math.max(0, S.aire - dt * 2); S.aviso = 0; return; }
   if (S.aviso === 0) { S.aviso = 1; g.ui.toast('💨 Aire malo: las antorchas se ahogan. Pique un hueco para ventilar, o salga', 3200); anotarUna(g, 'aire', 'El aire malo se junta en bolsas hondas: picar un hueco lo ventila; con mascarilla en la mochila no pasa nada.'); }
@@ -79,7 +91,7 @@ export function alPicarCueva(g, b, x, y, z) {
   if (!g.world || g.mode !== 'survival') return;
   const S = estado(g);
   // ventilar: picar dentro de una bolsa de aire malo la limpia 2 minutos
-  const bolsa = bolsaDeAire(g.world.gen.seed, x, y, z);
+  const bolsa = bolsaAqui(g.world.gen, x, y, z);
   if (bolsa) { S.ventilados.set(bolsa, (g.clock || 0) + 120); if (S.aire > 0) { g.ui.toast('🌬 Ventiló: el aire vuelve a correr', 1800); g.achieve('ventilo', 'Ventiló una bolsa de aire malo'); } }
   // el ruido: una estalactita arriba, a ≤ 7 bloques a lo ancho, puede caer (≥ 10 s entre eventos)
   if (S.caida || S.cdEvento > 0 || !difOf(g).hostiles || g.settings.hostiles === false || Math.random() > 0.08) return;

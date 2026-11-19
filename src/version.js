@@ -4,16 +4,16 @@
 export const GAME_NAME = 'NanoBlocks';
 // v13.1.0: la versión de generador de terreno MÁS NUEVA que este juego sabe hacer (la de los mundos nuevos). Si el anfitrión de una sala manda
 // una mayor, este cliente generaría un terreno distinto al suyo (cuevas flotando): se rechaza la entrada (red/sesion.js).
-export const GEN_MAX = 31; // v13.5.1: 31 = caminos con zigzag, túnel y rodeo de lo ajeno, y flora propia de los lugares típicos (GEN_CAMINOS en worldgen2.js) · v13.5.0 (b): v13.5.0: 30 = pueblos en sitio llano sin río y calles con perfil suave y media losa (GEN_PUEBLOS en worldgen2.js) · v13.4.2: 29 = caminos guiados con talud, taludes de obras y lugares típicos por bioma (GEN_RUTAS en worldgen2.js) · v13.4.1: 28 = carácter de los salones, minerales por zona, lugares de cueva (GEN_CARACTER en worldgen2.js) · v13.4.0: 27 = reparto de biomas, bordes suaves, montaña real y construcciones del desierto (GEN_SUPERFICIE en worldgen2.js) · v13.3.3: 26 = simas, bocas gigantes, hitos (GEN_SIMAS en worldgen2.js) · v13.3.2: 25 = la Red Honda y los Salones (GEN_RED en worldgen2.js) · v13.3.0: 24 = obras integradas al terreno (GEN_INTEGRACION en worldgen2.js) · v13.2.0: 23 = lava más abajo (GEN_PROF en worldgen2.js)
-export const GAME_VERSION = '13.6.1';
+export const GEN_MAX = 32; // v13.7.0: 32 = La Hondura, cámaras hondas bajo la Red Honda con gargantas, colada, vetas a la vista y lugares (GEN_HONDURA en worldgen2.js) · v13.5.1: 31 = caminos con zigzag, túnel y rodeo de lo ajeno, y flora propia de los lugares típicos (GEN_CAMINOS en worldgen2.js) · v13.5.0 (b): v13.5.0: 30 = pueblos en sitio llano sin río y calles con perfil suave y media losa (GEN_PUEBLOS en worldgen2.js) · v13.4.2: 29 = caminos guiados con talud, taludes de obras y lugares típicos por bioma (GEN_RUTAS en worldgen2.js) · v13.4.1: 28 = carácter de los salones, minerales por zona, lugares de cueva (GEN_CARACTER en worldgen2.js) · v13.4.0: 27 = reparto de biomas, bordes suaves, montaña real y construcciones del desierto (GEN_SUPERFICIE en worldgen2.js) · v13.3.3: 26 = simas, bocas gigantes, hitos (GEN_SIMAS en worldgen2.js) · v13.3.2: 25 = la Red Honda y los Salones (GEN_RED en worldgen2.js) · v13.3.0: 24 = obras integradas al terreno (GEN_INTEGRACION en worldgen2.js) · v13.2.0: 23 = lava más abajo (GEN_PROF en worldgen2.js)
+export const GAME_VERSION = '13.7.1';
 // v12.4.6: la versión MÁS VIEJA del juego que puede abrir lo que esta versión guarda. Se sube cuando un mundo guardado trae algo que un
 // juego anterior no entiende y lo rompería: bloques nuevos (ids que el mallador no conoce), un SAVE_FORMAT nuevo o un campo que cambia
 // de forma. Se guarda en meta.minVersion y el menú no abre un mundo cuyo minVersion sea más nuevo que este juego (12.4.0: los bloques 656–662).
-export const MIN_VERSION = '13.6.0'; // 13.6.0: ítem 1201 (escama azul; Anguila Mayor); // 13.4.3: bloque 700 (cuerda de espeleólogo) e ítem 1200 (brasa viva; CC4); 13.3.5: ítems 1196-1199 (orquídea, tuna, coco y té de orquídea; BI0); 13.3.4: ítems 1192-1195 y bloque 699 (esquirla, eco, lente, sopa y farol de cristal; CC1); 12.16.5: ítems 1190, 1191 y bloque 698 (campana, mantilla y foto del Rey), SAVE_FORMAT 9; 12.16.1: SAVE_FORMAT 8 (meta.reyArena, el diario del Redondel del Rey); 12.15.4: C8-B (bloques 693–695; ítems 1180–1186); 12.15.3: C8-C (bloque 696; ítems 1188, 1189); 12.15.2: C7 (bloques 685, 688–691; ítems 1160–1169); 12.15.1: C6 (bloques 672–684; ítems 1130–1153); 12.6.0: C5-B (bloques 668, 669, 671, 697; ítems 1121, 1124–1126); 12.7.0: C5-A1 (ítems 1100–1112); 12.7.2: C5-A2 (bloque 670; ítems 1113–1120)
+export const MIN_VERSION = '13.7.1'; // 13.7.1: bloque 702 (cristal ahumado; La Hondura); 13.6.0: ítem 1201 (escama azul; Anguila Mayor); // 13.4.3: bloque 700 (cuerda de espeleólogo) e ítem 1200 (brasa viva; CC4); 13.3.5: ítems 1196-1199 (orquídea, tuna, coco y té de orquídea; BI0); 13.3.4: ítems 1192-1195 y bloque 699 (esquirla, eco, lente, sopa y farol de cristal; CC1); 12.16.5: ítems 1190, 1191 y bloque 698 (campana, mantilla y foto del Rey), SAVE_FORMAT 9; 12.16.1: SAVE_FORMAT 8 (meta.reyArena, el diario del Redondel del Rey); 12.15.4: C8-B (bloques 693–695; ítems 1180–1186); 12.15.3: C8-C (bloque 696; ítems 1188, 1189); 12.15.2: C7 (bloques 685, 688–691; ítems 1160–1169); 12.15.1: C6 (bloques 672–684; ítems 1130–1153); 12.6.0: C5-B (bloques 668, 669, 671, 697; ítems 1121, 1124–1126); 12.7.0: C5-A1 (ítems 1100–1112); 12.7.2: C5-A2 (bloque 670; ítems 1113–1120)
 // v12.4.9: los ids que cubre MIN_VERSION. v12.5.1 (undécima revisión): antes solo se miraba el id más alto y un id nuevo por debajo
 // (el 665 de C5, el 1100 de la pesca) pasaba en verde. Ahora es una FIRMA de todos los ids definidos: cuántos bloques, cuántos ítems y
 // un hash de la lista. tools/revisar-version.mjs falla si cambia: al agregar ids, subir MIN_VERSION y copiar la firma nueva que imprime
-export const MIN_IDS = { bloques: 349, items: 401, hash: '24b4666', version: '13.6.0' }; // firma de la 13.6.0 (escama azul); // firma de la 13.4.3 (CC4: cuerda y brasa viva); antes, la 13.3.5 (BI0: orquídea, tuna, coco y té de orquídea); antes, la 13.3.4 (CC1: esquirla, eco, lente, sopa y farol de cristal); antes, la 12.16.5 (campana, mantilla y foto del Rey); antes, la 12.15.4 (C8-B); antes, la 12.15.3 (C8-C), la 12.15.2 (C7), la 12.15.1 (C6), la 12.7.2 (C5-A2); v12.6.3: con la versión que la trajo, que tiene que ser MIN_VERSION
+export const MIN_IDS = { bloques: 350, items: 401, hash: '8d9a152c', version: '13.7.1' }; // firma de la 13.7.1 (cristal ahumado); antes, la 13.6.0 (escama azul); // firma de la 13.4.3 (CC4: cuerda y brasa viva); antes, la 13.3.5 (BI0: orquídea, tuna, coco y té de orquídea); antes, la 13.3.4 (CC1: esquirla, eco, lente, sopa y farol de cristal); antes, la 12.16.5 (campana, mantilla y foto del Rey); antes, la 12.15.4 (C8-B); antes, la 12.15.3 (C8-C), la 12.15.2 (C7), la 12.15.1 (C6), la 12.7.2 (C5-A2); v12.6.3: con la versión que la trajo, que tiene que ser MIN_VERSION
 export const SAVE_FORMAT = 10; // 10: la experiencia con la curva nueva del balance de progresión (v13.2.4, se conserva el nivel) · 9: las mañas de jefe y los premios del Rey (meta.manasJefe, meta.reyPremio, v12.16.5) · 8: el diario del Redondel del Rey (meta.reyArena, v12.16.1) · 7: las fichas de otras personas (meta.jugadores) y la época (v12.10.0) · 3: la plata con denominaciones (v11.10.3) · 4: la billetera (v11.10.5) · 5: el chanchito y los topes de paga (v11.10.7) · 6: el tipo de mundo (v11.13.0)
 
 // Recursos de terceros (todos de uso libre).
@@ -26,6 +26,28 @@ export const CREDITS = [
 ];
 
 export const CHANGELOG = [
+  {
+    version: '13.7.1',
+    date: '2026-11-18',
+    title: 'La Hondura cobra vida: salamandras, calor, aire malo y el Tizón Mayor',
+    items: [
+      'La Hondura cobra vida (HO3 y HO4, sin generador nuevo: vale en los mundos de generador 32, donde hay cámaras). Salamandra de brasa en las cámaras de fragua y ceniza: mansa hasta que la golpean (14 de vida, muerde a 3 con 2 s de ardor); el Culebrón de brasa también sale junto a la colada de la fragua.',
+      'El Tizón Mayor, dueño de La Fragua de los Antiguos: un gigante de brasas de 130 de vida; golpe de 4 y una ola de brasa cada 9 s (anillo rojo 1,2 s antes, 3 de daño y ardor a menos de 4,5). Paga como minijefe (7 a 9 unidades el primero del día), suelta brasa viva y 2 a 3 diamantes; uno por cámara con lugar y no regresa una vez vencido. Calibrado con bot-pelea (equipo de hierro: el bot torpe cae en 13 s y el promedio gana con 3 a 8 de vida).',
+      'Calor de horno en las cámaras de fragua y ceniza (el efecto «calor»: más hambre y más sed; se va al salir) y aire malo en toda cámara de azufre (la mascarilla protege y picar un hueco ventila, como en cualquier bolsa).',
+      'Cristal ahumado (bloque 702, decorativo: 2 por 2 vidrios y un carbón) y receta para el basalto columnar que ya existía en el Inframundo (2 por 2 de basalto). Bloque nuevo: sube la versión mínima. Fichas en el bestiario.',
+    ],
+  },
+  {
+    version: '13.7.0',
+    date: '2026-11-18',
+    title: 'La Hondura: cámaras bajo la Red Honda',
+    items: [
+      'La Hondura (mundos nuevos, generador 32): bajo la Red Honda hay cámaras hondas, de piso plano y techo en cúpula, a las que se llega por una garganta desde un salón. Hay de cuatro tipos: fragua (colada de lava en una zanja con puentes de basalto), geoda (cristal y calcita), azufre y ceniza.',
+      'Cada cámara trae de 1 a 3 vetas a la vista en la pared (diamante, jade u oro) y, en fraguas y geodas, a veces un lugar propio: «La Fragua de los Antiguos» y «El Nido de Cristal», con cofre y placa.',
+      'Nadie nace cerca: ninguna a menos de 300 bloques del inicio, unas 6 por cada 1 000 trozos. Los mundos viejos (generador 21 a 31) salen idénticos.',
+      'Nuevo tools/revisar-hondura.mjs (en npm run revisar): cantidad, distancia, unión por la garganta, lava sin fugas, vetas, tiempo por trozo y mundos viejos sin cambios.',
+    ],
+  },
   {
     version: '13.6.1',
     date: '2026-11-18',

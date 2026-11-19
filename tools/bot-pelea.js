@@ -57,7 +57,7 @@ export const JEFES_LISTA = [
   ['terciopelo_reina', 'media'], ['cocodrilo_gigante', 'media'], ['jaguar_viejo', 'media'], ['centinela_cristal', 'media'], ['madre_esporal', 'media'], ['reina_agujas', 'media'], ['llorona', 'media'], ['segua', 'media'], ['mona', 'media'], ['cadejos', 'media'],
   ['viejo_monte', 'media'], ['tulevieja', 'media', { arco: true }], ['mono_congo_gigante', 'media'], // el capitán de la goleta no se mide: fuera de su barco no pelea (sale con 0 s)
   ['reina_bananera', 'jefeHierro'], ['cascabel_rey', 'jefeHierro'], ['escarabajo_hercules', 'jefeHierro'], ['sapo_tata', 'jefeHierro'], ['cangrejo_rey', 'jefeHierro'], ['ciempies_rey', 'jefeHierro'],
-  ['rey_murcielago', 'jefeHierro', { arco: true }], ['jefa_ventanilla', 'jefeHierro'],
+  ['rey_murcielago', 'jefeHierro', { arco: true }], ['jefa_ventanilla', 'jefeHierro'], ['tizon_mayor', 'jefeHierro'], // v13.7.1: el dueño de La Hondura (armadura y arma de hierro: el rango «avanzado» del plan)
   ['senor_arenal', 'jefeDiamante'], ['arpia', 'jefeDiamante', { arco: true }], ['el_olvido', 'jefeDiamante'], ['sombra_madre', 'jefeDiamante'],
   ['rey_zopilote', 'jefeJade', { arco: true, max: 400 }],
 ];

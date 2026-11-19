@@ -298,6 +298,9 @@ Al recargar con el mundo abierto y sin gesto previo, Chrome registra «Blocked a
 **PU-34 · P3 · Tarjeta del mundo a 375: la fecha sigue cortada.**
 «Supervivencia · v13.5.9 · día …» (la versión ya se ve; la fecha no). Una segunda línea o menos texto lo arregla.
 
+**PU-35 · P3 · Cartel de región a 375: tapa el panel del objetivo y del capítulo.**
+En capturas_1361, a 375 px el letrero («Valle Central») queda encima del panel del objetivo y del capítulo. A ese ancho conviene bajarlo, achicarlo o centrarlo más abajo. (Pedido por la orquestadora, para el próximo pulido, después de La Hondura.)
+
 ### Lo que revisé sin hallar fallas
 
 - **Consola en ≈ 12 minutos de juego** (2 cargas completas, 2 muertes, inventario, libreta en 11 pestañas, pausa, ajustes, 375 y 1024): 0 errores ni advertencias del juego; las únicas líneas son los 2 `beforeunload` de PU-33. Sin la advertencia de `getImageData`.

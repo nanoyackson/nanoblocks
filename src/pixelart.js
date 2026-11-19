@@ -407,6 +407,14 @@ P.glass = (t) => {
   for (let k = 0; k < 2; k++) t.set(4 + k, 8 - k, hex('#f4fcfe'));
   t.set(12, 11, hi); t.set(11, 12, hi);
 };
+// v13.7.1: cristal ahumado (vidrio oscuro con vetas de humo)
+P.cristal_ahumado = (t) => {
+  t.clear();
+  const hi = hex('#8c8a96'), lo = hex('#2a2830'), mid = hex('#4a4854');
+  for (let i = 0; i < T; i++) { t.set(i, 0, hi); t.set(0, i, hi); t.set(i, 15, lo); t.set(15, i, lo); }
+  for (let y = 1; y < 15; y++) for (let x = 1; x < 15; x++) if ((x * 3 + y * 5 + Math.floor(t.rnd() * 3)) % 9 < 2) t.set(x, y, mid);
+  for (let k = 0; k < 4; k++) t.set(3 + k, 6 - k, hex('#b8b6c4'));
+};
 P.water = (t) => {
   t.paint(PAL.water, (x, y) => 0.4 + Math.sin(x * 0.8 + y * 0.35 + t.noise(x, y, 4) * 4) * 0.2 + t.fbm(x, y) * 0.2, 0.7);
   for (let i = 0; i < 5; i++) {

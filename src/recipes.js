@@ -397,6 +397,9 @@ export const RECIPES = [
   shapeless(K.cuerda, 6, [1126, 1126, 1126]), // v13.4.3 (CC4): tres cabuyas, seis cuerdas
   shapeless(1193, 1, [1192, 1192, 1192, 1192, IRON]),
   shapeless(1194, 1, [1167, 1192, 1192]),
+  // v13.7.1 (La Hondura): los dos decorativos
+  shapeless(K.basalto_columnar, 2, [K.basalt, K.basalt]),
+  shapeless(K.cristal_ahumado, 2, [K.glass, K.glass, COAL]),
 ];
 
 // Horno: entrada -> salida, combustible -> segundos que arde

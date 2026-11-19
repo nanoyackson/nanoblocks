@@ -39,6 +39,9 @@ export const GEN_PUEBLOS = 30;
 // v13.5.1 (generador 31, caminos y flora): zigzag en laderas fuertes (R3), túnel como último recurso (R4), caminos que rodean pueblos y lugares con gente ajenos, y la flora propia de los lugares típicos de cada bioma.
 // Vive en carreteras.js y tipicas.js (`gen.version >= 31`); los mundos <= 30 salen idénticos.
 export const GEN_CAMINOS = 31;
+// v13.7.0 (generador 32, La Hondura, PLAN_HONDURA HO1 y HO2): una segunda capa de cámaras hondas bajo la Red Honda, unidas a ella por gargantas. Todo con `gen.version >= GEN_HONDURA`; los mundos <= 31 salen idénticos.
+export const GEN_HONDURA = 32;
+const HONDO_CELDA = 192, HONDO_PROB = 0.92;
 const ORO_28 = [4, 4, 5], DIAMANTE_28 = [3, 5, 6]; // tamaño de las vetas por zona (el rendimiento real lo mide tools/revisar-contenido.mjs)
 // pesos (en %) del tipo de salón por clase de bioma de arriba: candil, hongueada, agujas, laguna, caldera (plan §9.2 B4)
 const PESOS_TIPO = { humedo: [10, 40, 15, 30, 5], seco: [25, 5, 50, 0, 20], frio: [45, 5, 20, 10, 20], volcan: [10, 0, 10, 0, 80], neutro: [20, 20, 25, 15, 20] };
@@ -368,7 +371,7 @@ export class GenV2 {
   }
   lugar28(n, x0, z0, blocks, structures) {
     const L = n.lugar, rnd = mulberry32(Math.floor(L.x * 73856093 + L.z * 19349663 + this.gen.seed) | 0), R = L.tipo === 'isla' ? 2 : 3, Y = L.y;
-    const sol = L.tipo === 'altar' ? K.obsidian : L.tipo === 'isla' ? K.sand : L.tipo === 'camara_eco' ? K.calcite : K.cobble;
+    const sol = L.tipo === 'altar' ? K.obsidian : L.tipo === 'isla' ? K.sand : L.tipo === 'camara_eco' ? K.calcite : L.tipo === 'fragua' ? K.basalt : L.tipo === 'nido' ? K.quartz_block : K.cobble;
     const cel = (x, z) => x >= x0 && x < x0 + 16 && z >= z0 && z < z0 + 16;
     for (let dz = -R; dz <= R; dz++) for (let dx = -R; dx <= R; dx++) {
       if (dx * dx + dz * dz > R * R + 1) continue;
@@ -390,6 +393,11 @@ export class GenV2 {
       cofre(0, 0, 1, slots); placa(0, -3, 0, 'Cámara de eco', 'Aquí la roca devuelve la voz. Un cristal de eco marca los salones cercanos.');
     } else if (L.tipo === 'isla') {
       cofre(0, 0, 1, slots); poner(1, 1, K.farol); placa(-1, 1, 0, 'Isla del silencio', 'El agua no se mueve. Nadie viene aquí por casualidad.');
+    } else if (L.tipo === 'fragua') {
+      cofre(0, 0, 1, slots); poner(-2, 0, K.farol); poner(2, 0, K.farol); placa(0, 2, 2, 'La Fragua de los Antiguos', 'Aquí se fundía el oro y se tallaba el jade antes de que llegaran los nombres. Lo que quedó es de quien baje hasta acá.');
+    } else if (L.tipo === 'nido') {
+      for (const [dx, dz] of [[-2, -2], [2, -2], [-2, 2], [2, 2]]) poner(dx, dz, K.cristal_bloque);
+      cofre(0, 0, 1, slots); placa(0, 2, 2, 'El Nido de Cristal', 'El cristal crece aquí hacia adentro, como si cuidara algo. Llévese lo que quiera, pero no rompa el nido.');
     } else {
       cofre(0, 0, 1, slots); poner(-2, 0, K.farol); poner(2, 0, K.farol); placa(0, 2, 2, 'Altar de la brasa', 'Piedra negra sobre fuego. Se llevó lo que pudo; no lo vuelva a pedir.');
     }
@@ -496,7 +504,117 @@ export class GenV2 {
         }
       }
     }
+    // v32: La Hondura: la cámara (piso plano en y = piso, cúpula arriba), la zanja de la colada (un bloque más abajo que el piso) y la garganta que la une a un salón de la Red Honda
+    if (this.gen.version >= GEN_HONDURA) for (const n of this.hondoDe(cx, cz, 70)) {
+      carve((x, y, z) => {
+        if (y < n.piso) return y === n.piso - 1 && this.enColada(n, x, z) > 0;
+        const dx = (x - n.x) / n.rx, dz = (z - n.z) / n.rz, dy = (y - n.piso) / n.alto;
+        return dx * dx + dz * dz + dy * dy + this.gen.nCaveC.noise3(x * 0.07, y * 0.09, z * 0.07) * 0.1 < 1;
+      }, n.x - n.rx - 2, n.x + n.rx + 2, n.piso - 1, n.piso + n.alto + 2, n.z - n.rz - 2, n.z + n.rz + 2);
+      const G = n.gar, r = G.r + 1.4;
+      carve((x, y, z) => {
+        const vx = G.qx - G.px, vy = G.qy - G.py, vz = G.qz - G.pz, wx = x - G.px, wy = y - G.py, wz = z - G.pz;
+        let u = (wx * vx + wy * vy + wz * vz) / (vx * vx + vy * vy + vz * vz); u = u < 0 ? 0 : u > 1 ? 1 : u;
+        const ex = wx - vx * u, ey = wy - vy * u, ez = wz - vz * u, rr = G.r + 0.5 * Math.sin(u * 9 + G.ph);
+        return ex * ex + ey * ey + ez * ez < rr * rr;
+      }, Math.min(G.px, G.qx) - r, Math.max(G.px, G.qx) + r, Math.min(G.py, G.qy) - r, Math.max(G.py, G.qy) + r, Math.min(G.pz, G.qz) - r, Math.max(G.pz, G.qz) + r);
+    }
     return M;
+  }
+
+  // ---------- v32: La Hondura. Una cuadrícula de 192 x 192 con a lo más una CÁMARA HONDA por celda (nada a menos de 300 del inicio, y solo si hay un salón de la Red Honda con el piso a y <= 36 a 100 o menos
+  // para unirla por una GARGANTA). La cámara es de piso plano (y 12-14) y techo en cúpula de 13-17 de alto; todo sale de hash (sales 9600+), nunca de Math.random.
+  // Cuatro tipos: fragua (colada de lava en una zanja del piso con puentes de basalto), geoda (cristal y calcita), azufre y ceniza. Cada cámara trae 1 a 3 vetas a la vista en su pared.
+  hondoNodo(gx, gz) {
+    if (!this.hoC || this.hoC.size > 2000) this.hoC = new Map();
+    const k = gx * 100003 + gz; let n = this.hoC.get(k); if (n) return n;
+    const s = this.gen.seed, RC = HONDO_CELDA, H = (a) => cmH(s, gx, gz, a);
+    n = { gx, gz, cam: false };
+    const x = gx * RC + 40 + H(9601) * (RC - 80), z = gz * RC + 40 + H(9602) * (RC - 80);
+    if (H(9603) < HONDO_PROB && Math.hypot(x, z) >= 300) {
+      let sal = null, md = 101;
+      for (let sz = Math.floor(z / 96) - 1; sz <= Math.floor(z / 96) + 1; sz++) for (let sx = Math.floor(x / 96) - 1; sx <= Math.floor(x / 96) + 1; sx++) {
+        const m = this.cmNodo(sx, sz); if (!m.salon || m.piso > 36) continue;
+        const d = Math.hypot(m.x - x, m.z - z); if (d < md) { md = d; sal = m; }
+      }
+      if (sal) {
+        const rx = 14 + H(9604) * 14, rz = 14 + H(9605) * 14, piso = 12 + Math.floor(H(9606) * 3), alto = 13 + Math.floor(H(9607) * 5), u = H(9608) * 100;
+        const tipo = u < 35 ? 'fragua' : u < 60 ? 'geoda' : u < 80 ? 'azufre' : 'ceniza';
+        const ux = (sal.x - x) / md, uz = (sal.z - z) / md, ms = Math.min(sal.rx, sal.rz);
+        n = { gx, gz, cam: true, x, z, rx, rz, piso, alto, tipo,
+          gar: { px: x + ux * rx * 0.5, py: piso + 5, pz: z + uz * rz * 0.5, qx: sal.x - ux * ms * 0.3, qy: Math.max(piso + 7, Math.floor(sal.y - sal.ry * 0.6)), qz: sal.z - uz * ms * 0.3, r: 2.5 + H(9609), ph: H(9612) * 6.28 },
+          col: tipo === 'fragua' ? { a: H(9610) * Math.PI, w: 3 + Math.floor(H(9611) * 3) } : null, vetas: [], lugar: null };
+        const nv = 1 + Math.floor(H(9620) * 3);
+        for (let i = 0; i < nv; i++) { const q = H(9621 + i * 3); n.vetas.push({ a: H(9622 + i * 3) * 6.2832, y: piso + 2 + Math.floor(H(9623 + i * 3) * 3), id: q < 0.6 ? K.deep_diamond_ore : q < 0.85 ? K.jade_ore : K.deep_gold_ore }); }
+        if ((tipo === 'fragua' || tipo === 'geoda') && H(9630) < 0.7) {
+          const a = (n.col ? n.col.a + Math.PI / 2 : H(9631) * 6.2832) + (H(9632) < 0.5 ? 0 : Math.PI), off = 0.4 * Math.min(rx, rz);
+          n.lugar = { tipo: tipo === 'fragua' ? 'fragua' : 'nido', x: Math.floor(x + Math.cos(a) * off), z: Math.floor(z + Math.sin(a) * off), y: piso - 1, zona: Math.hypot(x, z) < 1000 ? 2 : 3 };
+        }
+      }
+    }
+    this.hoC.set(k, n); return n;
+  }
+  // las cámaras que tocan el trozo (con un margen) y las de las celdas vecinas
+  hondoDe(cx, cz, margen = 12) {
+    const x0 = cx * 16, z0 = cz * 16, RC = HONDO_CELDA, out = [], gx0 = Math.floor((x0 + 8) / RC), gz0 = Math.floor((z0 + 8) / RC);
+    for (let gz = gz0 - 1; gz <= gz0 + 1; gz++) for (let gx = gx0 - 1; gx <= gx0 + 1; gx++) {
+      const n = this.hondoNodo(gx, gz);
+      if (n.cam && n.x + n.rx + margen > x0 && n.x - n.rx - margen < x0 + 16 && n.z + n.rz + margen > z0 && n.z - n.rz - margen < z0 + 16) out.push(n);
+    }
+    return out;
+  }
+  hondoEn(HN, wx, wz) { for (let i = 0; i < HN.length; i++) { const n = HN[i], dx = (wx - n.x) / n.rx, dz = (wz - n.z) / n.rz; if (dx * dx + dz * dz < 1.2) return n; } return null; }
+  // 0 = no es colada, 1 = lava de la zanja, 2 = puente de basalto (la zanja de la fragua: ancho 3-5, cada 22 bloques un puente de 3)
+  enColada(n, wx, wz) {
+    if (!n.col) return 0;
+    const dx = wx - n.x, dz = wz - n.z, ex = dx / n.rx, ez = dz / n.rz;
+    if (ex * ex + ez * ez > 0.85) return 0;
+    const ca = Math.cos(n.col.a), sa = Math.sin(n.col.a), t = dx * ca + dz * sa, p = -dx * sa + dz * ca;
+    if (Math.abs(p) > n.col.w / 2) return 0;
+    return ((t + 11) % 22 + 22) % 22 < 3 ? 2 : 1;
+  }
+  // el líquido de una columna dentro de una cámara: ni agua ni lava de zona; solo la colada de la fragua en su zanja
+  liquido32(n, wx, y, wz, id) {
+    if (n.tipo === 'fragua' && y === n.piso - 1) { const c = this.enColada(n, wx, wz); if (c === 1) return K.lava; if (c === 2) return K.basalt; }
+    if (id === K.lava || id === K.water) return y < n.piso ? K.stone : 0; // bajo el piso un charco natural no puede quedar abierto: roca
+    return id;
+  }
+  caracter32(cx, cz, blocks, colAt, structures, HN) {
+    const x0 = cx * 16, z0 = cz * 16, seed = this.gen.seed;
+    for (const n of HN) {
+      for (let lz = 0; lz < 16; lz++) for (let lx = 0; lx < 16; lx++) {
+        const wx = x0 + lx, wz = z0 + lz, dx = (wx - n.x) / n.rx, dz = (wz - n.z) / n.rz;
+        if (dx * dx + dz * dz > 0.8) continue;
+        for (let y = n.piso; y <= n.piso + n.alto; y++) {
+          const i = lz * 16 + lx + y * 256;
+          if (blocks[i] !== 0) continue;
+          const below = blocks[i - 256], above = blocks[i + 256], r = hash3(seed, wx, y + 7600, wz), piso = OPAQUE[below] && below !== K.bedrock && below !== K.lava, techo = OPAQUE[above];
+          if (n.tipo === 'fragua') {
+            if (piso && r < 0.05 && !this.enColada(n, wx, wz)) blocks[i - 256] = K.magma;
+            else if (piso && r < 0.075) { for (let q = 0; q < 3 + Math.floor(r * 80) % 4 && blocks[i + q * 256] === 0; q++) blocks[i + q * 256] = K.basalt; }
+            else if (techo && r < 0.1) blocks[i] = K.stalactite;
+          } else if (n.tipo === 'geoda') {
+            if (techo && r < 0.07) { blocks[i] = K.cristal; if (r < 0.02) blocks[i + 256] = K.cristal_bloque; } else if (piso && r < 0.04) blocks[i] = K.calcite;
+          } else if (n.tipo === 'azufre') {
+            if (piso && r < 0.1) { blocks[i - 256] = K.azufre_bloque; if (r < 0.025) blocks[i] = K.stalagmite; }
+          } else if (piso && r < 0.12) blocks[i - 256] = K.obsidian;
+          else if (piso && r < 0.15) { for (let q = 0; q < 3 + Math.floor(r * 100) % 3 && blocks[i + q * 256] === 0; q++) blocks[i + q * 256] = K.basalt; }
+        }
+      }
+      // las vetas de la pared: un racimo de 2,2 de radio pegado al muro, a la vista desde el piso (solo sustituye roca)
+      for (const v of n.vetas) {
+        const vx = n.x + Math.cos(v.a) * n.rx * 0.98, vz = n.z + Math.sin(v.a) * n.rz * 0.98;
+        if (vx < x0 - 3 || vx > x0 + 19 || vz < z0 - 3 || vz > z0 + 19) continue;
+        for (let dz = -2; dz <= 2; dz++) for (let dx = -2; dx <= 2; dx++) for (let dy = -2; dy <= 2; dy++) {
+          if (dx * dx + dy * dy + dz * dz > 5) continue;
+          const wx = Math.floor(vx) + dx, wz = Math.floor(vz) + dz, y = v.y + dy, lx = wx - x0, lz = wz - z0;
+          if (lx < 0 || lx > 15 || lz < 0 || lz > 15 || y < 11 || y > 40) continue;
+          const i = lx + lz * 16 + y * 256, b = blocks[i];
+          if ((b === K.stone || b === K.deep_rock) && hash3(seed, wx, y + 7700, wz) < 0.85) blocks[i] = v.id;
+        }
+      }
+      if (n.lugar && Math.abs(n.lugar.x - x0 - 8) < 14 && Math.abs(n.lugar.z - z0 - 8) < 14) this.lugar28(n, x0, z0, blocks, structures);
+    }
   }
 
   cueva22(x, y, z, h, cc, bocas, cm) {
@@ -544,6 +662,7 @@ export class GenV2 {
     const v23 = g.version >= GEN_PROF;
     const cm = g.version >= GEN_RED ? { M: this.cmMask(cx, cz), x0, z0 } : null;
     const v28 = g.version >= GEN_CARACTER, SL = v28 ? this.salonesDe(cx, cz) : null;
+    const HN = g.version >= GEN_HONDURA ? this.hondoDe(cx, cz) : null; // v32: las cámaras de La Hondura que tocan el trozo
 
     for (let lz = 0; lz < CHUNK; lz++) for (let lx = 0; lx < CHUNK; lx++) {
       const wx = x0 + lx, wz = z0 + lz;
@@ -611,6 +730,7 @@ export class GenV2 {
       if (!underwater) for (let dz = -2; dz <= 2 && !nearSea; dz++) for (let dx = -2; dx <= 2; dx++) { if (colAt(lx + dx, lz + dz).h < SEA) { nearSea = true; break; } }
       const carveTop = underwater || biome === 'beach' ? h - 4 : h - (biome === 'volcano' ? 3 : 0);
       const S28 = v28 ? this.salonEn(SL, wx, wz) : null;
+      const H32 = HN && HN.length ? this.hondoEn(HN, wx, wz) : null;
       for (let y = 0; y <= h; y++) {
         let id;
         if (y === 0) id = K.bedrock;
@@ -627,6 +747,7 @@ export class GenV2 {
           else if (v22 ? y <= aq22 : (aqOn && y <= aqLevel)) id = K.water; // lagos subterráneos
           else id = 0;
           if (S28) id = this.liquido28(S28, y, id);
+          if (H32 && y <= H32.piso + H32.alto) id = this.liquido32(H32, wx, y, wz, id);
         }
         blocks[idx(lx, y, lz)] = id;
       }
@@ -725,6 +846,7 @@ export class GenV2 {
 
     // ---- v28 (CM3 y CC3): el carácter de cada salón y sus lugares ----
     if (v28) this.caracter28(cx, cz, blocks, colAt, structures, SL);
+    if (HN && HN.length) this.caracter32(cx, cz, blocks, colAt, structures, HN); // v32: el carácter de cada cámara honda, sus vetas y su lugar
 
     // ---- geodas de cuarzo ----
     if (rnd() < 0.05) {

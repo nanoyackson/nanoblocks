@@ -306,6 +306,8 @@ const defs = [
   { id: 681, key: 'jarron_chorotega', name: 'Jarrón chorotega', tex: 'clay', render: 'shape', boxes: [[4, 0, 4, 12, 10, 12], [6, 10, 6, 10, 14, 10]], hardness: 0.6, sound: 'stone' },
   { id: 682, key: 'puerta_tallada', name: 'Puerta tallada (adorno de pared; da comodidad)', tex: 'planks', render: 'shape', boxes: [[0, 0, 7, 16, 16, 9]], hardness: 1.5, tool: 'axe', sound: 'wood' },
   { id: 683, key: 'verja_forjada', name: 'Verja forjada', tex: 'verja', render: 'cutout', hardness: 2.5, tool: 'pickaxe', sound: 'glass' },
+  // v13.7.1 (La Hondura, HO3): el cristal ahumado (decorativo, sin economía propia: vidrio y carbón); el basalto columnar (142) ya existía del Inframundo y ahora también se fabrica
+  { id: 702, key: 'cristal_ahumado', name: 'Cristal ahumado', tex: 'cristal_ahumado', render: 'cutout', hardness: 0.4, sound: 'glass', drop: 0 },
   { id: 700, key: 'cuerda', name: 'Cuerda de espeleólogo (se cuelga en vertical: salte para subir, agáchese para bajar)', tex: 'vine', render: 'cross', solid: false, hardness: 0.2, sound: 'leaves', climb: true },
   { id: 699, key: 'farol_cristal', name: 'Farol de cristal (luz fría que no se apaga y mantiene limpio el aire malo)', tex: { top: 'farol_top', side: 'farol', bottom: 'farol_top' }, render: 'shape', solid: false, glow: true, boxes: [[6, 0, 6, 10, 10, 10], [5, 10, 5, 11, 14, 11]], hardness: 0.8, tool: 'pickaxe', sound: 'glass' }, // v13.3.4 (CC1)
   { id: 684, key: 'farol_forjado', name: 'Farol forjado (luz de plaza)', tex: { top: 'farol_top', side: 'farol', bottom: 'farol_top' }, render: 'shape', solid: false, glow: true, boxes: [[7, 0, 7, 9, 12, 9], [5, 12, 5, 11, 16, 11]], hardness: 1, tool: 'pickaxe', sound: 'glass' },

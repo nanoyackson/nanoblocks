@@ -12,7 +12,7 @@ import { Pieza, huevo, bandas } from './lowpoly.js';
 import { zonaSegura } from './historia.js';
 import { regionAt } from './regiones.js';
 import { anotar } from './diario.js';
-import { lavaCerca } from './salonlugar.js';
+import { lavaCerca, hondoAqui } from './salonlugar.js';
 
 const G = () => new THREE.Group();
 const pivotePata = (x, y, z, giroY, malla) => { const p = G(); p.position.set(x, y, z); p.rotation.y = giroY; p.add(malla); return p; };
@@ -163,7 +163,7 @@ export function especieDelSitio(w, x, y, z) {
 }
 export function cuevaFaunaSpawn(E, g) {
   if (g.dim !== 'tierra' || g.meta.invitado || !g.env || g.env.cave < 0.6 || Math.random() > 0.5) return false;
-  const vivos = E.mobs.filter((m) => !m.dead && (CUEVA_FAUNA[m.type] || m.type === 'culebron_brasa'));
+  const vivos = E.mobs.filter((m) => !m.dead && (CUEVA_FAUNA[m.type] || m.type === 'culebron_brasa' || m.type === 'salamandra_brasa'));
   if (vivos.length >= TOPE_TOTAL) return false;
   const w = g.world, pl = g.player.body.pos;
   for (let tries = 0; tries < 8; tries++) {
@@ -176,7 +176,10 @@ export function cuevaFaunaSpawn(E, g) {
     if (zona.length >= TOPE_ZONA) continue;
     // v13.6.0: en un salón Caldera, a menos de 10 de la lava, 6 de cada 10 veces sale el Culebrón de brasa (a lo más 2 por zona)
     const sn = salonAqui(w.gen, { x, y, z }, 1.5); // el piso con lava queda en el borde de abajo del salón: se mira con holgura
-    const t = sn && sn.tipo === 'caldera' && Math.random() < 0.6 && lavaCerca(w, x, y, z, 10) ? 'culebron_brasa' : especieDelSitio(w, x, y, z);
+    // v13.7.1: en una cámara honda de fragua o ceniza, salamandras de brasa (y culebrones junto a la colada); en la geoda y el azufre no sale nada
+    const hn = hondoAqui(w.gen, x, y, z);
+    if (hn && hn.tipo !== 'fragua' && hn.tipo !== 'ceniza') continue;
+    const t = hn ? (hn.tipo === 'fragua' && lavaCerca(w, x, y, z, 6) && Math.random() < 0.4 ? 'culebron_brasa' : 'salamandra_brasa') : sn && sn.tipo === 'caldera' && Math.random() < 0.6 && lavaCerca(w, x, y, z, 10) ? 'culebron_brasa' : especieDelSitio(w, x, y, z);
     if (zona.filter((m) => m.type === t).length >= TOPE_ESPECIE) continue;
     return !!E.spawnMob(t, x + 0.5, y + 0.05, z + 0.5);
   }
