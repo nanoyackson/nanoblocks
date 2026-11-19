@@ -18,6 +18,7 @@ const CORRECCIONES_MAX = 10, VENTANA_CORRECC = 10000;
 const PUESTO_MIN_MS = 10 * 60 * 1000, PUESTOS_MAX = 4000; // M2: lo que un invitado puso no da cupo al romperlo en 10 min (se recuerdan hasta 4000)
 const RECHAZOS_MAX = 60; // bloques rechazados en 10 s antes de sacar a un invitado
 const HZ_BLOQUES = 20; // el anfitrión junta los cambios y los difunde 20 veces por segundo
+const PEND_MAX = 4000, RITMO_BLOQUES = 16; // cambios propios por mandar (invitado) y cuántos manda por segundo
 const COLA_MAX = 4000; // si se acumulan más, se manda el estado de los trozos en vez de cambio por cambio
 const TROZOS_POR_TIC = 2, TROZOS_COLA_MAX = 64;
 const GUARDA_CADA = 5; // segundos: las fichas con cambios se guardan a lo sumo cada 5 s (y de inmediato cuando alguien sale)
@@ -101,6 +102,7 @@ export class Anfitrion extends Base {
     if (!g || g.estado !== 'dentro') return; // sin «hola» aceptado no hay nada que decir
     if (!recibir(g.lim, tipo, ahora())) {
       if (tipo === 'chat') this.faltaChat(g, peerId);
+      else if (tipo === 'bloque' && (!g.lim.flood || g.lim.flood.length <= 200)) this.corregirBloque(peerId, cuerpo, bytes); // v13.5.4
       if (mirada(g.lim, ahora()) === 'expulsa') this.expulsar(peerId, false, 'ritmo');
       return;
     }
@@ -387,6 +389,13 @@ export class Anfitrion extends Base {
     }
     E.escribir(m.x, m.y, m.z, m.id); // por la misma función de siempre: la física, la luz y el guardado funcionan igual
   }
+  // v13.5.4: un bloque que llegó de más (ráfaga) se descarta sin castigo; al invitado se le dice cómo está de verdad ese bloque para que no se quede con uno que el mundo no tiene
+  corregirBloque(peerId, cuerpo, bytes) {
+    const r = validar('bloque', cuerpo, bytes, true);
+    if (!r.ok || !this.env.leerSiCargado) return;
+    const id = this.env.leerSiCargado(r.msg.x, r.msg.y, r.msg.z);
+    if (id >= 0) this.a(peerId, 'bloques', { b: [[r.msg.x, r.msg.y, r.msg.z, id]] });
+  }
   // el mundo avisa de cada cambio (setBlock): se junta y se difunde en la próxima tanda
   bloqueCambiado(x, y, z, old, id) {
     if (!this.dentro().length) return;
@@ -457,7 +466,7 @@ export class Invitado extends Base {
     super(canal, env);
     this.rol = 'invitado'; this.anfitrionId = anfitrionId; this.pid = -1; this.estado = 'buscando'; this.mundo = null;
     this.rev = -1; this.invSucio = false; // la versión de la ficha que dio el anfitrión (-1: aún no llega) y si la mochila cambió
-    this.pend = []; this.fichas = 20; this.reparoPronto = false; // cambios locales por mandar, ficha de ritmo y si toca pedir el estado de los trozos
+    this.pend = []; this.pendPor = new Map(); this.fichas = 20; this.fichaT = ahora(); this.reparoPronto = false; // cambios locales por mandar, ficha de ritmo y si toca pedir el estado de los trozos
     this.alResultado = null; // la pantalla de unirse: (ok, dato) cuando el anfitrión contesta
     canal.alEntrar((userId) => { if (userId === anfitrionId && this.estado === 'buscando') this.saludar(); });
     canal.alSalir((userId) => { if (userId === anfitrionId && !this.cerrada) this.fin('anfitrion-salio'); });
@@ -519,8 +528,12 @@ export class Invitado extends Base {
   // un cambio hecho aquí (el mundo lo avisa): se predice en el momento y se manda como intención; el anfitrión confirma o corrige
   bloqueCambiado(x, y, z, old, id) {
     if (this.estado !== 'dentro') return;
-    if (this.pend.length >= 300) { this.pend.length = 0; this.reparoPronto = true; return; } // un estallido: se repara pidiendo el estado
-    this.pend.push({ x, y, z, id, viejo: old });
+    // v13.5.4: varios cambios al mismo bloque se juntan en uno (queda el último, contra el bloque de antes del primero) y una ráfaga larga espera su turno en la cola
+    const k = `${x},${y},${z}`, e = this.pendPor.get(k);
+    if (e) { e.id = id; return; }
+    if (this.pend.length >= PEND_MAX) { this.pend.length = 0; this.pendPor.clear(); this.reparoPronto = true; return; } // un estallido enorme: se repara pidiendo el estado
+    const p = { x, y, z, id, viejo: old, k };
+    this.pend.push(p); this.pendPor.set(k, p);
   }
   marcarInv() { this.invSucio = true; }
   pedirCofre(x, y, z) { if (this.estado === 'dentro') this.canal.enviar('nb.cofre_abre', { x, y, z }, this.anfitrionId); }
@@ -537,9 +550,13 @@ export class Invitado extends Base {
   reparar() { const c = this.env.chunksCerca(); if (c.length) this.canal.enviar('nb.chunks_pide', { c }, this.anfitrionId); }
   tick(dt) {
     if (this.estado !== 'dentro') return;
-    this.fichas = Math.min(20, this.fichas + dt * 8); // por debajo de lo que tolera el anfitrión (10 por segundo)
+    // v13.5.4: el ritmo se mide con el reloj de verdad (no con el dt del juego: si el juego avanza más rápido que el reloj, el anfitrión lo vería como inundación)
+    const t = ahora(), real = Math.min(1, Math.max(0, (t - this.fichaT) / 1000)); this.fichaT = t;
+    this.fichas = Math.min(20, this.fichas + real * RITMO_BLOQUES); // por debajo de lo que tolera el anfitrión (20 por segundo)
     while (this.pend.length && this.fichas >= 1) {
-      const p = this.pend.shift(); this.fichas--;
+      const p = this.pend.shift(); this.pendPor.delete(p.k);
+      if (p.id === p.viejo) continue; // se puso y se quitó: no hay nada que mandar
+      this.fichas--;
       this.canal.enviar('nb.bloque', { op: p.id === 0 ? 0 : 1, x: p.x, y: p.y, z: p.z, id: p.id, cara: 0, viejo: p.viejo, seq: this.seq = (this.seq + 1) & 0xffff }, this.anfitrionId);
     }
     this.t.repara += dt;

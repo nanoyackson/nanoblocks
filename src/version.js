@@ -5,7 +5,7 @@ export const GAME_NAME = 'NanoBlocks';
 // v13.1.0: la versión de generador de terreno MÁS NUEVA que este juego sabe hacer (la de los mundos nuevos). Si el anfitrión de una sala manda
 // una mayor, este cliente generaría un terreno distinto al suyo (cuevas flotando): se rechaza la entrada (red/sesion.js).
 export const GEN_MAX = 31; // v13.5.1: 31 = caminos con zigzag, túnel y rodeo de lo ajeno, y flora propia de los lugares típicos (GEN_CAMINOS en worldgen2.js) · v13.5.0 (b): v13.5.0: 30 = pueblos en sitio llano sin río y calles con perfil suave y media losa (GEN_PUEBLOS en worldgen2.js) · v13.4.2: 29 = caminos guiados con talud, taludes de obras y lugares típicos por bioma (GEN_RUTAS en worldgen2.js) · v13.4.1: 28 = carácter de los salones, minerales por zona, lugares de cueva (GEN_CARACTER en worldgen2.js) · v13.4.0: 27 = reparto de biomas, bordes suaves, montaña real y construcciones del desierto (GEN_SUPERFICIE en worldgen2.js) · v13.3.3: 26 = simas, bocas gigantes, hitos (GEN_SIMAS en worldgen2.js) · v13.3.2: 25 = la Red Honda y los Salones (GEN_RED en worldgen2.js) · v13.3.0: 24 = obras integradas al terreno (GEN_INTEGRACION en worldgen2.js) · v13.2.0: 23 = lava más abajo (GEN_PROF en worldgen2.js)
-export const GAME_VERSION = '13.5.3';
+export const GAME_VERSION = '13.5.4';
 // v12.4.6: la versión MÁS VIEJA del juego que puede abrir lo que esta versión guarda. Se sube cuando un mundo guardado trae algo que un
 // juego anterior no entiende y lo rompería: bloques nuevos (ids que el mallador no conoce), un SAVE_FORMAT nuevo o un campo que cambia
 // de forma. Se guarda en meta.minVersion y el menú no abre un mundo cuyo minVersion sea más nuevo que este juego (12.4.0: los bloques 656–662).
@@ -26,6 +26,15 @@ export const CREDITS = [
 ];
 
 export const CHANGELOG = [
+  {
+    version: '13.5.4',
+    date: '2026-11-18',
+    title: 'Invitado sin expulsiones por rellenar',
+    items: [
+      'Un invitado que cambia muchos bloques de golpe (un relleno o un script de unos 250) ya no sale de la sala por «demasiados mensajes». Tres cambios en `src/red/sesion.js` y `limites.js`: (1) el invitado manda sus cambios con el reloj de verdad (16 por segundo; antes sumaba el `dt` del juego, y si el juego avanzaba más rápido que el reloj, el anfitrión lo veía como una inundación), junta los cambios repetidos al mismo bloque en uno (queda el último contra el bloque de antes del primero; si vuelve a como estaba no manda nada) y la cola aguanta 4 000 cambios (antes 300, y al pasarse se tiraban todos); (2) el anfitrión tolera 20 bloques por segundo con ráfaga de 40 (antes 10 y 20) y el exceso de una ráfaga se descarta sin castigo, corrigiendo al invitado con el bloque verdadero; (3) solo el inundador sostenido (más de 400 descartes en 5 s) o el que insiste con bloques que no puede poner (60 rechazos en 10 s) sale.',
+      'Prueba nueva en `tools/revisar-red.mjs` (250 bloques en el mismo instante no expulsan; 1 000 por segundo sostenidos sí; 20 por segundo durante 30 s, sin descartes). Prueba en red real con dos pestañas, con el juego del invitado además acelerado al doble: 250 bloques de cuatro tipos en 15 s, nadie expulsado y los dos mundos con la misma suma de control (9 224 bloques en la zona); 15 de los 250 los rechazó el anfitrión por las reglas de siempre (apoyo o alcance) y quedaron igual en los dos. Sin SAVE_FORMAT, MIN_VERSION ni generador nuevos (la huella no se toca).',
+    ],
+  },
   {
     version: '13.5.3',
     date: '2026-11-18',

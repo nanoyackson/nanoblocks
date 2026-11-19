@@ -223,4 +223,17 @@ ok(!alcanceOk({ x: 0, y: 70, z: 0 }, 40, 70, 0), 'alcance: bloque lejano se rech
   rechaza('pos', { ...pos, otro: 1 }, 'esquema', 'campo ajeno sigue rechazado');
 }
 
+// v13.5.4: un relleno en ráfaga (≈ 250 bloques de golpe) no expulsa: el exceso se descarta sin castigo; el inundador sostenido sí sale
+{
+  const inv = nuevoInvitado(0); let pasan = 0;
+  for (let i = 0; i < 250; i++) if (recibir(inv, 'bloque', 0)) pasan++;
+  ok(pasan === LIMITES.bloque.cap && mirada(inv, 0) === 'ok', `250 bloques en el mismo instante: pasan ${pasan}, el resto se descarta y la mirada sigue en «ok»`);
+  let estado = 'ok';
+  for (let s = 0; s < 10 * 20 && estado !== 'expulsa'; s++) { const ms = s * 50; for (let i = 0; i < 50; i++) recibir(inv, 'bloque', ms); estado = mirada(inv, ms); }
+  ok(estado === 'expulsa', 'pero 1 000 bloques por segundo sostenidos sí se expulsan');
+  const n = nuevoInvitado(0); let malos = 0;
+  for (let s = 0; s < 20 * 30; s++) if (!recibir(n, 'bloque', s * 50)) malos++; // 20 por segundo, 30 s: el ritmo máximo permitido
+  ok(malos === 0 && mirada(n, 29950) === 'ok', 'a 20 bloques por segundo, 30 s: sin descartes');
+}
+
 if (fallas) { console.log(`\n${fallas} fallas`); process.exitCode = 1; } else console.log('\nTodas las costuras del multijugador pasan.');

@@ -3,7 +3,7 @@
 // Un cubo de fichas por invitado y tipo de mensaje: repone `rate` fichas por segundo hasta `cap` (la ráfaga permitida).
 export const LIMITES = {
   pos: { rate: 15, cap: 30 },
-  bloque: { rate: 10, cap: 20 },
+  bloque: { rate: 20, cap: 40 }, // v13.5.4: antes 10 y 20; el invitado manda a 16 por segundo (sesion.js), con margen para la demora de la red
   rompe_inicio: { rate: 10, cap: 20 },
   inv_op: { rate: 10, cap: 15 },
   inv: { rate: 2, cap: 4 }, // v12.13.0: la foto de la mochila (el invitado manda 1 cada 0,5 s como mucho)
@@ -20,7 +20,8 @@ export const LIMITES = {
 };
 // v12.16.4: lo que se DESCARTA sin castigo cuando excede (el cliente lo repite solo: posición y pedido de trozos). Un invitado honesto que
 // explora jamás se expulsa por esto; solo un inundador sostenido (más de FLOOD_MAX descartes en 5 s).
-const BLANDOS = new Set(['pos', 'chunks_pide']);
+// v13.5.4: «bloque» también (un relleno grande en ráfaga no se castiga: el exceso se descarta y se le corrige con el bloque verdadero; solo el inundador sostenido sale)
+const BLANDOS = new Set(['pos', 'chunks_pide', 'bloque']);
 export const FLOOD_MAX = 400;
 export const TOPE_ANFITRION = 300; // mensajes por segundo entre todos los invitados juntos
 
