@@ -356,3 +356,24 @@ label { font-family: var(--font); }
 
 /* v13.5.9 (PU-26): con jefe a la vista, el cartel de región baja para no pisar la barra del jefe */
 body:has(#bossbar:not(.hidden)) #region-banner { top: 17%; }
+
+/* v13.6.1 (PU-28): a 375 px los selects de Ajustes (con opciones largas) ensanchaban su etiqueta y se salían del panel: todo cabe en el ancho y el texto largo se recorta */
+#screen-settings .ajustes-grupo, #screen-settings label { min-width: 0; max-width: 100%; box-sizing: border-box; }
+#screen-settings select { width: 100%; max-width: 100%; box-sizing: border-box; text-overflow: ellipsis; }
+
+/* v13.6.1 (PU-09, segunda pasada): el botón «Listo» tenía fondo casi transparente y, al desplazar, los campos se veían por debajo; ahora lleva un fondo sólido del color del panel con el brillo encima */
+#btn-settings-back { background: linear-gradient(rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.07)), rgb(11, 15, 23); box-shadow: 0 -16px 12px -2px rgb(11, 15, 23), 0 0 0 6px rgb(11, 15, 23); }
+
+/* v13.6.1 (PU-13, segunda pasada): en teléfono la brújula se corre a la izquierda y se angosta para no quedar debajo del reloj («NE» cortado) */
+@media (max-width: 700px) { #compass { left: 8px; transform: none; width: calc(100vw - 142px); } }
+
+/* v13.6.1 (PU-27): el aviso de logro baja debajo del reloj (antes se pintaba encima de la hora) */
+.achv { top: 44px; }
+
+/* v13.6.1 (PU-34): la tarjeta del mundo deja que la línea de modo, versión, día y fecha pase a una segunda línea en lugar de cortarse con puntos suspensivos */
+.world .meta { white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.3; }
+
+/* v13.6.1 (PU-31): en teléfono, con una pantalla de panel abierta (inventario, ajustes, libreta…) el HUD de abajo (billetera, vida, aire, hambre) se esconde: asomaba por el vidrio del panel */
+@media (max-width: 700px) {
+  body:has(.screen.on:not(.saliendo)) #billetera-hud, body:has(.screen.on:not(.saliendo)) #bars, body:has(.screen.on:not(.saliendo)) #hotbar { visibility: hidden; }
+}

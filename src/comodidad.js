@@ -75,8 +75,10 @@ export function fichaItem(stack, g) {
   else if (def.durability && g && g.mode === 'survival' && materialDe(def)) lineas.push('🔨 Se puede mejorar en el yunque');
   if (stack.filo) lineas.push(`🗡 Con aceite: 30 % más de daño, ${stack.filo} golpes`);
   if (def.tier && def.isBlock !== false && def.tool === 'pickaxe') lineas.push(`Pide ${NIVEL[def.tier] || 'un buen pico'}`);
-  { const uso = usoLinea(def); if (uso) lineas.splice(1, 0, `ℹ ${uso}`); } // v13.5.8 (PU-17): para qué sirve, justo debajo del nombre
-  if (g && g.mode === 'survival') lineas.push(...origenLineas(id, g));
+  const origen = g && g.mode === 'survival' ? origenLineas(id, g) : [];
+  // v13.5.8 (PU-17): para qué sirve, justo debajo del nombre. v13.6.1 (PU-32): si es ingrediente y el origen ya dice «Sirve para», no se repite
+  { const uso = usoLinea(def); if (uso && !(uso.startsWith('Ingrediente:') && origen.some((l) => l.includes('Sirve para')))) lineas.splice(1, 0, `ℹ ${uso}`); }
+  lineas.push(...origen);
   return lineas.join('\n');
 }
 

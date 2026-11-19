@@ -244,7 +244,12 @@ export function tickCharlas(g, dt) {
   for (const m of g.entities.mobs) {
     if (!m.data || !m.data.globo) continue;
     m.data.globoT -= dt;
-    if (m.data.globoT <= 0 || m.dead) { m.group.remove(m.data.globo); m.data.globo.material.dispose(); m.data.globo = null; }
+    if (m.data.globoT <= 0 || m.dead) { m.group.remove(m.data.globo); m.data.globo.material.dispose(); m.data.globo = null; continue; }
+    // v13.6.1 (PU-30): con la cámara pegada al globo (un NPC al lado de la cara) el cartel se pintaba enorme: se encoge a menos de 2,5 bloques, hasta 1/3 de su tamaño
+    const s = m.data.globo, pp = g.player.body.pos, d = Math.hypot(m.body.pos.x - pp.x, m.body.pos.y + m.kind.h - (pp.y + 1.6), m.body.pos.z - pp.z);
+    if (!s.userData.base) s.userData.base = { x: s.scale.x, y: s.scale.y };
+    const k = Math.max(0.33, Math.min(1, d / 2.5));
+    s.scale.set(s.userData.base.x * k, s.userData.base.y * k, 1);
   }
   // la respuesta llega al ratito
   const c = g.charla;

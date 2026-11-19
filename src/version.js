@@ -5,7 +5,7 @@ export const GAME_NAME = 'NanoBlocks';
 // v13.1.0: la versión de generador de terreno MÁS NUEVA que este juego sabe hacer (la de los mundos nuevos). Si el anfitrión de una sala manda
 // una mayor, este cliente generaría un terreno distinto al suyo (cuevas flotando): se rechaza la entrada (red/sesion.js).
 export const GEN_MAX = 31; // v13.5.1: 31 = caminos con zigzag, túnel y rodeo de lo ajeno, y flora propia de los lugares típicos (GEN_CAMINOS en worldgen2.js) · v13.5.0 (b): v13.5.0: 30 = pueblos en sitio llano sin río y calles con perfil suave y media losa (GEN_PUEBLOS en worldgen2.js) · v13.4.2: 29 = caminos guiados con talud, taludes de obras y lugares típicos por bioma (GEN_RUTAS en worldgen2.js) · v13.4.1: 28 = carácter de los salones, minerales por zona, lugares de cueva (GEN_CARACTER en worldgen2.js) · v13.4.0: 27 = reparto de biomas, bordes suaves, montaña real y construcciones del desierto (GEN_SUPERFICIE en worldgen2.js) · v13.3.3: 26 = simas, bocas gigantes, hitos (GEN_SIMAS en worldgen2.js) · v13.3.2: 25 = la Red Honda y los Salones (GEN_RED en worldgen2.js) · v13.3.0: 24 = obras integradas al terreno (GEN_INTEGRACION en worldgen2.js) · v13.2.0: 23 = lava más abajo (GEN_PROF en worldgen2.js)
-export const GAME_VERSION = '13.6.0';
+export const GAME_VERSION = '13.6.1';
 // v12.4.6: la versión MÁS VIEJA del juego que puede abrir lo que esta versión guarda. Se sube cuando un mundo guardado trae algo que un
 // juego anterior no entiende y lo rompería: bloques nuevos (ids que el mallador no conoce), un SAVE_FORMAT nuevo o un campo que cambia
 // de forma. Se guarda en meta.minVersion y el menú no abre un mundo cuyo minVersion sea más nuevo que este juego (12.4.0: los bloques 656–662).
@@ -26,6 +26,15 @@ export const CREDITS = [
 ];
 
 export const CHANGELOG = [
+  {
+    version: '13.6.1',
+    date: '2026-11-18',
+    title: 'Pulido de la regresion de la 13.5.9',
+    items: [
+      'Pulido de la regresión de la 13.5.9 (`docs/revisiones/PULIDO_LISTA.md`: PU-09 y PU-13, que quedaron a medias, y PU-27 a PU-34); solo interfaz y un guardado, sin generador ni ids. PU-09: «Listo» de Ajustes lleva fondo sólido del color del panel (antes casi transparente: los campos se veían por debajo). PU-13: a 375 px la brújula se corre a la izquierda y se angosta (8 a 241) para no quedar bajo el reloj (254 a 365). PU-27: el aviso de logro baja a 44 px, debajo del reloj. PU-28: a 375 px los selects de Ajustes caben en el panel (0 controles fuera; antes 5 salían por la derecha). PU-31: en teléfono, con una pantalla abierta, se esconden la billetera, las barras y la barra de acceso (asomaban por el vidrio).',
+      'PU-29: no se guarda con el jugador muerto (`game.save`): el guardado quedaba con 0 de vida y «vivo»; el siguiente, ya reaparecido, sí. PU-30: el globo de lo que dice un NPC se encoge a menos de 2,5 bloques de la cámara, hasta un tercio (medido: 0,41 a 1 bloque, 1,0 de lejos). PU-32: la ficha de un ingrediente ya no repite «Ingrediente: sirve para…» si el origen dice «Sirve para». PU-34: la línea de la tarjeta del mundo pasa a una segunda línea en vez de cortarse. PU-33 (el `beforeunload` bloqueado en la consola) es del navegador y se deja como está. Captura en `docs/revisiones/capturas_1361/`.',
+    ],
+  },
   {
     version: '13.6.0',
     date: '2026-11-18',

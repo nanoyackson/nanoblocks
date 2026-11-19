@@ -521,6 +521,7 @@ export class Game {
   async save() {
     if (!this.world || !this.meta || this.saving) return;
     if (this.meta.invitado) return; // v12.11.0: el mundo del anfitrión no se guarda en la máquina de quien lo visita
+    if (this.player && !this.player.alive) return; // v13.6.1 (PU-29): con la pantalla de muerte puesta no se guarda (el guardado quedaba con 0 de vida y «vivo»); el siguiente, ya reaparecido, sí
     this.saving = true;
     let dirty = null;
     try {

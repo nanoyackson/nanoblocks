@@ -1,5 +1,10 @@
 # Registro de versiones
 
+## 13.6.1 — 2026-11-18 · Pulido de la regresion de la 13.5.9
+
+- Pulido de la regresión de la 13.5.9 (`docs/revisiones/PULIDO_LISTA.md`: PU-09 y PU-13, que quedaron a medias, y PU-27 a PU-34); solo interfaz y un guardado, sin generador ni ids. PU-09: «Listo» de Ajustes lleva fondo sólido del color del panel (antes casi transparente: los campos se veían por debajo). PU-13: a 375 px la brújula se corre a la izquierda y se angosta (8 a 241) para no quedar bajo el reloj (254 a 365). PU-27: el aviso de logro baja a 44 px, debajo del reloj. PU-28: a 375 px los selects de Ajustes caben en el panel (0 controles fuera; antes 5 salían por la derecha). PU-31: en teléfono, con una pantalla abierta, se esconden la billetera, las barras y la barra de acceso (asomaban por el vidrio).
+- PU-29: no se guarda con el jugador muerto (`game.save`): el guardado quedaba con 0 de vida y «vivo»; el siguiente, ya reaparecido, sí. PU-30: el globo de lo que dice un NPC se encoge a menos de 2,5 bloques de la cámara, hasta un tercio (medido: 0,41 a 1 bloque, 1,0 de lejos). PU-32: la ficha de un ingrediente ya no repite «Ingrediente: sirve para…» si el origen dice «Sirve para». PU-34: la línea de la tarjeta del mundo pasa a una segunda línea en vez de cortarse. PU-33 (el `beforeunload` bloqueado en la consola) es del navegador y se deja como está. Captura en `docs/revisiones/capturas_1361/`.
+
 ## 13.6.0 — 2026-11-18 · Culebron de brasa y Anguila Mayor, los salones con mas vida
 
 - Contenido en tiempo real, sin generador nuevo (valen en todo mundo de generador 28 en adelante; la huella no se toca): dos criaturas de los salones que quedaban del plan de contenido (`PLAN_CONTENIDO_MUNDO` §4), en `src/salonfauna.js`. El Culebrón de brasa vive en las Calderas: sale de la lava (`kind.lavaOk`: la lava no lo daña), no se aleja de ella (solo persigue a quien está a menos de 12 de su sitio y si no vuelve), 24 de vida, 4 de mordida con 3 s de ardor, y suelta brasa viva (0 a 2); lo hace aparecer el anfitrión en `cuevaFaunaSpawn` junto a la lava de un salón Caldera, a lo más 2 por zona.

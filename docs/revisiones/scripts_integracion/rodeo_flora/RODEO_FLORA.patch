@@ -1,0 +1,50 @@
+--- a/src/carreteras.js	2026-11-19 07:33:59.702292400 -0600
++++ b/src/carreteras.js	2026-11-19 07:24:21.727230800 -0600
+@@ -5,7 +5,7 @@
+ import { hash3 } from './noise.js';
+ import { BLOCK_BY_KEY as K } from './blocks.js';
+ import { villageAt, CELL } from './pueblogen.js';
+-import { structuresNearPasos, structRadius } from './estructuras.js';
++import { structuresNearPasos, structuresNear, structRadius } from './estructuras.js';
+ 
+ // lugares a los que llega un camino desde el pueblo más cercano (los que tienen gente, no la selva virgen)
+ const ROAD_TO = new Set(['capital', 'basilica', 'ruinas', 'fortin', 'estadio_nacional', 'estadio_obra', 'estacion', 'refineria', 'playa_lujo', 'sanatorio', 'hacienda', 'beneficio', 'muelle_limon', 'marino_ballena', 'monteverde', 'grecia', 'zapote', 'aeropuerto']);
+@@ -93,6 +93,8 @@
+ 
+ // v13.5.1 (generador 31): lo ajeno que un camino debe rodear: los pueblos de las celdas vecinas que no son sus extremos (villageAt, cacheado: no suma trabajo). Los lugares con gente quedan fuera:
+ // buscarlos con structuresNear por tramo costaba +36 % (ver tools/revisar-caminos.mjs).
++const PEN = +(process.env.PEN || 60);
++const EXTRA = process.env.EXTRA ? new Set(process.env.EXTRA.split(',')) : null;
+ function obrasAjenas(gen, A, B, ax, az, bx, bz, len) {
+   const mx = (ax + bx) / 2, mz = (az + bz) / 2, R = len / 2 + 60, res = [];
+   const cx0 = Math.floor((mx - R) / CELL), cx1 = Math.floor((mx + R) / CELL), cz0 = Math.floor((mz - R) / CELL), cz1 = Math.floor((mz + R) / CELL);
+@@ -101,6 +103,20 @@
+     if (!v || v === A || v === B || (v.x === A.x && v.z === A.z) || (v.x === B.x && v.z === B.z)) continue;
+     res.push({ x: v.x, z: v.z, r: (v.L ?? 46) + 4 });
+   }
++  if (EXTRA) {
++    const dx = bx - ax, dz = bz - az, L2 = dx * dx + dz * dz || 1, marg = len * 0.3 + 30;
++    const cellOk = (T, gx, gz) => {
++      const cx = (gx + 0.5) * T.cell, cz = (gz + 0.5) * T.cell;
++      const t = Math.max(0, Math.min(1, ((cx - ax) * dx + (cz - az) * dz) / L2));
++      return Math.hypot(cx - (ax + t * dx), cz - (az + t * dz)) < marg + T.cell * 0.71 + T.R;
++    };
++    const vistos = new Set();
++    for (const P of structuresNear(gen, mx, mz, R, EXTRA, cellOk)) {
++      if (vistos.has(P.id)) continue; vistos.add(P.id);
++      if (Math.hypot(P.x - A.x, P.z - A.z) < 60 || Math.hypot(P.x - B.x, P.z - B.z) < 60) continue;
++      res.push({ x: P.x, z: P.z, r: structRadius(gen, P.type) + 4 });
++    }
++  }
+   return res.length ? res : null;
+ }
+ 
+@@ -178,7 +194,7 @@
+       const t = i / M, u = 1 - t, x = u * u * ax + 2 * u * t * mx + t * t * bx, z = u * u * az + 2 * u * t * mz + t * t * bz;
+       const h = gen.column(Math.round(x), Math.round(z)).h;
+       cost += 3 * Math.hypot(x - px, z - pz) + (ph === null ? 0 : 9 * Math.abs(h - ph)) + (h > 90 ? 6 : 0);
+-      if (obras) for (const o of obras) if (Math.abs(x - o.x) < o.r && Math.abs(z - o.z) < o.r) { cost += 60; break; } // v13.5.1: rodear lo ajeno (pueblos y lugares con gente)
++      if (obras) for (const o of obras) if (Math.abs(x - o.x) < o.r && Math.abs(z - o.z) < o.r) { cost += PEN; break; } // v13.5.1: rodear lo ajeno (pueblos y lugares con gente)
+       run = h < SEA - 3 ? run + 1 : 0; mar = Math.max(mar, run);
+       px = x; pz = z; ph = h;
+     }

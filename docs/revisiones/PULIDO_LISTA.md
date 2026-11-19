@@ -224,3 +224,88 @@ La cola de avisos funciona: `Locutor` muestra **uno a la vez**, funde los repeti
 | **T4b · Sonido y animación** | PU-21, 22, 23, 24, 25, 26 | 1 día |
 
 Para confirmar de oído y de vista: PU-22, 23, 24 y 25 (necesitan una persona con ratón y teclado, §5).
+
+
+---
+
+## Regresión v13.5.9 (19-nov)
+
+Revisada la versión **en vivo** (https://nanoyackson.github.io/nanoblocks/, v13.5.9, generador 31) en el navegador integrado, con un mundo propio («Regresion 13.5.9», semilla `regresion-1`; no se tocó ningún mundo de Isaac; quedó guardado en el navegador de la app y se puede borrar). Solo lectura: no se cambió `src/` ni `tools/`. Mismo límite que §0: el navegador integrado no captura el puntero, así que **no se pudo caminar ni oír nada**; se jugó con la API de depuración (`window.nanoblocks`), `game.update` (≈ 12 minutos de juego en total, del día 1 hasta la noche) y emulación de 1024 × 768 y 375 × 812 (móvil, 5 puntos táctiles). Lo de la Tanda 4 (PU-18 a PU-26) se verificó **leyendo el commit `a18276b`** y corriendo `revisar-subtitulos` y `revisar-fichas` (ambas pasan); sonido y poses siguen sin confirmarse de oído ni de vista.
+
+**Nota previa:** la primera carga en este navegador mostró «v13.5.3» aunque el commit 13.5.9 se había publicado 3 minutos antes; tras borrar el service worker y el caché salió «v13.5.9». Puede ser solo propagación de la publicación, pero conviene comprobar que un jugador con la versión vieja recibe la nueva sin tener que limpiar nada.
+
+**Resultado: 24 de 26 arreglados (✔), 2 con falla (✘: PU-09 y PU-13) y 8 hallazgos nuevos (PU-27 a PU-34, ninguno P1).**
+
+### Los 26 hallazgos
+
+| PU | Estado | Cómo se comprobó / qué queda |
+|---|---|---|
+| 01 | ✔ | En vivo, 1024 y 375: «Sobrevivir la primera noche» y «Capítulo 1/9» quedan una debajo de la otra, sin encimarse. |
+| 02 | ✔ | Por código (`prologo.js`: sin `mousedown`; sale con tecla, al soltar el ratón o a los 8,6 s). En vivo el título «Las cartas de la abuela» llegó a verse completo. No se probó hacer clic durante el prólogo. |
+| 03 | ✔ | Las 11 pestañas envuelven en filas (375: 5 filas; todas visibles) y la abierta lleva `on` + `aria-selected` al abrirla con una pestaña (con `openLibreta()` sin pestaña, solo por API, no queda ninguna marcada). |
+| 04 | ✔ | Ayuda empieza por «🧭 Primeros pasos y controles» (WASD, picar/poner, E, M/L/C/Y) y el combate quedó después de «Sobrevivir». |
+| 05 | ✔ | Pantalla de muerte: «Se conservan la armadura y lo que tenía en la mano»; «Léala con C» en `historia.js` y `cuaderno.js`. |
+| 06 | ✔ | Con un aviso largo en pantalla y pausa: el aviso se limpia (opacidad 0) y se ve «Juego en pausa». |
+| 07 | ✔ | La tarjeta dice «Supervivencia · v13.5.9 · día 1 · 19/11, 07:30»: versión primero, fecha corta. A 375 px la fecha aún se corta (ver PU-34). |
+| 08 | ✔ | Se nace mirando tierra y monte, no el mar; el texto del capítulo nombra «📖 en la brújula». |
+| 09 | ✘ | **Parcial.** La barra de scroll ya tiene estilo y al llegar al final «Listo» no tapa el último campo; pero el botón sigue `sticky` con fondo casi transparente (`rgba(255,255,255,.06)`) y mientras se desplaza el texto de los campos se ve **por detrás** de «Listo» (a 375 se lee «Clave TURN (opcional)» debajo del botón). Arreglo: fondo opaco (`var(--surface)`) en el botón o en una franja detrás. |
+| 10 | ✔ | A 1024 × 768 la lista de recetas mide 187 px (≈ 3,5 filas, antes 1,5); filtros en una sola fila con desplazamiento; el panel no se mueve al filtrar (inventario 12-379, Recetas 393-756; no pasa de 768). |
+| 11 | ✔ | A 375 el inventario, el personaje y Recetas van apilados y entran en 343 px (16-359); sin desplazamiento lateral. |
+| 12 | ✔ | En emulación táctil (`pointer: coarse`) sale el aviso «📱 NanoBlocks se juega con teclado y ratón…» en el menú y en «Crear mundo nuevo»; en escritorio no sale. |
+| 13 | ✘ | **Parcial.** La billetera ya no tapa aire/sed (queda encima de las burbujas). Pero a 375 el reloj (x 255-365) sigue **encima de la brújula** (56-319): tapa 64 px, la parte derecha. Arreglo: reloj debajo de la brújula o brújula más angosta a ≤ 700 px. |
+| 14 | ✔ | Ningún «mouse» en el texto visible (HTML ni libretas; Ayuda dice «ratón»). |
+| 15 | ✔ | Consola sin la advertencia de `getImageData` en una carga limpia (ver abajo). |
+| 16 | ✔ | Medido con `game.update` quieto: el hambre sube 0,4 por segundo (antes 0,8): un punto de comida cada ≈ 112 s en el día 1; sed 0,31 por segundo. Reaparecer deja comida 10 y sed 10. (No se miró si el ritmo vuelve al normal desde el día 2.) |
+| 17 | ✔ | `revisar-fichas`: 401 ítems con línea de uso, 12-90 caracteres. En vivo la tortilla muestra ingrediente, frescura, saciedad, cómo se fabrica y dónde se consigue. Ver PU-32 (línea repetida). |
+| 18 | ✔ | Por código: `derrumbe`, `silbido`, `resoplido`, `chancho`, `danta.hurt`, `cadenas`, `gato.bufido` ya están en `CAPTIONS`; `audio.play(..., { sub: true })` subtitula lo de interfaz (lahar, goleta) sin flecha. Sin confirmar en el juego. |
+| 19 | ✔ | Claves con punto (`perro.gruñido`, `chest.open`) y el coyote usa `perro.gruñido`; `revisar-subtitulos` falla si hay claves huérfanas y hoy pasa. |
+| 20 | ✔ | Se agregaron ≈ 25 textos (cristal, hongo, magma, lechuza, oropéndola, yigüirro, cencerro, galope, gato, aleteo, yunque, remo, carrete…). |
+| 21 | ✔ | `defensa.js` y `monte.js` usan `'break'`; no queda ningún `material(…, 'dig')`. |
+| 22 | ✔ | Por código: «dig.cloth» al agarrar la cuerda y cada 0,45 s al trepar. Sin oír. |
+| 23 | ✔ | Por código: `material(blk.sound, 'step', pos, this.sneaking ? 0.45 : 1)`; `audio.material` acepta `vol`. Sin oír (el paso más corto al correr no se hizo; no era obligatorio). |
+| 24 | ✔ | Por código: `avatar.js` tiene pose de nadar (brazada y patada) y de trepar (manos alternas); la mano en 1.ª persona (`game.js`) lo toma de `inWater`/`enCuerda`. Sin verlo. |
+| 25 | ✔ | Por código: `sip` inclina la taza sin masticar (`game.js:2659`). Lanzar la caña sigue con el golpe genérico (no se había prometido pose propia). Sin verlo. |
+| 26 | ✔ | Por código: `body:has(#bossbar:not(.hidden)) #region-banner { top: 17% }` (`vidrio.css`; `#bossbar` se oculta con `.hidden`, `ui.js:1182`) y `limpiarAvisos` al pausar. No se peleó con un jefe. |
+
+### Hallazgos nuevos
+
+**PU-27 · P3 · El aviso de logro tapa el reloj.**
+«¡Logro! · 3 Bandada de pericos» (arriba a la derecha) se dibuja encima de «Día 1 · 07:30» y deja ver solo «a 1 · 07:30». Se ve en 1024 × 768 al ganar un logro; dura unos segundos.
+- Arreglo: bajar la pila de logros 40 px o ponerla a la izquierda de la brújula.
+
+**PU-28 · P2 · Ajustes a 375 px: tres controles se salen del panel.**
+«Movimiento tranquilo», «Avisos en pantalla» (`#s-avisos`) y «Velocidad de lectura» (`#s-lectura`) miden 388 px y empiezan en x = 58, o sea terminan en 446 con un panel de 16-359: se cortan por la derecha y no se pueden operar bien.
+- Pasos: móvil 375 → pausa → Ajustes → bajar hasta «Avisos en pantalla».
+- Arreglo: `width: 100%; box-sizing: border-box` (o `max-width: 100%`) en esos `select` y etiquetas dentro de `@media (max-width: 700px)`.
+
+**PU-29 · P3 · Un guardado con 0 de vida carga a un jugador «vivo» con 0 de vida.**
+Reproducido forzando el estado (llamé a `ui.closeInventory()` con la pantalla de muerte puesta: el juego volvió a `playing` con `health = 0` y `alive = false`; se guardó, recargué la página y el mundo cargó con `health = 0`, `alive = true`, sin pantalla de muerte, caminable). No es una ruta normal de jugador (la pantalla de muerte bloquea `E`), pero el guardado puede quedar así si se guarda en medio de la animación de muerte (guardado automático cada 30 s).
+- Arreglo: no guardar mientras `muerte` / `!alive`, o al cargar con `health <= 0` volver a `showDeath` o reaparecer.
+
+**PU-30 · P3 · Bocadillo de un NPC enorme sobre la pantalla.**
+En la noche del día 1, tras 4 minutos quieto, el cartel «¡Hola! Hábleme con clic derecho» de un NPC se pintó a toda la pantalla (letra de ≈ 40 px encima de la brújula y del centro), pegado a la cámara. No lo pude reproducir con otra posición. Candidato: limitar el tamaño máximo del cartel por distancia.
+
+**PU-31 · P3 · El chip de la billetera y la fila de aire/sed se asoman por encima de los paneles a 375 px.**
+Con el inventario abierto a 375 se ve «₡0» y las burbujas sobre el borde del panel de Recetas; el HUD queda por encima de la capa de paneles. Arreglo: ocultar `#bars` y la billetera mientras haya una pantalla abierta, o bajar su z-index.
+
+**PU-32 · P3 · La ficha de ítem repite lo mismo en dos líneas.**
+En la tortilla: «Ingrediente: sirve para fabricar Gallo pinto, Empanada, Gallos de picadillo y 2 más» y, tres líneas abajo, «Sirve para: Gallo pinto, Empanada, Gallos de picadillo y 2 más». La ficha mide 7 líneas y tapa la billetera.
+- Arreglo: dejar una sola (`comodidad.js:46`).
+
+**PU-33 · P3 · Un `beforeunload` bloqueado deja un error en la consola al salir.**
+Al recargar con el mundo abierto y sin gesto previo, Chrome registra «Blocked attempt to show a 'beforeunload' confirmation panel…» (2 veces, siempre al navegar yo). Es del navegador y con un clic previo no sale; se anota por si alguien mira la consola.
+
+**PU-34 · P3 · Tarjeta del mundo a 375: la fecha sigue cortada.**
+«Supervivencia · v13.5.9 · día …» (la versión ya se ve; la fecha no). Una segunda línea o menos texto lo arregla.
+
+### Lo que revisé sin hallar fallas
+
+- **Consola en ≈ 12 minutos de juego** (2 cargas completas, 2 muertes, inventario, libreta en 11 pestañas, pausa, ajustes, 375 y 1024): 0 errores ni advertencias del juego; las únicas líneas son los 2 `beforeunload` de PU-33. Sin la advertencia de `getImageData`.
+- **Hambre del día 1:** comida 19 → 6 y sed 18 → 7 en ≈ 12 minutos de juego quieto; sin pérdida de vida por hambre.
+- **Panel de inventario:** no cambia de alto ni de posición al filtrar recetas (regla de `CLAUDE.md`).
+- **Aviso táctil:** solo aparece con puntero grueso.
+- **Pruebas del repo:** `revisar-subtitulos` y `revisar-fichas` pasan en el árbol actual (v13.6.0 en trabajo).
+
+### Pendiente de una persona con ratón y teclado
+
+PU-22, 23, 24 y 25 (oír y ver), la pose de nadar y trepar en F5, la pelea con jefe y el cartel de región (PU-26), y repetir PU-02 haciendo clic durante el prólogo.
